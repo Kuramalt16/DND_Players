@@ -1,0 +1,54 @@
+Feats not done yet
+
+BUG: Chose a skill, the next dropbox allows me to select the same skill, third doesnt..
+
+BUG: Expertise goes wonka am able to choose two oif the same skill to be an expert in
+
+BuG: choosing a second spell in warlock second page unselects previous page first spell
+
+Melee weapon effect needs to be checked probably does nothing in spells
+
+might be a bug in items when trying to equip its possible another "," shows up. needs testing
+
+BUG: missing passive perception
+
+TEST:
+
+ALL CONDITIONS
+ALL SPELLS
+ALL CANTRIPS
+ALL CLASSES
+ALL SUBCLASSES
+ALL ELDRITCH INCANTATIONS
+ALL PATRONS
+HEAVY Weapon property
+Throwing weapons
+Firing from bows
+
+
+2025-05-23 -- 2025-05-25 update:
+    bugs:
+        Manage Spells:
+            * fixed selecting spell after scrolling down
+            * fixed crashing after trying to display a spells' description
+        Actions:
+            * fixed screen sizing when displaying spell slots (problem was that spell slots disappeared when the screen was resized after viewing the spell slots)
+            * Fixed Green-Flame Blade cantrip effect and component piece.
+            * Fixed Cantrip leveling up with higer level casting.
+
+    features:
+        Items:
+            * Add items no longer requires first letter to be capitalized
+            * Pressing 'Tab' while in add items autofills to the closest item in the list
+            * Made potions possible to drink in inventory !!! will crash if potion is not a health potion. !!!
+        Actions:
+            * Pressing on an action flashes the button red to indicate clicking
+            * Added AC and DC to Actions
+            * Made Roll History
+            * Added Notes
+
+    optimization:
+        Items:
+            * Reduced the quality and size (in Kb) of some weapon images which will reduce the amount of memory used and speed up the initial power on process
+        Overall:
+            * Added support for loosers with no mouse (Scroll with Arrow keys, switch description with Left arrow key)

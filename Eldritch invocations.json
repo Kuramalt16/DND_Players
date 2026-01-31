@@ -1,0 +1,374 @@
+{
+    "Agonizing Blast": {
+        "Prerequisite": ["Cantrip:Eldritch Blast"],
+        "Description": [
+            "When you cast eldritch blast, add your Charisma modifier to the damage it deals on a hit."
+        ],
+        "Action_Type": "Passive"
+    },
+    "Armor of Shadows": {
+        "Prerequisite": "",
+        "Description": [
+            "You can cast mage armor on yourself at will, without expending a spell slot or material components."
+        ],
+        "Code": ["Free:Spell:Mage Armor"],
+        "Action_Type": "Free Spell"
+    },
+    "Ascendant Step": {
+        "Prerequisite": ["Level:9"],
+        "Description": [
+            "You can cast levitate on yourself at will, without expending a spell slot or material components."
+        ],
+        "Code": ["Free:Spell:Levitate"],
+        "Action_Type": "Free Spell"
+    },
+    "Aspect of the Moon": {
+        "Prerequisite": ["Boon:Pact of the Tome"],
+        "Description": [
+            "You no longer need to sleep and can't be forced to sleep by any means. To gain the benefits of a long rest, you can spend all 8 hours doing light activity, such as reading your Book of Shadows and keeping watch."
+        ],
+        "Action_Type": "Passive"
+    },
+    "Beast Speech": {
+        "Prerequisite": "",
+        "Description": [
+            "You can cast speak with animals at will, without expending a spell slot."
+        ],
+        "Code": ["Free:Spell:Speak with Animals"],
+        "Action_Type": "Free Spell"
+    },
+    "Beguiling Influence": {
+        "Prerequisite": "",
+        "Description": [
+            "You gain proficiency in the Deception and Persuasion skills."
+        ],
+        "Code": ["PROFICIENCY:Deception:Persuasion"],
+        "Action_Type": "Passive"
+    },
+    "Bewitching Whispers": {
+        "Prerequisite": ["Level:7"],
+        "Description": [
+            "You can cast compulsion once using a warlock spell slot. You can't do so again until you finish a long rest."
+        ],
+        "Code": ["1LR:Spell:Compulsion"],
+        "Action_Type": "Spell"
+
+    },
+    "Bond of the Talisman": {
+        "Prerequisite": ["Level:12", "Boon:Pact of the Talisman"],
+        "Description": [
+            "While someone else is wearing your talisman, you can use your action to teleport to the unoccupied space closest to them, provided the two of you are on the same plane of existence. The wearer of your talisman can do the same thing, using their action to teleport to you. The teleportation can be used a number of times equal to your proficiency bonus, and all expended uses are restored when you finish a long rest."
+        ],
+        "Action_Type": "Action"
+    },
+    "Book of Ancient Secrets": {
+        "Prerequisite": ["Boon:Pact of the Tome"],
+        "Description": [
+            "You can now inscribe magical rituals in your Book of Shadows. Choose two 1st-level spells that have the ritual tag from any class's spell list. The spells appear in the book and don't count against the number of spells you know. With your Book of Shadows in hand, you can cast the chosen spells as rituals. You can't cast the spells except as rituals, unless you've learned them by some other means. You can also cast a warlock spell you know as a ritual if it has the ritual tag.",
+            "On your adventures, you can add other ritual spells to your Book of Shadows. When you find such a spell, you can add it to the book if the spell's level is equal to or less than half your warlock level (rounded up) and if you can spare the time to transcribe the spell. For each level of the spell, the transcription process takes 2 hours and costs 50 gp for the rare inks needed to inscribe it."
+        ],
+        "Code": ["BYPASS:Spell_Limit"],
+        "Action_Type": "Action"
+    },
+    "Chains of Carceri": {
+        "Prerequisite": ["Level:15", "Boon:Pact of the Chain"],
+        "Description": [
+            "You can cast hold monster at will – targeting a celestial, fiend, or elemental – without expending a spell slot or material components. You must finish a long rest before you can use this invocation on the same creature again."
+        ],
+        "Code": ["1LR:Spell:Hold Monster"],
+        "Action_Type": "Spell"
+    },
+    "Cloak of Flies": {
+        "Prerequisite": ["Level:5"],
+        "Description": [
+            "As a bonus action, you can surround yourself with a magical aura that looks like buzzing flies. The aura extends 5 feet from you in every direction, but not through total cover. It lasts until you're incapacitated or you dismiss it as a bonus action. The aura grants you advantage on Charisma (Intimidation) checks but disadvantage on all other Charisma checks. Any other creature that starts its turn in the aura takes poison damage equal to your Charisma modifier (minimum of 0 damage). Once you use this invocation, you can't use it again until you finish a short or long rest."
+        ],
+        "Action_Type": "Bonus",
+        "Damage": "CHA MOD",
+        "Distance": "5 ft",
+        "Code": ["1SR:Cloak of Flies"]
+    },
+    "Devil's Sight": {
+        "Prerequisite": "",
+        "Description": [
+            "You can see normally in darkness, both magical and nonmagical, to a distance of 120 feet."
+        ],
+        "Action_Type": "Passive"
+    },
+    "Dreadful Word": {
+        "Prerequisite": ["Level:7"],
+        "Description": [
+            "You can cast confusion once using a warlock spell slot. You can't do so again until you finish a long rest."
+        ],
+        "Code": ["1LR:Spell:Confusion"],
+        "Action_Type": "Spell"
+    },
+    "Eldritch Mind": {
+        "Prerequisite": "",
+        "Description": [
+            "You have advantage on Constitution saving throws that you make to maintain your concentration on a spell."
+        ],
+        "Code": ["Niche:Advantage:Concentration"],
+        "Action_Type": "Passive"
+    },
+    "Eldritch Sight": {
+        "Prerequisite": "",
+        "Description": [
+            "You can cast detect magic at will, without expending a spell slot or material components."
+        ],
+        "Code": ["Free:Spell:Detect Magic"],
+        "Action_Type": "Free Spell"
+    },
+    "Eldritch Smite": {
+        "Prerequisite": ["Level:5", "Boon:Pact of the Blade"],
+        "Description": [
+            "Once per turn when you hit a creature with your pact weapon, you can expend a warlock spell slot to deal an extra 1d8 force damage to the target, plus another 1d8 per level of the spell slot, and you can knock the target prone if it is Huge or smaller."
+        ],
+        "Code": ["1B:Eldritch Smite"],
+        "Action_Type": "Spell"
+    },
+    "Eldritch Spear": {
+        "Prerequisite": ["Cantrip:Eldritch Blast"],
+        "Description": [
+            "When you cast eldritch blast, its range is 300 feet."
+        ],
+        "Code": ["Niche:Cantrip:Eldritch Blast:Range:300"],
+        "Action_Type": "Passive"
+    },
+    "Eyes of the Rune Keeper": {
+        "Prerequisite": "",
+        "Description": [
+            "You can read all writing."
+        ],
+        "Code": ["Languages:All Writing"],
+        "Action_Type": "Passive"
+    },
+    "Far Scribe": {
+        "Prerequisite": ["Level:5", "Boon:Pact of the Tome"],
+        "Description": [
+            "A new page appears in your Book of Shadows. With your permission, a creature can use its action to write its name on that page, which can contain a number of names equal to your proficiency bonus. You can cast the sending spell, targeting a creature whose name is on the page, without using a spell slot and without using material components. To do so, you must write the message on the page. The target hears the message in their mind, and if the target replies, their message appears on the page, rather than in your mind. The writing disappears after 1 minute. As an action, you can magically erase a name on the page by touching it."
+        ],
+        "Code": ["1A:Far Scribe"],
+        "Action_Type": "Action"
+    },
+    "Fiendish Vigor": {
+        "Prerequisite": "",
+        "Description": [
+            "You can cast false life on yourself at will as a 1st-level spell, without expending a spell slot or material components."
+        ],
+        "Code": ["Free:Spell:False Life"],
+        "Action_Type": "Free Spell"
+    },
+    "Gaze of Two Minds": {
+        "Prerequisite": "",
+        "Description": [
+            "You can use your action to touch a willing humanoid and perceive through its senses until the end of your next turn. As long as the creature is on the same plane of existence as you, you can use your action on subsequent turns to maintain this connection, extending the duration until the end of your next turn. While perceiving through the other creature's senses, you benefit from any special senses possessed by that creature, and you are blinded and deafened to your own surroundings."
+        ],
+        "Code": ["1A:Gaze of Two Minds"],
+        "Action_Type": "Action"
+    },
+    "Ghostly Gaze": {
+        "Prerequisite": ["Level:7"],
+        "Description": [
+            "As an action, you gain the ability to see through solid objects to a range of 30 feet. Within that range, you have darkvision if you don't already have it. This special sight lasts for 1 minute or until your concentration ends (as if you were concentrating on a spell). During that time, you perceive objects as ghostly, transparent images. Once you use this invocation, you can't use it again until you finish a short or long rest."
+        ],
+        "Code": ["1SR:Ghostly Gaze"],
+        "Action_Type": "Action"
+    },
+    "Gift of the Depths": {
+        "Prerequisite": ["Level:5"],
+        "Description": [
+            "You can breathe underwater, and you gain a swimming speed equal to your walking speed. You can also cast water breathing once without expending a spell slot. You regain the ability to do so when you finish a long rest."
+        ],
+        "Code": ["Two:Free:Spell:Water Breathing"],
+        "Code2": ["Niche:Speed:Swimming:"],
+        "Action_Type": "Free Spell"
+    },
+    "Gift of the Ever-Living Ones": {
+        "Prerequisite": ["Boon:Pact of the Chain"],
+        "Description": [
+            "Whenever you regain hit points while your familiar is within 100 feet of you, treat the roll as if you had rolled the maximum on the dice for those hit points."
+        ],
+        "Action_Type": "Passive"
+
+    },
+    "Grasp of Hadar": {
+        "Prerequisite": ["Cantrip:Eldritch Blast"],
+        "Description": [
+            "Once on each of your turns when you hit a creature with eldritch blast, you can move that creature in a straight line 10 feet closer to you."
+        ],
+        "Action_Type": "Passive"
+    },
+    "Improved Pact Weapon": {
+        "Prerequisite": ["Boon:Pact of the Blade"],
+        "Description": [
+            "You can use any weapon you summon with your Pact of the Blade feature as a spellcasting focus for your warlock spells. In addition, the weapon gains a +1 bonus to its attack and damage rolls unless it is a magic weapon that already has a bonus to those rolls. Finally, the weapon you summon can be a shortbow, longbow, light crossbow, or heavy crossbow."
+        ],
+        "Action_Type": "Passive"
+    },
+    "Lance of Lethargy": {
+        "Prerequisite": ["Cantrip:Eldritch Blast"],
+        "Description": [
+            "Once on each of your turns when you hit a creature with eldritch blast, you can reduce that creature's speed by 10 feet until the end of your next turn."
+        ],
+        "Action_Type": "Bonus"
+    },
+    "Lifedrinker": {
+        "Prerequisite": ["Level:12", "Boon:Pact of the Blade"],
+        "Description": [
+            "When you hit a creature with your pact weapon, the creature takes extra necrotic damage equal to your Charisma modifier (minimum of 1)."
+        ],
+        "Code": ["1B:Lifedrinker"],
+        "Action_Type": "Passive"
+    },
+    "Maddening Hex": {
+        "Prerequisite": ["Level:5"],
+        "Description": [
+            "As a bonus action, you cause a psychic disturbance around the target cursed by your hex spell or by a warlock feature of yours, such as Hexblade's Curse or Sign of Ill Omen. When you do so, you deal psychic damage to the cursed target and each creature of your choice within 5 feet of it. The psychic damage equals your Charisma modifier (minimum of 1 damage)."
+        ],
+        "Code": ["1B:Maddening Hex"],
+        "Action_Type": "Bonus"
+    },
+    "Mask of Many Faces": {
+        "Prerequisite": "",
+        "Description": [
+            "You can cast disguise self at will, without expending a spell slot."
+        ],
+        "Code": ["Free:Spell:Disguise Self"],
+        "Action_Type": "Free Spell"
+    },
+    "Master of Myriad Forms": {
+        "Prerequisite": ["Level:15"],
+        "Description": [
+            "You can cast alter self at will, without expending a spell slot."
+        ],
+        "Code": ["Free:Spell:Alter Self"],
+        "Action_Type": "Free Spell"
+    },
+    "Minions of Chaos": {
+        "Prerequisite": ["Level:9"],
+        "Description": [
+            "You can cast conjure elemental once using a warlock spell slot. You can't do so again until you finish a long rest."
+        ],
+        "Code": ["1LR:Spell:Conjure Elemental"],
+        "Action_Type": "Spell"
+    },
+    "Mire the Mind": {
+        "Prerequisite": ["Level:5"],
+        "Description": [
+            "You can cast slow once using a warlock spell slot. You can't do so again until you finish a long rest."
+        ],
+        "Code": ["1LR:Spell:Slow"],
+        "Action_Type": "Spell"
+    },
+    "Misty Visions": {
+        "Prerequisite": "",
+        "Description": [
+            "You can cast silent image at will, without expending a spell slot or material components."
+        ],
+        "Code": ["Free:Spell:Silent Image"],
+        "Action_Type": "Free Spell"
+    },
+    "One with Shadows": {
+        "Prerequisite": ["Level:5"],
+        "Description": [
+            "When you are in an area of dim light or darkness, you can use your action to become invisible until you move or take an action or a reaction."
+        ],
+        "Code": ["1B:One with Shadows"],
+        "Action_Type": "Passive"
+    },
+    "Otherworldly Leap": {
+        "Prerequisite": ["Level:9"],
+        "Description": [
+            "You can cast jump on yourself at will, without expending a spell slot or material components."
+        ],
+        "Code": ["Free:Spell:Jump"],
+        "Action_Type": "Free Spell"
+    },
+    "Repelling Blast": {
+        "Prerequisite": ["Cantrip:Eldritch Blast"],
+        "Action_Type": "Passive",
+        "Description": [
+            "When you hit a creature with eldritch blast, you can push the creature up to 10 feet away from you in a straight line."
+        ]
+    },
+    "Sculptor of Flesh": {
+        "Prerequisite": ["Level:7"],
+        "Description": [
+            "You can cast polymorph once using a warlock spell slot. You can't do so again until you finish a long rest."
+        ],
+        "Code": ["1LR:Spell:Polymorph"],
+        "Action_Type": "Spell"
+    },
+    "Shroud of Shadow": {
+        "Prerequisite": ["Level:15"],
+        "Description": [
+            "You can cast invisibility at will, without expending a spell slot."
+        ],
+        "Code": ["Free:Spell:Invisibility"],
+        "Action_Type": "Free Spell"
+    },
+    "Sign of Ill Omen": {
+        "Prerequisite": ["Level:5"],
+        "Description": [
+            "You can cast bestow curse once using a warlock spell slot. You can't do so again until you finish a long rest."
+        ],
+        "Code": ["1LR:Spell:Bestow Curse"],
+        "Action_Type": "Spell"
+    },
+    "Thief of Five Fates": {
+        "Prerequisite": "",
+        "Description": [
+            "You can cast bane once using a warlock spell slot. You can't do so again until you finish a long rest."
+        ],
+        "Code": ["1LR:Spell:Bane"],
+        "Action_Type": "Spell"
+    },
+    "Tomb of Levistus": {
+        "Prerequisite": ["Level:5"],
+        "Description": [
+            "As a reaction when you take damage, you can entomb yourself in ice, which melts away at the end of your next turn. You gain 10 temporary hit points per warlock level, which take as much of the triggering damage as possible. Immediately after you take the damage, you gain vulnerability to fire damage, your speed is reduced to 0, and you are incapacitated. These effects, including any remaining temporary hit points, all end when the ice melts."
+        ],
+        "Code": ["1R:Tomb of Levistus"],
+        "Action_Type": "Reaction"
+    },
+    "Trickster's Escape": {
+        "Prerequisite": ["Level:7"],
+        "Description": [
+            "You can cast freedom of movement once on yourself without expending a spell slot. You regain the ability to do so when you finish a long rest."
+        ],
+        "Code": ["Free:Spell:Freedom of Movement"],
+        "Action_Type": "Free Spell"
+    },
+    "Visions of Distant Realms": {
+        "Prerequisite": ["Level:15"],
+        "Description": [
+            "You can cast arcane eye at will, without expending a spell slot."
+        ],
+        "Code": ["Free:Spell:Arcane Eye"],
+        "Action_Type": "Free Spell"
+    },
+    "Voice of the Chain Master": {
+        "Prerequisite": ["Boon:Pact of the Chain"],
+        "Description": [
+            "You can communicate telepathically with your familiar and perceive through your familiar's senses as long as you are on the same plane of existence. Additionally, while perceiving through your familiar's senses, you can also speak through your familiar in your own voice, even if your familiar is normally incapable of speech."
+        ],
+        "Action_Type": "Passive"
+    },
+    "Whispers of the Grave": {
+        "Prerequisite": ["Level:9"],
+        "Description": [
+            "You can cast speak with dead at will, without expending a spell slot."
+        ],
+        "Code": ["Free:Spell:Speak with Dead"],
+        "Action_Type": "Free Spell"
+    },
+    "Witch Sight": {
+        "Prerequisite": ["Level:15"],
+        "Description": [
+            "You can see the true form of any shapechanger or creature concealed by illusion or transmutation magic while the creature is within 30 feet of you and within line of sight."
+        ],
+        "Code": ["Niche:Truesight:30"],
+        "Action_Type": "Passive"
+    }
+}

@@ -1,0 +1,126 @@
+{
+    "Changeling": {
+        "Size": [
+            "Char:Size",
+            "Medium"
+        ],
+        "Speed": [
+            "Char:Speed",
+            "30"
+        ],
+        "Languages": [
+            "Char:Languages",
+            "Common",
+            "Sylvan",
+            "Elvish",
+            "Dwarvish",
+            "Halfling"
+        ],
+        "Code": [
+            "Feature:Shapechanger"
+        ],
+        "Ability Score": [
+            "STR",
+            "DEX",
+            "CHA"
+        ],
+        "Skills": [
+            "Insight",
+            "Persuasion"
+        ]
+    },
+    "Fighter": {
+        "1": {
+            "Hit dice": [
+                "1d10"
+            ],
+            "Proficiency Bonus": [
+                "2"
+            ],
+            "Armor Proficiencies": [
+                "Light Armor",
+                "Medium Armor",
+                "Heavy Armor",
+                "Shields"
+            ],
+            "Weapon Proficiencies": [
+                "Simple",
+                "Martial"
+            ],
+            "Saving Throw Proficiencies": [
+                "Saving_STR",
+                "Saving_CON"
+            ],
+            "Second Wind": [
+                "1d10+1"
+            ],
+            "Code": [
+                "Feature:Second Wind"
+            ],
+            "Skills": [
+                "Acrobatics",
+                "Athletics"
+            ],
+            "Fighting Style": [
+                "Two-Weapon Fighting"
+            ]
+        },
+        "2": {
+            "Hit dice": [
+                "2d10"
+            ],
+            "Proficiency Bonus": [
+                "2"
+            ],
+            "Action Surge": [
+                "1"
+            ],
+            "Code": [
+                "Feature:Action Surge"
+            ]
+        },
+        "3": {
+            "Hit dice": [
+                "3d10"
+            ],
+            "Proficiency Bonus": [
+                "2"
+            ],
+            "Martial Archetype": [
+                "Champion"
+            ]
+        },
+        "4": {
+            "Hit dice": [
+                "4d10"
+            ],
+            "Proficiency Bonus": [
+                "2"
+            ],
+            "Ability Score": [
+                "CHA",
+                "CON"
+            ]
+        },
+        "5": {
+            "Hit dice": [
+                "5d10"
+            ],
+            "Proficiency Bonus": [
+                "3"
+            ],
+            "Extra Attack": [
+                "1"
+            ],
+            "Code": [
+                "Feature:Extra Attack"
+            ]
+        }
+    },
+    "Equiped Items": {
+        "Weapons": "",
+        "Magic Weapon": "",
+        "Shield": ""
+    },
+    "Notes": "labas kuki\\cursor0"
+}

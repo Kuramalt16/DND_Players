@@ -1,0 +1,253 @@
+{
+    "Human": {
+        "Ability Score": [
+            "Char:Ability_Scores",
+            "STR",
+            "DEX",
+            "CON",
+            "INT",
+            "WIS",
+            "CHA"
+        ],
+        "Size": [
+            "Char:Size",
+            "Medium"
+        ],
+        "Speed": [
+            "Char:Speed",
+            "30"
+        ],
+        "Languages": [
+            "Char:Languages",
+            "Common"
+        ]
+    },
+    "Druid": {
+        "1": {
+            "Hit dice": [
+                "1d8"
+            ],
+            "Armor Proficiencies": [
+                "Light Armor",
+                "Medium Armor",
+                "Shields"
+            ],
+            "Weapon Proficiencies": [
+                "Club",
+                "Dagger",
+                "Dart",
+                "Javelin",
+                "Mace",
+                "Quarterstaff",
+                "Scimitar",
+                "Sickle",
+                "Sling",
+                "Spear"
+            ],
+            "Tool Proficiencies": [
+                "Herbalism kit"
+            ],
+            "Saving Throw Proficiencies": [
+                "Saving_INT",
+                "Saving_WIS"
+            ],
+            "Proficiency Bonus": [
+                "2"
+            ],
+            "Primary Ability": [
+                "Wisdom"
+            ],
+            "Spell Slots": [
+                "1st:2"
+            ],
+            "Slot Level": [
+                "1"
+            ],
+            "Languages": [
+                "Druidic"
+            ],
+            "Skills": [
+                "Animal Handling",
+                "Nature"
+            ],
+            "Cantrip": [
+                "Druidcraft",
+                "Guidance"
+            ],
+            "Spell": [
+                "Healing Word",
+                "Ice Knife",
+                "Speak with Animals",
+                "Animal Messenger",
+                "Enhance Ability",
+                "Moonbeam",
+                "Revivify"
+            ]
+        },
+        "2": {
+            "Hit dice": [
+                "2d8"
+            ],
+            "Proficiency Bonus": [
+                "2"
+            ],
+            "Wild Shape": [
+                "2:SR"
+            ],
+            "Spell Slots": [
+                "1st:3"
+            ],
+            "Slot Level": [
+                "1"
+            ],
+            "Wild Companion": [
+                "Spell",
+                "Find Familiar:Wild Shape"
+            ],
+            "Druid Circle": [
+                "Land"
+            ],
+            "Code": [
+                "Feature:Wild Companion",
+                "Feature:Wild Shape"
+            ]
+        },
+        "3": {
+            "Hit dice": [
+                "3d8"
+            ],
+            "Proficiency Bonus": [
+                "2"
+            ],
+            "Slot Level": [
+                "1:2"
+            ],
+            "Spell Slots": [
+                "1st:4,2nd:2"
+            ]
+        },
+        "4": {
+            "Hit dice": [
+                "4d8"
+            ],
+            "Proficiency Bonus": [
+                "2"
+            ],
+            "Slot Level": [
+                "1:2"
+            ],
+            "Spell Slots": [
+                "1st:4,2nd:3"
+            ],
+            "Cantrip": [
+                "Shape Water"
+            ],
+            "Ability Score": [
+                "INT",
+                "CON"
+            ]
+        },
+        "5": {
+            "Hit dice": [
+                "5d8"
+            ],
+            "Proficiency Bonus": [
+                "3"
+            ],
+            "Slot Level": [
+                "1:2:3"
+            ],
+            "Spell Slots": [
+                "1st:4,2nd:3,3rd:2"
+            ]
+        }
+    },
+    "Barbarian": {
+        "1": {
+            "Hit dice": [
+                "1d12"
+            ],
+            "Proficiency Bonus": [
+                "2"
+            ],
+            "Armor Proficiencies": [
+                "Light Armor",
+                "Medium Armor",
+                "Shields"
+            ],
+            "Weapon Proficiencies": [
+                "Simple",
+                "Martial"
+            ],
+            "Saving Throw Proficiencies": [
+                "Saving_STR",
+                "Saving_CON"
+            ],
+            "Rage": [
+                "2"
+            ],
+            "Rage Damage": [
+                "2"
+            ],
+            "Languages": [
+                "Druidic"
+            ],
+            "Unarmored Defense": [
+                "{AC:10+DEX MOD+CON MOD}"
+            ],
+            "Skills": [
+                "Athletics",
+                "Intimidation"
+            ],
+            "Code": [
+                "Feature:Rage",
+                "Feature:Unarmored Defense"
+            ]
+        },
+        "2": {
+            "Hit dice": [
+                "2d12"
+            ],
+            "Proficiency Bonus": [
+                "2"
+            ],
+            "Rage": [
+                "2"
+            ],
+            "Rage Damage": [
+                "2"
+            ],
+            "Reckless Attack": [
+                "Advantage on first attack and more vulnerable on getting hit"
+            ],
+            "Code": [
+                "Feature:Danger Sense",
+                "Feature:Reckless Attack"
+            ]
+        }
+    },
+    "Choises": {
+        "Land:Bonus Cantrip": "Shillelagh",
+        "Land:Subclass path": "Grassland",
+        "Beasts": [
+            "Owl",
+            "Wolf",
+            "Giant Rat",
+            "Stag",
+            "Fox",
+            "Dire Wolf",
+            "Owlbear"
+        ]
+    },
+    "Equiped Items": {
+        "Weapons": "",
+        "Magic Weapon": "Battleaxe +1",
+        "Shield": "Shield",
+        "Armour": "",
+        "Magic Armour": "Mithral Armor",
+        "Wonderous Item": "Toilet Paper of God,Holy Symbol of Abbathor",
+        "Special": "Wooden Staff,Alchemists Supplies,Shovel,Bedroll,Pot (iron)",
+        "Ingredient": "Orc Penis",
+        "Potions": "Potion of Acid,Potion of Greater Healing,Poison (basic)"
+    }
+}

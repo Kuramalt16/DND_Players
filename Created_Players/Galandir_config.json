@@ -1,0 +1,303 @@
+{
+    "Changeling": {
+        "Size": [
+            "Char:Size",
+            "Medium"
+        ],
+        "Speed": [
+            "Char:Speed",
+            "30"
+        ],
+        "Languages": [
+            "Char:Languages",
+            "Common",
+            "Sylvan",
+            "Elvish",
+            "Dwarvish",
+            "Halfling"
+        ],
+        "Code": [
+            "Feature:Shapechanger"
+        ],
+        "Skills": [
+            "Persuasion"
+        ],
+        "Ability Score": [
+            "INT",
+            "INT",
+            "INT"
+        ]
+    },
+    "Wizard": {
+        "1": {
+            "Hit dice": [
+                "1d6"
+            ],
+            "Weapon Proficiencies": [
+                "Dagger",
+                "Dart",
+                "Sling",
+                "Quarterstaff",
+                "Crossbow Light"
+            ],
+            "Saving Throw Proficiencies": [
+                "Saving_INT",
+                "Saving_WIS"
+            ],
+            "Proficiency Bonus": [
+                "2"
+            ],
+            "Primary Ability": [
+                "Intelligence"
+            ],
+            "Spell Slots": [
+                "1st:2"
+            ],
+            "Slot Level": [
+                "1"
+            ],
+            "Arcane Recovery": [
+                "1"
+            ],
+            "Skills": [
+                "Arcana",
+                "History"
+            ],
+            "Cantrip": [
+                "Blade Ward",
+                "Acid Splash",
+                "Booming Blade"
+            ],
+            "Spell": [
+                "Absorb Elements",
+                "Alarm",
+                "Burning Hands",
+                "Catapult",
+                "Cause Fear",
+                "Charm Person",
+                "Chromatic Orb",
+                "Comprehend Languages",
+                "Color Spray"
+            ]
+        },
+        "2": {
+            "Hit dice": [
+                "2d6"
+            ],
+            "Proficiency Bonus": [
+                "2"
+            ],
+            "Spell Slots": [
+                "1st:3"
+            ],
+            "Slot Level": [
+                "1"
+            ],
+            "Arcane Recovery": [
+                "1"
+            ],
+            "Arcane Tradition": [
+                "Necromancy"
+            ]
+        },
+        "3": {
+            "Hit dice": [
+                "3d6"
+            ],
+            "Proficiency Bonus": [
+                "2"
+            ],
+            "Spell Slots": [
+                "1st:4,2nd:2"
+            ],
+            "Slot Level": [
+                "2"
+            ],
+            "Arcane Recovery": [
+                "2"
+            ]
+        },
+        "4": {
+            "Hit dice": [
+                "4d6"
+            ],
+            "Proficiency Bonus": [
+                "2"
+            ],
+            "Spell Slots": [
+                "1st:4,2nd:3"
+            ],
+            "Slot Level": [
+                "2"
+            ],
+            "Arcane Recovery": [
+                "2"
+            ],
+            "Ability Score": [
+                "STR",
+                "STR"
+            ]
+        },
+        "5": {
+            "Hit dice": [
+                "5d6"
+            ],
+            "Proficiency Bonus": [
+                "3"
+            ],
+            "Spell Slots": [
+                "1st:4,2nd:3,3rd:2"
+            ],
+            "Slot Level": [
+                "3"
+            ],
+            "Arcane Recovery": [
+                "3"
+            ]
+        }
+    },
+    "Sorcerer": {
+        "1": {
+            "Hit dice": [
+                "1d6"
+            ],
+            "Weapon Proficiencies": [
+                "Dagger",
+                "Dart",
+                "Sling",
+                "Quarterstaff",
+                "Crossbow Light"
+            ],
+            "Saving Throw Proficiencies": [
+                "Saving_CON",
+                "Saving_CHA"
+            ],
+            "Proficiency Bonus": [
+                "2"
+            ],
+            "Primary Ability": [
+                "Charisma"
+            ],
+            "Spell Slots": [
+                "1st:2"
+            ],
+            "Slot Level": [
+                "1"
+            ],
+            "Skills": [
+                "Deception",
+                "Intimidation"
+            ],
+            "Cantrip": [
+                "Chill Touch",
+                "Blade Ward",
+                "Acid Splash",
+                "Booming Blade"
+            ],
+            "Spell": [
+                "Chaos Bolt",
+                "Absorb Elements"
+            ],
+            "Sorcerous Origin": [
+                "Shadow Magic"
+            ]
+        },
+        "2": {
+            "Hit dice": [
+                "2d6"
+            ],
+            "Proficiency Bonus": [
+                "2"
+            ],
+            "Spell Slots": [
+                "1st:3"
+            ],
+            "Slot Level": [
+                "1"
+            ],
+            "Sorcery Points": [
+                "2"
+            ],
+            "Font of Magic": [
+                "1"
+            ],
+            "Code": [
+                "Feature:Font of Magic"
+            ]
+        },
+        "3": {
+            "Hit dice": [
+                "3d6"
+            ],
+            "Proficiency Bonus": [
+                "2"
+            ],
+            "Spell Slots": [
+                "1st:4,2nd:2"
+            ],
+            "Slot Level": [
+                "2"
+            ],
+            "Sorcery Points": [
+                "3"
+            ],
+            "Metamagic": [
+                "Distant Spell",
+                "Quickened Spell"
+            ]
+        },
+        "4": {
+            "Hit dice": [
+                "4d6"
+            ],
+            "Proficiency Bonus": [
+                "2"
+            ],
+            "Spell Slots": [
+                "1st:4,2nd:3"
+            ],
+            "Slot Level": [
+                "2"
+            ],
+            "Sorcery Points": [
+                "4"
+            ],
+            "Ability Score": [
+                "CHA",
+                "WIS"
+            ]
+        },
+        "5": {
+            "Hit dice": [
+                "5d6"
+            ],
+            "Proficiency Bonus": [
+                "3"
+            ],
+            "Spell Slots": [
+                "1st:4,2nd:3,3rd:2"
+            ],
+            "Slot Level": [
+                "3"
+            ],
+            "Sorcery Points": [
+                "5"
+            ],
+            "Magical Guidance": [
+                "1"
+            ],
+            "Code": [
+                "Feature:Magical Guidance"
+            ]
+        }
+    },
+    "Equiped Items": {
+        "Weapons": "Dagger",
+        "Magic Weapon": "",
+        "Shield": "",
+        "Special": "Spellbook"
+    },
+    "Chosen_spells": "Absorb Elements,False Life,Find Familiar,Identify,Illusory Script,Jim's Magic Missile,Jump,Mage Armor,Magic Missile,Protection from Evil and Good",
+    "Chosen_cantrips": "Chill Touch,Mending,Control Flames,Mold Earth,Acid Splash",
+    "Notes": "Yo-ho-ho-ho\\cursor0"
+}

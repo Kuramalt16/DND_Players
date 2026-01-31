@@ -1,0 +1,206 @@
+{
+    "Dwarf": {
+        "Ability Score": [
+            "Char:Ability_Scores",
+            "CON",
+            "CON"
+        ],
+        "Size": [
+            "Char:Size",
+            "Medium"
+        ],
+        "Speed": [
+            "Char:Speed",
+            "25"
+        ],
+        "Darkvision": [
+            "Char:Darkvision",
+            "60"
+        ],
+        "Resistance": [
+            "Char:Resistance",
+            "Poison"
+        ],
+        "Weapon Proficiencies": [
+            "Battleaxe",
+            "Handaxe",
+            "Light hammer",
+            "Warhammer"
+        ],
+        "Languages": [
+            "Char:Languages",
+            "Common",
+            "Dwarvish"
+        ],
+        "Second Ability Score": [
+            "Char:Ability_Scores",
+            "STR",
+            "STR"
+        ],
+        "Armor Proficiencies": [
+            "Light Armor",
+            "Medium Armor"
+        ]
+    },
+    "Fighter": {
+        "1": {
+            "Hit dice": [
+                "1d10"
+            ],
+            "Proficiency Bonus": [
+                "2"
+            ],
+            "Armor Proficiencies": [
+                "Light Armor",
+                "Medium Armor",
+                "Heavy Armor",
+                "Shields"
+            ],
+            "Weapon Proficiencies": [
+                "Simple",
+                "Martial"
+            ],
+            "Saving Throw Proficiencies": [
+                "Saving_STR",
+                "Saving_CON"
+            ],
+            "Second Wind": [
+                "1d10+1"
+            ],
+            "Code": [
+                "Feature:Second Wind"
+            ],
+            "Skills": [
+                "Animal Handling",
+                "History"
+            ],
+            "Fighting Style": [
+                "Dueling"
+            ]
+        },
+        "2": {
+            "Hit dice": [
+                "2d10"
+            ],
+            "Proficiency Bonus": [
+                "2"
+            ],
+            "Action Surge": [
+                "1"
+            ],
+            "Code": [
+                "Feature:Action Surge"
+            ]
+        },
+        "3": {
+            "Hit dice": [
+                "3d10"
+            ],
+            "Proficiency Bonus": [
+                "2"
+            ],
+            "Martial Archetype": [
+                "Champion"
+            ]
+        },
+        "4": {
+            "Hit dice": [
+                "4d10"
+            ],
+            "Proficiency Bonus": [
+                "2"
+            ],
+            "Ability Score": [
+                "WIS",
+                "INT"
+            ]
+        },
+        "5": {
+            "Hit dice": [
+                "5d10"
+            ],
+            "Proficiency Bonus": [
+                "3"
+            ],
+            "Extra Attack": [
+                "1"
+            ],
+            "Code": [
+                "Feature:Extra Attack"
+            ]
+        }
+    },
+    "Ranger": {
+        "1": {
+            "Hit dice": [
+                "1d10"
+            ],
+            "Proficiency Bonus": [
+                "2"
+            ],
+            "Armor Proficiencies": [
+                "Light Armor",
+                "Medium Armor",
+                "Shields"
+            ],
+            "Weapon Proficiencies": [
+                "Simple",
+                "Martial"
+            ],
+            "Saving Throw Proficiencies": [
+                "Saving_STR",
+                "Saving_DEX"
+            ],
+            "Favored Enemy": [
+                "1"
+            ],
+            "Natural Explorer": [
+                "1"
+            ],
+            "Code": [
+                "Feature:Favored Enemy",
+                "Feature:Natural Explorer"
+            ],
+            "Skills": [
+                "Nature",
+                "Insight",
+                "Survival"
+            ]
+        },
+        "2": {
+            "Hit dice": [
+                "2d10"
+            ],
+            "Proficiency Bonus": [
+                "2"
+            ],
+            "Primary Ability": [
+                "Wisdom"
+            ],
+            "Spell Slots": [
+                "1st:2"
+            ],
+            "Slot Level": [
+                "1"
+            ],
+            "Spell": [
+                "Goodberry",
+                "Speak with Animals"
+            ],
+            "Fighting Style": [
+                "Defense"
+            ]
+        }
+    },
+    "Equiped Items": {
+        "Weapons": "",
+        "Magic Weapon": "Battleaxe of Dwarf Fire",
+        "Shield": "",
+        "Wonderous Item": "Ring of Mind Shielding",
+        "Special": "Holy symbol of Marthammor Duinn,Mess Kit,Wooden Stake,Mirror (Steel),Torch,Water Skin,Holy Water,Manacles,Bedroll,TinderBox,Hammer (tool),Crowbar",
+        "Armour": "Splint",
+        "Magic Armour": "",
+        "Food": "Rations",
+        "Potions": "Oil flask,Potion of Greater Healing"
+    }
+}

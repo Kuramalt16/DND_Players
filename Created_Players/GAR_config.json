@@ -1,0 +1,158 @@
+{
+    "Hobgoblin": {
+        "Size": [
+            "Char:Size",
+            "Medium"
+        ],
+        "Speed": [
+            "Char:Speed",
+            "30"
+        ],
+        "Darkvision": [
+            "Char:Darkvision",
+            "60"
+        ],
+        "Languages": [
+            "Char:Languages",
+            "Common",
+            "Goblin"
+        ],
+        "Code": [
+            "Feature:Fey Ancestry",
+            "Feature:Fey Gift",
+            "Feature:Fortune from the Many"
+        ],
+        "Ability Score": [
+            "STR",
+            "DEX",
+            "CON"
+        ],
+        "Fortune from the Many lv3": [
+            "Spite"
+        ]
+    },
+    "Barbarian": {
+        "1": {
+            "Hit dice": [
+                "1d12"
+            ],
+            "Proficiency Bonus": [
+                "2"
+            ],
+            "Armor Proficiencies": [
+                "Light Armor",
+                "Medium Armor",
+                "Shields"
+            ],
+            "Weapon Proficiencies": [
+                "Simple",
+                "Martial"
+            ],
+            "Saving Throw Proficiencies": [
+                "Saving_STR",
+                "Saving_CON"
+            ],
+            "Rage": [
+                "2"
+            ],
+            "Rage Damage": [
+                "2"
+            ],
+            "Unarmored Defense": [
+                "{AC:10+DEX MOD+CON MOD}"
+            ],
+            "Code": [
+                "Feature:Rage",
+                "Feature:Unarmored Defense"
+            ],
+            "Skills": [
+                "Intimidation",
+                "Nature"
+            ]
+        },
+        "2": {
+            "Hit dice": [
+                "2d12"
+            ],
+            "Proficiency Bonus": [
+                "2"
+            ],
+            "Rage": [
+                "2"
+            ],
+            "Rage Damage": [
+                "2"
+            ],
+            "Reckless Attack": [
+                "Advantage on first attack and more vulnerable on getting hit"
+            ],
+            "Code": [
+                "Feature:Danger Sense",
+                "Feature:Reckless Attack"
+            ]
+        },
+        "3": {
+            "Hit dice": [
+                "3d12"
+            ],
+            "Proficiency Bonus": [
+                "2"
+            ],
+            "Rage": [
+                "3"
+            ],
+            "Rage Damage": [
+                "2"
+            ],
+            "Primal Path": [
+                "Storm Herald"
+            ],
+            "Skills": [
+                "Animal Handling"
+            ]
+        },
+        "4": {
+            "Hit dice": [
+                "4d12"
+            ],
+            "Proficiency Bonus": [
+                "2"
+            ],
+            "Rage": [
+                "3"
+            ],
+            "Rage Damage": [
+                "2"
+            ],
+            "Ability Score": [
+                "CON",
+                "STR"
+            ]
+        },
+        "5": {
+            "Hit dice": [
+                "5d12"
+            ],
+            "Proficiency Bonus": [
+                "3"
+            ],
+            "Rage": [
+                "3"
+            ],
+            "Rage Damage": [
+                "2"
+            ],
+            "Extra Attack": [
+                "1"
+            ],
+            "Fast Movement": [
+                "1"
+            ],
+            "Code": [
+                "Feature:Fast Movement",
+                "Feature:Extra Attack"
+            ]
+        }
+    },
+    "Equiped Items": {}
+}

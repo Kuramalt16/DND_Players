@@ -1,0 +1,202 @@
+{
+  "Beak": {
+    "Description": "Melee Weapon Attack: +*HIT* to hit, reach 5 ft., one creature. Hit: *DICE* + *DICE_MOD* piercing damage.",
+    "Type": "Piercing",
+    "Owl": {
+      "HIT": "2",
+      "DICE": "1d4",
+      "DICE_MOD": "0"
+    },
+    "Owlbear": {
+      "HIT": "7",
+      "DICE": "1d10",
+      "DICE_MOD": "5"
+    }
+  },
+  "Bite": {
+    "Description": "Melee Weapon Attack: +*HIT* to hit, reach 5 ft., one target. Hit: *DICE* + *DICE_MOD* piercing damage. If the target is a creature, it must succeed on a DC *DC* Strength saving throw or be knocked prone.",
+    "Type": "Piercing",
+    "Fox": {
+      "HIT": "3",
+      "DICE": "1d4",
+      "DICE_MOD": "1",
+      "DC": "7"
+    },
+    "Dire Wolf": {
+      "HIT": "5",
+      "DICE": "2d6",
+      "DICE_MOD": "3",
+      "DC": "13"
+    },
+    "Wolf": {
+      "HIT": "4",
+      "DICE": "2d4",
+      "DICE_MOD": "2",
+      "DC": "11"
+    },
+    "Giant Rat": {
+      "HIT": "4",
+      "DICE": "1d4",
+      "DICE_MOD": "2",
+      "DC": "7"
+    },
+    "Rabbit": {
+      "HIT": "4",
+      "DICE": "1d4",
+      "DICE_MOD": "0",
+      "DC": "3"
+    }
+  },
+  "Claws": {
+    "Type": "Slashing",
+    "Description": "Melee Weapon Attack: +*HIT* to hit, reach 5 ft., one target. Hit: *DICE* + *DICE_MOD* slashing damage.",
+    "Owlbear": {
+      "HIT": "7",
+      "DICE": "2d8",
+      "DICE_MOD": "5"
+    }
+  },
+  "Charge": {
+    "Description": "If the *NAME* moves at least 20 ft. straight toward a target and then hits it with a *ATTACK_NAME* attack on the same turn, the target takes an extra *DICE* slashing damage. If the target is a creature, it must succeed on a DC *DC* Strength saving throw or be knocked prone.",
+    "Type": "Slashing",
+    "Cow": {
+      "NAME": "Cow",
+      "ATTACK_NAME": "Gore",
+      "DICE": "2d6",
+      "DC": "13"
+    },
+    "Boar": {
+      "NAME": "Boar",
+      "ATTACK_NAME": "Tusk",
+      "DICE": "1d6",
+      "DC": "11"
+    }
+  },
+  "Gore": {
+    "Description": "Melee Weapon Attack: +*HIT* to hit, reach 5 ft., one target. Hit: *DICE* + *DICE_MOD* piercing damage.",
+    "Type": "Piercing",
+    "Cow": {
+      "HIT": "6",
+      "DICE": "1d6",
+      "DICE_MOD": "4"
+    }
+  },
+  "Hidden": {
+    "Description": "The *NAME* has Advantage on Dexterity (Stealth) checks when remaining motionless",
+    "Owl": {
+      "NAME": "Owl"
+    }
+  },
+  "Hooves": {
+    "Description": "Melee Weapon Attack: +*HIT* to hit, reach 5 ft., one target. Hit: *DICE* + *DICE_MOD* bludgeoning damage.",
+    "Type": "Bludgeoning",
+    "Stag": {
+      "HIT": "5",
+      "DICE": "2d4",
+      "DICE_MOD": "3"
+    }
+  },
+  "Horns": {
+    "Description": "Melee Weapon Attack: +*HIT* to hit, reach 5 ft., one target. Hit: *DICE* + *DICE_MOD* piercing damage.",
+    "Type": "Piercing",
+    "Stag": {
+      "HIT": "3",
+      "DICE": "1d6",
+      "DICE_MOD": "2"
+    }
+  },
+  "Keen Hearing": {
+    "Description": "The *NAME* has advantage on Wisdom (Perception) checks that rely on hearing.",
+    "Stag": {
+      "NAME": "Stag"
+    }
+  },
+  "Keen Hearing and Sight": {
+    "Description": "The *NAME* has advantage on Wisdom (Perception) checks that rely on hearing or sight.",
+    "Owl": {
+      "NAME": "Owl"
+    }
+  },
+  "Keen Hearing and Smell": {
+    "Description": "The *NAME* has advantage on Wisdom (Perception) checks that rely on hearing or smell.",
+    "Wolf": {
+      "NAME": "Wolf"
+    },
+    "Dire Wolf": {
+      "NAME": "Dire Wolf"
+    }
+  },
+  "Keen Sight and Smell": {
+    "Description": "The *NAME* has advantage on Wisdom (Perception) checks that rely on sight or smell.",
+    "Owlbear": {
+      "NAME": "Owlbear"
+    }
+  },
+  "Keen Smell": {
+    "Description": "The *NAME* has advantage on Wisdom (Perception) checks that rely on smell.",
+    "Giant Rat": {
+      "NAME": "Giant Rat"
+    }
+  },
+  "Multiattack": {
+    "Description": "The *NAME* makes *COUNT* attacks: *DESC*",
+    "Owlbear": {
+      "NAME": "Owlbear",
+      "COUNT": "two",
+      "DESC": "one with its beak and one with its claws.",
+      "Attack_list": ["Beak", "Claws"]
+    }
+  },
+  "Pack Tactics": {
+    "Description": "The *NAME* has advantage on an attack roll against a creature if at least one of the *NAME*'s allies is within 5 ft. of the creature and the ally isn't incapacitated.",
+    "Dire Wolf": {
+      "NAME": "Dire Wolf"
+    },
+    "Wolf": {
+      "NAME": "Wolf"
+    },
+    "Giant Rat": {
+      "NAME": "Giant Rat"
+    }
+  },
+  "Relentless": {
+    "Use": ["1", "SR"],
+    "Description": "If the *NAME* takes *DAMAGE_TAKEN* damage or less that would reduce it to 0 hit points, it is reduced to 1 hit point instead.",
+    "Boar": {
+      "NAME": "Boar",
+      "DAMAGE_TAKEN": "7"
+    }
+  },
+  "Small Creature": {
+    "Description": "The *NAME* has Armour Class increases to *AC* when target is at least *DISTANCE* ft. away",
+    "Owl": {
+      "NAME": "Owl",
+      "AC": "16",
+      "DISTANCE": "60"
+    }
+  },
+  "Silent Flight": {
+    "Description": "The *NAME* makes no sound when flying",
+    "Owl": {
+      "NAME": "Owl"
+    }
+  },
+  "Talons": {
+    "Type": "Slashing",
+    "Description": "Melee Weapon Attack: +*HIT* to hit, reach 5 ft., one target. Hit: (*DICE*) slashing damage.",
+    "Owl": {
+      "HIT": "3",
+      "DICE": "1d4",
+      "DICE_MOD": "0"
+    }
+  },
+  "Tusk": {
+    "Description": "Melee Weapon Attack: +*HIT* to hit, reach 5 ft., one target. Hit: *DICE* + *DICE_MOD* slashing damage.",
+    "Type": "Slashing",
+    "Boar": {
+      "HIT": "3",
+      "DICE": "1d6",
+      "DICE_MOD": "1"
+    }
+  }
+}

@@ -1,0 +1,330 @@
+{
+  "Sneak Attack": {
+    "Class": "Rogue",
+    "Description": "Beginning at 1st level, you know how to strike subtly and exploit a foe's distraction. Once per turn, you can deal an extra 1d6 damage to one creature you hit with an attack if you have advantage on the attack roll. The attack must use a finesse or a ranged weapon. You don't need advantage on the attack roll if another enemy of the target is within 5 feet of it, that enemy isn't incapacitated, and you don't have disadvantage on the attack roll. The amount of the extra damage increases as you gain levels in this class, as shown in the Sneak Attack column of the Rogue table.",
+    "Description_for_dummies": "If you had an Advantage on your attack roll with a ranged or finesse weapon or if there is a second creature within 5ft of your target you can deal extra damage",
+    "Damage": "Char_dict",
+    "Action_Type": "Passive"
+  },
+  "Cunning Action": {
+    "Class": "Rogue",
+    "Description": "Starting at 2nd level, your quick thinking and agility allow you to move and act quickly. You can take a bonus action on each of your turns in combat. This action can be used only to take the Dash, Disengage, or Hide action.",
+    "Description_for_dummies": "As a bonus action you can DASH, HIDE or DISENGAGE",
+    "Action_Type": "Passive"
+  },
+  "Uncanny Dodge": {
+    "Class": "Rogue",
+    "Description": "Starting at 5th level, when an attacker that you can see hits you with an attack, you can use your reaction to halve the attack's damage against you.",
+    "Description_for_dummies": "When being hit you can use your reaction to halve the attacks damage",
+    "Action_Type": "Reaction",
+    "Trigger": "Damaged"
+  },
+  "Mask of the Wild": {
+    "Class": "Any",
+    "Race": "Elf",
+    "SubRace": "Wood Elf",
+    "Description": "You can attempt to hide even when you are only lightly obscured by foliage, heavy rain, falling snow, mist, and other natural phenomena.",
+    "Description_for_dummies": "You can hide even when you are barely covered",
+    "Action_Type": "Passive"
+  },
+  "Danger Sense": {
+    "Class": "Barbarian",
+    "Description": "At 2nd level, you gain an uncanny sense of when things nearby aren't as they should be, giving you an edge when you dodge away from danger. You have advantage on Dexterity saving throws against effects that you can see, such as traps and spells. To gain this benefit, you can't be blinded, deafened, or incapacitated.",
+    "Description_for_dummies": "When you aren't blinded, deafened or incapacitated you gain advantage on DEX saving throws against spells, traps",
+    "Action_Type": "Passive"
+  },
+  "Two weapon fighting": {
+    "Class": "Amy",
+    "Description": "When having two weapons in your hands you can make a second attack with your weapon as a bonus action but don't add the modifier on the second attack",
+    "Description_for_dummies": "When wielding two weapons you can make a second melee weapon attack with the offhand weapon, but you do not add the modifier",
+    "Action_Type": "Bonus"
+  },
+  "Wild Companion": {
+    "Class": "Druid",
+    "Description" : "At 2nd level, you gain the ability to summon a spirit that assumes an animal form: as an action, you can expend a use of your Wild Shape feature to cast the Find Familiar spell, without material components.\n\nWhen you cast the spell in this way, the familiar is a fey instead of a beast, and the familiar disappears after a number of hours equal to half your druid level.",
+    "Description_for_dummies": "You can now cast Find Familiar spell with wildshape slots instead of spell slots, it doesn't cost materials in this way",
+    "Action_Type": "Changed_Spell_Slot",
+    "Change": ["REMOVE", "1", "Wild Shape"]
+  },
+  "Wild Shape": {
+    "Class": "Druid",
+    "Description": "Starting at 2nd level, you can use your action to magically assume the shape of a beast that you have seen before. You can use this feature twice. You regain expended uses when you finish a short or long rest.\n\nYour druid level determines the beasts you can transform into, as shown in the Beast Shapes table. At 2nd level, for example, you can transform into any beast that has a challenge rating of 1/4 or lower that doesn't have a flying or swimming speed. You can stay in a beast shape for a number of hours equal to half your druid level (rounded down). You then revert to your normal form unless you expend another use of this feature. You can revert to your normal form earlier by using a bonus action on your turn. You automatically revert if you fall unconscious, drop to 0 hit points, or die.\n\nWhile you are transformed, the following rules apply:\n\nYour game statistics are replaced by the statistics of the beast, but you retain your alignment, personality, and Intelligence, Wisdom, and Charisma scores. You also retain all of your skill and saving throw proficiencies, in addition to gaining those of the creature. If the creature has the same proficiency as you and the bonus in its stat block is higher than yours, use the creature's bonus instead of yours. If the creature has any legendary or lair actions, you can't use them.\nWhen you transform, you assume the beast's hit points and Hit Dice. When you revert to your normal form, you return to the number of hit points you had before you transformed. However, if you revert as a result of dropping to 0 hit points, any excess damage carries over to your normal form. For example, if you take 10 damage in animal form and have only 1 hit point left, you revert and take 9 damage. As long as the excess damage doesn't reduce your normal form to 0 hit points, you aren't knocked unconscious.\nYou can't cast spells, and your ability to speak or take any action that requires hands is limited to the capabilities of your beast form. Transforming doesn't break your concentration on a spell you've already cast, however, or prevent you from taking actions that are part of a spell, such as Call Lightning, that you've already cast.\nYou retain the benefit of any features from your class, race, or other source and can use them if the new form is physically capable of doing so. However, you can't use any of your special senses, such as darkvision, unless your new form also has that sense.\nYou choose whether your equipment falls to the ground in your space, merges into your new form, or is worn by it. Worn equipment functions as normal, but the DM decides whether it is practical for the new form to wear a piece of equipment, based on the creature's shape and size. Your equipment doesn't change size or shape to match the new form, and any equipment that the new form can't wear must either fall to the ground or merge with it. Equipment that merges with the form has no effect until you leave the form.",
+    "Description_for_dummies": "You can turn into a Beast that you see twice per short or long rest",
+    "Action_Type": "Class_Spell_Slot",
+    "Spell_slot": ["ADD", "2"],
+    "reset": "SR",
+    "Special_Flag": ["Cast"]
+  },
+  "Rage": {
+    "Class": "Barbarian",
+    "Description": "In battle, you fight with primal ferocity. On your turn, you can enter a rage as a bonus action.\n\nWhile raging, you gain the following benefits if you aren't wearing heavy armor:\n\n• You have advantage on Strength checks and Strength saving throws.\n\n• When you make a melee weapon attack using Strength, you gain a +2 bonus to the damage roll. This bonus increases as you level.\n\n• You have resistance to bludgeoning, piercing, and slashing damage.\n\nIf you are able to cast spells, you can't cast them or concentrate on them while raging.\n\nYour rage lasts for 1 minute. It ends early if you are knocked unconscious or if your turn ends and you haven't attacked a hostile creature since your last turn or taken damage since then. You can also end your rage on your turn as a bonus action.\n\nOnce you have raged the maximum number of times for your barbarian level, you must finish a long rest before you can rage again. You may rage 2 times at 1st level, 3 at 3rd, 4 at 6th, 5 at 12th, and 6 at 17th.",
+    "Description_for_dummies": "As a Bonus action you can enter Rage mode if you aren't wearing Heavy armor you gain: advantage on STR checks and STR saving throws, resistance to Piercing, Bludgeoning, Slashing Damage, melee attacks using the STR mod get increesed damage rolls, can't concentrate on spells, ",
+    "Action_Type": "Class_Spell_Slot",
+    "Spell_slot": ["COMMAND", "Char", "Rage"],
+    "reset": "LR",
+    "Special_Flag": ["Rage"]
+  },
+  "Unarmored Defense": {
+    "Class": "Barbarian",
+    "Description": "While you are not wearing any armor, your Armor Class equals 10 + your Dexterity modifier + your Constitution modifier. You can use a shield and still gain this benefit.",
+    "Description_for_dummies": "While you are not wearing any armor, your Armor Class equals 10 + your Dexterity modifier + your Constitution modifier. You can use a shield and still gain this benefit.",
+    "Action_Type": "Passive"
+  },
+  "Reckless Attack": {
+    "Class": "Barbarian",
+    "Description": "Starting at 2nd level, you can throw aside all concern for defense to attack with fierce desperation. When you make your first attack on your turn, you can decide to attack recklessly. Doing so gives you advantage on melee weapon attack rolls using Strength during this turn, but attack rolls against you have advantage until your next turn.",
+    "Description_for_dummies": "You can make a reckless attack as your first attack against a creature, this gives you advantage on melee weapon attacks that require STR, but gives opponents advantage on attack rolls against you this turn",
+    "Action_Type": "Passive"
+  },
+  "Fighting Style": {
+    "Archery": {
+      "Description": "You gain a +2 bonus to attack rolls you make with ranged weapons."
+    },
+    "Defense": {
+      "Description": "While you are wearing armor, you gain a +1 bonus to AC."
+    },
+    "Dueling": {
+      "Description": "When you are wielding a melee weapon in one hand and no other weapons, you gain a +2 bonus to damage rolls with that weapon."
+    },
+    "Great Weapon Fighting": {
+      "Description": "When you roll a 1 or 2 on a damage die for an attack you make with a melee weapon that you are wielding with two hands, you can reroll the die and must use the new roll, even if the new roll is a 1 or a 2. The weapon must have the two-handed or versatile property for you to gain this benefit."
+    },
+    "Protection": {
+      "Description": "When a creature you can see attacks a target other than you that is within 5 feet of you, you can use your reaction to impose disadvantage on the attack roll. You must be wielding a shield."
+    },
+    "Two-Weapon Fighting": {
+      "Description": "When you engage in two-weapon fighting, you can add your ability modifier to the damage of the second attack.",
+      "Action_Type": "Passive"
+    },
+    "Thrown Weapon Fighting": {
+      "Description": "You can draw a weapon that has the thrown property as part of the attack you make with the weapon.\nIn addition, when you hit with a ranged attack using a thrown weapon, you gain a +2 bonus to the damage roll.",
+      "Action_Type": "Passive"
+    },
+    "Action_Type": "Passive"
+  },
+  "Second Wind": {
+    "Class": "Fighter",
+    "Description": "You have a limited well of stamina that you can draw on to protect yourself from harm. On your turn, you can use a bonus action to regain hit points equal to 1d10 + your fighter level.\n\nOnce you use this feature, you must finish a short or long rest before you can use it again.",
+    "Description_for_dummies": "You can regain your hp as a bonus action",
+    "Action_Type": "Class_Spell_Slot",
+    "Spell_slot": ["ADD", "1"],
+    "Dice": "1d10 + Char:Class:Fighter:LV",
+    "reset": "SR"
+
+  },
+  "Extra Attack": {
+    "Class": "Fighter",
+    "Description": "Beginning at 5th level, you can attack twice, instead of once, whenever you take the Attack action on your turn.",
+    "Description_for_dummies": "You can attack twice on your turn",
+    "At higher levels": "The number of attacks increases to three when you reach 11th level in this class and to four when you reach 20th level in this class.",
+    "Action_Type": "Passive"
+  },
+  "Action Surge": {
+    "Class": "Fighter",
+    "Description": "Starting at 2nd level, you can push yourself beyond your normal limits for a moment. On your turn, you can take one additional action on top of your regular action and a possible bonus action.\n\nOnce you use this feature, you must finish a short or long rest before you can use it again.",
+    "Description_for_dummies": "You can take your turn again after your turn when you use this feature",
+    "At higher levels": "Starting at 17th level, you can use it twice before a rest, but only once on the same turn.",
+    "Action_Type": "Class_Spell_Slot",
+    "Spell_slot": ["ADD", "1"],
+    "reset": "SR"
+  },
+  "Favored Enemy": {
+    "Class": "Ranger",
+    "Description": "Beginning at 1st level, you have significant experience studying, tracking, hunting, and even talking to a certain type of enemy.\n\nChoose a type of favored enemy: aberrations, beasts, celestials, constructs, dragons, elementals, fey, fiends, giants, monstrosities, oozes, plants, or undead. Alternatively, you can select two races of humanoid (such as gnolls and orcs) as favored enemies.\n\nYou have advantage on Wisdom (Survival) checks to track your favored enemies, as well as on Intelligence checks to recall information about them.\n\nWhen you gain this feature, you also learn one language of your choice that is spoken by your favored enemies, if they speak one at all.\n\nYou choose one additional favored enemy, as well as an associated language, at 6th and 14th level. As you gain levels, your choices should reflect the types of monsters you have encountered on your adventures.",
+    "Description_for_dummies": "Choose a type of favoured enemy or two humanoid races, you have advantage on WIS (Survival) checks to track the enemy and INT checks to recall information about them. You also gain their language if they have one.",
+    "At higher levels": "You choose one additional favored enemy, as well as an associated language, at 6th and 14th level. As you gain levels, your choices should reflect the types of monsters you have encountered on your adventures.",
+    "Action_Type": "Passive",
+    "Special_Flag": ["CHOOSE_OR", "1", "Aberrations", "Beasts", "Celestials", "Constructs", "Dragons", "Elementals", "Fey", "Fiends", "Giants", "Monstrosities", "Oozes", "Plants", "Undead"],
+    "Chose_Or": ["CHOOSE_OR", "2", "Orcs", "Gnolls", "Goblins", "Humans"]
+  },
+  "Natural Explorer": {
+    "Class": "Ranger",
+    "Description": "You are particularly familiar with one type of natural environment and are adept at traveling and surviving in such regions. Choose one type of favored terrain: arctic, coast, desert, forest, grassland, mountain, swamp, or the Underdark. When you make an Intelligence or Wisdom check related to your favored terrain, your proficiency bonus is doubled if you are using a skill that you're proficient in.\n\nWhile traveling for an hour or more in your favored terrain, you gain the following benefits:\n\nDifficult terrain doesn't slow your group's travel.\nYour group can't become lost except by magical means.\nEven when you are engaged in another activity while traveling (such as foraging, navigating, or tracking), you remain alert to danger.\nIf you are traveling alone, you can move stealthily at a normal pace.\nWhen you forage, you find twice as much food as you normally would.\nWhile tracking other creatures, you also learn their exact number, their sizes, and how long ago they passed through the area.\n\nYou choose additional favored terrain types at 6th and 10th level.",
+    "Description_for_dummies": "Choose a favoured terrain, INT and WIS checks related to the terrain give double proficiency bonuses if the skill is proficient already. while traveling for more than an hour in this terrain you get benefits: difficult terain doesnt slow your group down, your group can't become lost, when doing some other manual tasks you stay alert for danger, when moving alone traveling speed doesnt impede your stealth, foraging gives you twice as much food, when tracking creatures you also learn their exact number, sizes and how long ago they passed through the area.",
+    "At higher levels": "You choose additional favored terrain types at 6th and 10th level.",
+    "Action_Type": "Passive",
+    "Special_Flag": ["CHOOSE", "1", "Arctic", "Coast", "Desert", "Forest", "Grassland", "Mountain", "Swamp", "Underdark"]
+
+  },
+  "Fast Movement": {
+    "Class": "Barbarian",
+    "Description": "Starting at 5th level, your speed increases by 10 feet while you aren't wearing heavy armor.",
+    "Description_for_dummies": "When you aren't wearing heavy armor your walking speed increases by 10 ft.",
+    "Action_Type": "Passive"
+  },
+  "Draconic Cry": {
+    "Race": "Kobold",
+    "Description": "As a bonus action, you let out a cry at your enemies within 10 feet of you. Until the start of your next turn, you and your allies have advantage on attack rolls against any of those enemies who could hear you. You can use this trait a number of times equal to your proficiency bonus, and you regain all expended uses when you finish a long rest.",
+    "Description_for_dummies": "As a bonus action, you let out a cry at your enemies within 10 feet of you. Until the start of your next turn, you and your allies have advantage on attack rolls against any of those enemies who could hear you. You can use this trait a number of times equal to your proficiency bonus, and you regain all expended uses when you finish a long rest.",
+    "Action_Type": "Class_Spell_Slot",
+    "Spell_slot": ["ADD", "Proficiency Bonus"],
+    "reset": "LR"
+  },
+  "Defiance": {
+    "Race": "Kobold",
+    "Description": "You have advantage on saving throws to avoid or end the frightened condition on yourself.",
+    "Description_for_dummies": "Get advantage on Saving throws to avoid or end Frightened condition.",
+    "Action_Type": "Passive"
+  },
+  "Firbolg Magic": {
+    "Race": "Firbolg",
+    "Description": "You can cast the Detect Magic and Disguise Self spells with this trait. When you use this version of Disguise Self, you can seem up to 3 feet shorter or taller. Once you cast either of these spells with this trait, you can’t cast that spell with it again until you finish a long rest. You can also cast these spells using any spell slots you have.\n Charisma is your spellcasting ability.",
+    "Description_for_dummies": "You can cast Detect Magic and Disguise self once per long rest without using spell slots.",
+    "Action_Type": "Class_Spell_Slot_and_spell",
+    "Spell_slot": ["ADD", "2"],
+    "reset": "LR",
+    "Spell": ["ADD", "2", "Detect Magic", "Disguise Self"]
+  },
+  "Hidden Step": {
+    "Race": "Firbolg",
+    "Description": "As a bonus action, you can magically turn invisible until the start of your next turn or until you attack, make a damage roll, or force someone to make a saving throw. You can use this trait a number of times equal to your proficiency bonus, and you regain all expended uses when you finish a long rest.",
+    "Description_for_dummies": "As a bonus action you turn invisible until the start of your next turn or until you make an action or you can make a damage roll or force someone to make a saving throw.",
+    "Action_Type": "Class_Spell_Slot",
+    "Spell_slot": ["ADD", "Proficiency Bonus"],
+    "reset": "LR"
+  },
+  "Powerful Build": {
+    "Race": "Firbolg",
+    "Description": "You count as one size larger when determining your carrying capacity and the weight you can push, drag, or lift.",
+    "Description_for_dummies": "You can carry more than your size would dictate",
+    "Action_Type": "Passive"
+  },
+  "Speech of Beast and Leaf": {
+    "Race": "Firbolg",
+    "Description": "You have the ability to communicate in a limited manner with Beasts, Plants, and vegetation. They can understand the meaning of your words, though you have no special ability to understand them in return. You have advantage on all Charisma checks you make to influence them.",
+    "Description_for_dummies": "You have advantage on CHA checks when influencing plants or beasts, you can make them understand you, but you can't understand them",
+    "Action_Type": "Passive"
+  },
+  "Divine Sense": {
+    "Class": "Paladin",
+    "Description": "The presence of strong evil registers on your senses like a noxious odor, and powerful good rings like heavenly music in your ears. As an action, you can open your awareness to detect such forces. Until the end of your next turn, you know the location of any celestial, fiend, or undead within 60 feet of you that is not behind total cover. You know the type (celestial, fiend, or undead) of any being whose presence you sense, but not its identity (the vampire Count Strahd von Zarovich, for instance). Within the same radius, you also detect the presence of any place or object that has been consecrated or desecrated, as with the hallow spell.\n\nYou can use this feature a number of times equal to 1 + your Charisma modifier. When you finish a long rest, you regain all expended uses.",
+    "Description_for_dummies": "As an Action you can sense the presence of all Fiend, Celestial, Undead within 60 ft of you that are not totally hidden. Also you detect places that are magically changed.",
+    "Action_Type": "Class_Spell_Slot",
+    "reset": "LR",
+    "Spell_slot": ["COMMAND", "MODIFIER", "CON", "+", "1"]
+  },
+  "Lay on Hands": {
+    "Class": "Paladin",
+    "Description": "Your blessed touch can heal wounds. You have a pool of healing power that replenishes when you take a long rest. With that pool, you can restore a total number of hit points equal to your paladin level x 5.\n\nAs an action, you can touch a creature and draw power from the pool to restore a number of hit points to that creature, up to the maximum amount remaining in your pool.\n\nAlternatively, you can expend 5 hit points from your pool of healing to cure the target of one disease or neutralize one poison affecting it. You can cure multiple diseases and neutralize multiple poisons with a single use of Lay on Hands, expending hit points separately for each one.\n\nThis feature has no effect on undead and constructs.",
+    "Description_for_dummies": "As an action you touch a creature and you can heal them. You get 5 uses in your pool, you can use how many uses at once as you want. you can also cure any disease or neutralize one poison with a single use. The amount of hp a single use gives is based on your paladin level.",
+    "Action_Type": "Class_Spell_Slot",
+    "Spell_slot": ["ADD", "5"],
+    "reset": "LR"
+  },
+  "Divine Smite": {
+    "Class": "Paladin",
+    "Description": "Starting at 2nd level, when you hit a creature with a melee weapon attack, you can expend one spell slot to deal radiant damage to the target, in addition to the weapon's damage. The extra damage is 2d8 for a 1st-level spell slot, plus 1d8 for each spell level higher than 1st, to a maximum of 5d8. The damage increases by 1d8 if the target is an undead or a fiend.",
+    "Description_for_dummies": "When hitting a creature with a melee weapon attack, you can expend one spell slot and deal bonus radiant damage, 2d8 (first) + 1d8 for each next level, damage also increeses by 1d8 if the creature is undead or a fiend",
+    "Action_Type": "Passive"
+  },
+  "Divine Health": {
+    "Class": "Paladin",
+    "Description": "By 3rd level, the divine magic flowing through you makes you immune to disease.",
+    "Description_for_dummies": "You get immunity to disease",
+    "Action_Type": "Passive"
+
+  },
+  "Crimson Rite": {
+    "Class": "Blood Hunter",
+    "Description": "Also at 2nd level, you learn to invoke a rite of hemocraft that infuses your weapon strikes with elemental energy. As a bonus action, you can activate any rite you know on one weapon you’re holding. The effect of the rite lasts until you finish a short or long rest. When you activate a rite, you take necrotic damage equal to one roll of your hemocraft die. This damage can’t be reduced in any way.\n\nWhile the rite is in effect, attacks you make with this weapon are magical, and deal extra damage equal to your hemocraft die of the type determined by the chosen rite. A weapon can hold only one active rite at a time. Other creatures can’t gain the benefit of your rite.\n\nYou choose one rite from the crimson rites below when you first gain this feature. You learn an additional crimson rite at 7th level, and again at 14th level.",
+    "Description_for_dummies": "as a bonus action roll a Hemocraft die, take the damage rolled. Choose one from the list of known rites (Damage types) and your weapon deals bonus damage (based on the hemocraft die) of this type.",
+    "Action_Type": "Changed_Spell_Slot",
+    "Change": ["ROLL", "1", "Hemocraft_die"]
+  },
+  "Blood Maledict": {
+    "Class": "Blood Hunter",
+    "Description": "at 1st level, you gain the ability to channel—or sometimes sacrifice—a part of your vital essence to curse and manipulate creatures through hemocraft magic. You know one Blood Curse of your choice. You learn one additional blood curse of your choice at 6th, 10th, 14th, and 18th level. Each time you learn a new blood curse, you can also choose one of the blood curses you know and replace it with another blood curse.\n\nEach time you use your Blood Maledict feature, you choose which curse to invoke from the curses you know. While invoking a blood curse, but before it affects the target, you can choose to amplify the curse by taking necrotic damage equal to one roll of your hemocraft die. This damage can’t be reduced in any way. An amplified curse gains an additional effect, noted in the curse’s description. Creatures that do not have blood are immune to blood curses unless you have amplified the curse.\n\nOnce you use this feature, you must finish a short or long rest before you can use it again. You can use Blood Maledict twice between rests starting at 6th level, three times starting at 13th level, and four times starting at 17th level.",
+    "Description_for_dummies": "Once per short rest you can boost your blood curse ability by taking the damage from your hemocraft die",
+    "Action_Type": "Changed_Spell_Slot",
+    "Change": ["ADD_ROLL_REMOVE", "1", "Blood Maledict__Hemocraft_die__Blood Maledict"]
+  },
+  "Hunter's Bane": {
+    "Class": "Blood Hunter",
+    "Description": "At 1st level, you have survived the Hunter’s Bane—a dangerous, long-guarded ritual that alters your life’s blood, forever binding you to the darkness and honing your senses against it. You have advantage on Wisdom (Survival) checks to track fey, fiends, or undead, as well as on Intelligence checks to recall information about such creatures.\n\nThe Hunter’s Bane also empowers your body to control and shape hemocraft magic, using your own blood and life essence to fuel your abilities. Some of your features require your target to make a saving throw to resist the feature’s effects. The saving throw DC is calculated as follows:\n\nHemocraft save DC = 8 + your proficiency bonus + your Hemocraft modifier (your choice between Intelligence and Wisdom)",
+    "Description_for_dummies": "You have advantage on Wisdom (Survival) checks to track fey, fiends, or undead, as well as on Intelligence checks to recall information about such creatures.",
+    "Action_Type": "Passive"
+  },
+  "Shapechanger": {
+    "Race": "Changeling",
+    "Description": "As an action, you can change your appearance and your voice. You determine the specifics of the changes, including your coloration, hair length, and sex. You can also adjust your height and weight and can change your size between Medium and Small. You can make yourself appear as a member of another race, though none of your game statistics change. You can’t duplicate the appearance of an individual you’ve never seen, and you must adopt a form that has the same basic arrangement of limbs that you have. Your clothing and equipment aren’t changed by this trait.\nYou stay in the new form until you use an action to revert to your true form or until you die.",
+    "Description_for_dummies": "You can change into creatures you have seen.",
+    "Action_Type": "Class_Spell_Slot",
+    "reset": "inf",
+    "Spell_slot": ["ADD", "1"],
+    "Special_Flag": ["Cast"]
+  },
+  "Font of Magic": {
+    "Class": "Sorcerer",
+    "Description": "At 2nd level, you tap into a deep wellspring of magic within yourself. This wellspring is represented by sorcery points, which allow you to create a variety of magical effects.\n\nSorcery Points. You have 2 sorcery points, and you gain more as you reach higher levels, as shown in the Sorcery Points column of the Sorcerer table. You can never have more sorcery points than shown on the table for your level. You regain all spent sorcery points when you finish a long rest.\nFlexible Casting. You can use your sorcery points to gain additional spell slots, or sacrifice spell slots to gain additional sorcery points. You learn other ways to use your sorcery points as you reach higher levels.\nCreating Spell Slots. You can transform unexpended sorcery points into one spell slot as a bonus action on your turn. The Creating Spell Slots table shows the cost of creating a spell slot of a given level. You can create spell slots no higher in level than 5th. Any spell slot you create with this feature vanishes when you finish a long rest.\nConverting a Spell Slot to Sorcery Points. As a bonus action on your turn, you can expend one spell slot and gain a number of sorcery points equal to the slot's level.",
+    "Description_for_dummies": "You can turn sorcery points into spell slots and slots into sorcery points. 1st slot: 2 points, 2nd: 3, 3rd: 5, 4th: 6, 5th: 7",
+    "Action_Type": "Class_Spell_Slot",
+    "reset": "LR",
+    "Spell_slot": ["COMMAND", "Char", "Sorcery Points"]
+  },
+  "Metamagic": {
+    "Distant Spell": {
+      "Description": "When you cast a spell that has a range of 5 feet or greater, you can spend 1 sorcery point to double the range of the spell.\nWhen you cast a spell that has a range of touch, you can spend 1 sorcery point to make the range of the spell 30 feet.",
+      "Action_Type": "Changed_Spell_Slot",
+      "Change": ["REMOVE", "1", "Font of Magic"]
+    },
+    "Quickened Spell": {
+      "Description": "When you cast a spell that has a casting time of 1 action, you can spend 2 sorcery points to change the casting time to 1 bonus action for this casting.",
+      "Action_Type": "Changed_Spell_Slot",
+      "Change": ["REMOVE", "2", "Font of Magic"]
+
+    },
+    "Action_Type": "Passive"
+  },
+  "Magical Guidance": {
+    "Class": "Sorcerer",
+    "Description": "When you reach 5th level, you can tap into your inner wellspring of magic to try and conjure success from failure. When you make an ability check that fails, you can spend 1 sorcery point to reroll the d20, and you must use the new roll, potentially turning the failure into a success.",
+    "Description_for_dummies": "When you fail a skill or ability check you can spend one sorcery point to reroll the check. You must use the new roll now",
+    "Action_Type": "Changed_Spell_Slot",
+    "Change": ["REMOVE", "1", "Font of Magic"]
+  },
+  "Fey Ancestry": {
+    "Race": "Hobgoblin",
+    "Description": "You have advantage on saving throws you make to avoid or end the charmed condition on yourself.",
+    "Description_for_dummies": "Advantage on saving throw against Charmed condition",
+    "Action_Type": "Passive"
+  },
+  "Fey Gift": {
+    "Race": "Hobgoblin",
+    "Description": "You can use this trait to take the Help action as a bonus action, and you can do so a number of times equal to your proficiency bonus. You regain all expended uses when you finish a long rest.",
+    "Description_for_dummies": "Can use the HELP action on others as a bonus action the amount of your proficiency bonus. Long rest resets.",
+    "Action_Type": "Class_Spell_Slot",
+    "Spell_slot": ["ADD", "Proficiency Bonus"],
+    "reset": "LR"
+  },
+  "Fortune from the Many": {
+    "Race": "Hobgoblin",
+    "Description": "If you miss with an attack roll or fail an ability check or a saving throw, you can draw on your bonds of reciprocity to gain a bonus to the roll equal to the number of allies you can see within 30 feet of you (maximum bonus of +3). You can use this trait a number of times equal to your proficiency bonus, and you regain all expended uses when you finish a long rest.",
+    "Description_for_dummies": "When you fail a roll can get a bonus based on the amount of allies around you (max +3). Regain use after long rest",
+    "Action_Type": "Class_Spell_Slot",
+    "Spell_slot": ["ADD", "Proficiency Bonus"],
+    "reset": "LR"
+  },
+  "Fortune from the Many lv3": {
+    "Race": "Hobgoblin",
+    "Hospitality": {
+      "Race": "Hobgoblin",
+      "Description": "You and the creature you help each gain a number of temporary hit points equal to 1d6 plus your proficiency bonus.",
+      "Description_for_dummies": "You and the creature you help each gain a number of temporary hit points equal to 1d6 plus your proficiency bonus.",
+      "Action_Type": "Passive"
+    },
+    "Passage": {
+      "Race": "Hobgoblin",
+      "Description": "You and the creature you help each increase your walking speeds by 10 feet until the start of your next turn.",
+      "Description_for_dummies": "You and the creature you help each increase your walking speeds by 10 feet until the start of your next turn.",
+      "Action_Type": "Passive"
+    },
+    "Spite": {
+      "Race": "Hobgoblin",
+      "Description": "Until the start of your next turn, the first time the creature you help hits a target with an attack roll, that target has disadvantage on the next attack roll it makes within the next minute.",
+      "Description_for_dummies": "Until your other turn if the first creature you help hits with an attack roll, the target has disadvantage on their next attack (effect lasts 10 rounds).",
+      "Action_Type": "Passive"
+    },
+    "Action_Type": "Passive"
+  }
+
+}

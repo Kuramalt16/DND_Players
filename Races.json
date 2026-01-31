@@ -1,0 +1,110 @@
+{
+  "Elf": {
+    "Ability Score": ["--ADD", "Char:Ability_Scores", "DEX", "DEX"],
+    "Size": ["--ADD", "Char:Size", "Medium"],
+    "Speed": ["--ADD", "Char:Speed", "30"],
+    "Darkvision": ["--ADD", "Char:Darkvision", "60"],
+    "Resistance": ["--ADD", "Char:Resistance", "Charmed"],
+    "Immunity": ["--ADD", "Char:Immunity", "Sleep"],
+    "Trance": ["Elves do not sleep, instead they meditate for 4 hours during a long rest"],
+    "Code": ["--CODE", "Feature:Trance"],
+    "Skills": ["--ADD_NOW", "Char:Skills", "Perception"],
+    "Languages": ["--ADD", "Char:Languages", "Common", "Elvish"],
+    "Sub-Race": ["--CHOOSE:1", "FROM", "High Elf", "Wood Elf"]
+  },
+  "High Elf": {
+    "Second Ability Score": ["--ADD", "Char:Ability_Scores", "INT"],
+    "Cantrip": ["--CHOOSE:1", "FROM", "--Cantrips:Wizard"],
+    "Weapon Proficiencies": ["--ADD", "PROFICIENCY", "Longsword","Shortsword","Shortbow","Longbow"],
+    "Extra Languages": ["--CHOOSE:1", "FROM", "Elvish", "Dwarvish", "Draconic", "Gnomish", "Giant", "Orc", "Sylvan", "Infernal", "Halfling", "Celestial", "Goblin", "Abyssal", "Deep Speech", "Primordial", "Undercommon"]
+  },
+  "Wood Elf": {
+    "Second Ability Score": ["--ADD", "Char:Ability_Scores", "WIS"],
+    "Weapon Proficiencies": ["--ADD", "PROFICIENCY", "Longsword","Shortsword","Shortbow","Longbow"],
+    "Fleet of Foot": ["--ADD", "Char:Speed", "35"],
+    "Mask of the Wild": ["You can attempt to hide even when you are only lightly obscured,"],
+    "Code": ["--CODE", "Feature:Mask of the Wild"]
+  },
+
+  "Human": {
+    "Ability Score": ["--ADD", "Char:Ability_Scores", "STR", "DEX", "CON", "INT", "WIS", "CHA"],
+    "Size": ["--ADD", "Char:Size", "Medium"],
+    "Speed": ["--ADD", "Char:Speed", "30"],
+    "Languages": ["--ADD", "Char:Languages", "Common"],
+    "Extra Languages": ["--CHOOSE:1", "FROM", "Elvish", "Dwarvish", "Draconic", "Gnomish", "Giant", "Orc", "Sylvan", "Infernal", "Halfling", "Celestial", "Goblin", "Abyssal", "Deep Speech", "Primordial", "Undercommon"]
+  },
+  "Dwarf": {
+    "Ability Score": ["--ADD", "Char:Ability_Scores", "CON", "CON"],
+    "Size": ["--ADD", "Char:Size", "Small"],
+    "Speed": ["--ADD", "Char:Speed", "25"],
+    "Darkvision": ["--ADD", "Char:Darkvision", "60"],
+    "Resistance": ["--ADD", "Char:Resistance", "Poison"],
+    "Tool Proficiencies": ["--CHOOSE:1", "FROM", "Smith's Tools", "Brewer's Supplies", "Mason's Tools"],
+    "Weapon Proficiencies": ["--ADD", "PROFICIENCY", "Battleaxe", "Handaxe", "Light hammer", "Warhammer"],
+    "Languages": ["--ADD", "Char:Languages", "Common", "Dwarvish"],
+    "Stonecunning": ["Whenever you make an Intelligence (History) check related to the origin of stonework, you are considered proficient in the History skill and add double your proficiency bonus to the check, instead of your normal proficiency bonus."],
+    "Sub-Race": ["--CHOOSE:1", "FROM", "Hill Dwarf", "Mountain Dwarf"],
+    "Code": ["--CODE", "Feature:Stonecunning"]
+
+  },
+  "Hill Dwarf": {
+    "Second Ability Score": ["--ADD", "Char:Ability_Scores", "WIS"],
+    "Health": ["--ADD", "Char:Health", "1*lv"]
+  },
+  "Mountain Dwarf": {
+    "Second Ability Score": ["--ADD", "Char:Ability_Scores", "STR", "STR"],
+    "Armor Proficiencies": ["--ADD", "PROFICIENCY", "Light Armor", "Medium Armor"]
+  },
+
+  "Kobold": {
+      "Ability Score Improvement": ["Choose Three Ability Score improvements"],
+      "Ability Score": ["--CHOOSE_OR:3", "INCLUDING_FROM", "STR", "DEX", "CON", "INT", "WIS", "CHA"],
+      "Size": ["--ADD", "Char:Size", "Small"],
+      "Speed": ["--ADD", "Char:Speed", "30"],
+      "Darkvision": ["--ADD", "Char:Darkvision", "60"],
+      "Languages": ["--ADD", "Char:Languages", "Common", "Draconic"],
+      "Draconic Cry": ["As a bonus action, you let out a cry at your enemies within 10 feet of you. Until the start of your next turn, you and your allies have advantage on attack rolls against any of those enemies who could hear you. You can use this trait a number of times equal to your proficiency bonus, and you regain all expended uses when you finish a long rest."],
+      "Kobold Legacy": ["--CHOOSE:1", "FROM", "Craftiness", "Defiance", "Draconic Sorcery"],
+      "Craftiness": ["--DEPENDANT__Kobold Legacy__0__--CHOOSE:1", "FROM", "Arcana", "Investigation", "Medicine", "Sleight of Hand", "Survival"],
+      "Defiance": ["--DEPENDANT__Kobold Legacy__1__--ADD", "Defiance", "Get advantage on saving throws to avoid or end the frightened condition on yourself."],
+      "Draconic Sorcery": ["--DEPENDANT__Kobold Legacy__2__--CHOOSE:1", "FROM", "--Cantrips:Sorcerer"],
+      "IF0" : ["choises", "Kobold Legacy", "EQUAL" ,"Draconic Sorcery", "Primary Ability", "--CHOOSE:1", "FROM", "INT", "WIS", "CHA"],
+      "Code": ["--CODE", "Feature:Draconic Cry"]
+
+  },
+  "Firbolg": {
+      "Ability Score Improvement": ["Choose Three Ability Score improvements"],
+      "Ability Score": ["--CHOOSE_OR:3", "INCLUDING_FROM", "STR", "DEX", "CON", "INT", "WIS", "CHA"],
+      "Size": ["--ADD", "Char:Size", "Medium"],
+      "Speed": ["--ADD", "Char:Speed", "30"],
+      "Languages": ["--ADD", "Char:Languages", "Common", "Sylvan"],
+      "Firbolg Magic": ["You can cast the Detect Magic and Disguise Self spells with this trait. When you use this version of Disguise Self, you can seem up to 3 feet shorter or taller. Once you cast either of these spells with this trait, you can’t cast that spell with it again until you finish a long rest. You can also cast these spells using any spell slots you have.\nIntelligence, Wisdom, or Charisma is your spellcasting ability for these spells when you cast them with this trait."],
+      "Hidden Step": ["As a bonus action, you can magically turn invisible until the start of your next turn or until you attack, make a damage roll, or force someone to make a saving throw. You can use this trait a number of times equal to your proficiency bonus, and you regain all expended uses when you finish a long rest."],
+      "Powerful Build": ["You count as one size larger when determining your carrying capacity and the weight you can push, drag, or lift."],
+      "Speech of Beast and Leaf": ["You have the ability to communicate in a limited manner with Beasts, Plants, and vegetation. They can understand the meaning of your words, though you have no special ability to understand them in return. You have advantage on all Charisma checks you make to influence them."],
+      "Code": ["--CODE", "Feature:Firbolg Magic", "Feature:Hidden Step", "Feature:Powerful Build", "Feature:Speech of Beast and Leaf"]
+  },
+  "Changeling": {
+      "Ability Score Improvement": ["Choose Three Ability Score improvements"],
+      "Ability Score": ["--CHOOSE_OR:3", "INCLUDING_FROM", "STR", "DEX", "CON", "INT", "WIS", "CHA"],
+      "Size": ["--ADD", "Char:Size", "Medium"],
+      "Speed": ["--ADD", "Char:Speed", "30"],
+      "Languages": ["--ADD", "Char:Languages", "Common", "Sylvan", "Elvish", "Dwarvish", "Halfling"],
+      "Skills": ["--CHOOSE:2", "PROFICIENCY", "Deception", "Insight", "Intimidation", "Performance", "Persuasion"],
+      "Shapechanger": ["As an action, you can change your appearance and your voice. You determine the specifics of the changes, including your coloration, hair length, and sex. You can also adjust your height and weight and can change your size between Medium and Small. You can make yourself appear as a member of another race, though none of your game statistics change. You can’t duplicate the appearance of an individual you’ve never seen, and you must adopt a form that has the same basic arrangement of limbs that you have. Your clothing and equipment aren’t changed by this trait.\nYou stay in the new form until you use an action to revert to your true form or until you die."],
+      "Code": ["--CODE", "Feature:Shapechanger"]
+  },
+  "Hobgoblin": {
+      "Ability Score Improvement": ["Choose Three Ability Score improvements"],
+      "Ability Score": ["--CHOOSE_OR:3", "INCLUDING_FROM", "STR", "DEX", "CON", "INT", "WIS", "CHA"],
+      "Size": ["--ADD", "Char:Size", "Medium"],
+      "Speed": ["--ADD", "Char:Speed", "30"],
+      "Darkvision": ["--ADD", "Char:Darkvision", "60"],
+      "Fey Ancestry": ["You have advantage on saving throws you make to avoid or end the charmed condition on yourself."],
+      "Fey Gift": ["You can use this trait to take the Help action as a bonus action, and you can do so a number of times equal to your proficiency bonus. You regain all expended uses when you finish a long rest."],
+      "Fortune from the Many": ["If you miss with an attack roll or fail an ability check or a saving throw, you can draw on your bonds of reciprocity to gain a bonus to the roll equal to the number of allies you can see within 30 feet of you (maximum bonus of +3). You can use this trait a number of times equal to your proficiency bonus, and you regain all expended uses when you finish a long rest."],
+      "Languages": ["--ADD", "Char:Languages", "Common", "Goblin"],
+      "Code": ["--CODE", "Feature:Fey Ancestry", "Feature:Fey Gift", "Feature:Fortune from the Many"],
+      "Fortune from the Many lv3": ["--LEVEL_REQ:3", "--CHOOSE:1", "FROM", "Hospitality", "Passage", "Spite"]
+  }
+}

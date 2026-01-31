@@ -1,0 +1,242 @@
+{
+    "Elf": {
+        "Ability Score": [
+            "Char:Ability_Scores",
+            "DEX",
+            "DEX"
+        ],
+        "Size": [
+            "Char:Size",
+            "Medium"
+        ],
+        "Speed": [
+            "Char:Speed",
+            "30"
+        ],
+        "Darkvision": [
+            "Char:Darkvision",
+            "60"
+        ],
+        "Resistance": [
+            "Char:Resistance",
+            "Charmed"
+        ],
+        "Immunity": [
+            "Char:Immunity",
+            "Sleep"
+        ],
+        "Skills": [
+            "Char:Skills",
+            "Perception"
+        ],
+        "Languages": [
+            "Char:Languages",
+            "Common,Elvish"
+        ],
+        "Second Ability Score": [
+            "Char:Ability_Scores",
+            "WIS"
+        ],
+        "Weapon Proficiencies": [
+            "Longsword",
+            "Shortsword",
+            "Shortbow",
+            "Longbow"
+        ],
+        "Fleet of Foot": [
+            "Char:Speed",
+            "35"
+        ],
+        "Code": [
+            "Feature:Mask of the Wild"
+        ]
+    },
+    "Rogue": {
+        "1": {
+            "Armor Proficiencies": [
+                "Light Armor"
+            ],
+            "Weapon Proficiencies": [
+                "Simple",
+                "Hand Crossbow",
+                "Longsword",
+                "Rapier",
+                "Shortsword"
+            ],
+            "Tool Proficiencies": [
+                "Thieves' Tools"
+            ],
+            "Saving Throw Proficiencies": [
+                "Saving_DEX",
+                "Saving_INT"
+            ],
+            "Sneak Attack": [
+                "1d6"
+            ],
+            "Proficiency Bonus": [
+                "2"
+            ],
+            "Languages": [
+                "Thieves' Cant"
+            ],
+            "Code": [
+                "Feature:Sneak Attack"
+            ],
+            "Skills": [
+                "Acrobatics",
+                "Stealth",
+                "Sleight of Hand",
+                "Persuasion"
+            ],
+            "Expertise": [
+                "Acrobatics",
+                "Stealth"
+            ],
+            "Hit dice": [
+                "1d8"
+            ]
+        },
+        "2": {
+            "Cunning Action": [
+                "BONUS:Dash",
+                "BONUS:Disengage",
+                "BONUS:Hide"
+            ],
+            "Proficiency Bonus": [
+                "2"
+            ],
+            "Sneak Attack": [
+                "1d6"
+            ],
+            "Code": [
+                "Bonus:Cunning Action"
+            ],
+            "Hit dice": [
+                "2d8"
+            ]
+        },
+        "3": {
+            "Proficiency Bonus": [
+                "2"
+            ],
+            "Sneak Attack": [
+                "2d6"
+            ],
+            "Roguish Archetype": [
+                "Thief"
+            ],
+            "Hit dice": [
+                "3d8"
+            ]
+        },
+        "4": {
+            "Proficiency Bonus": [
+                "2"
+            ],
+            "Sneak Attack": [
+                "2d6"
+            ],
+            "Ability Score": [
+                "STR",
+                "CHA"
+            ],
+            "Hit dice": [
+                "4d8"
+            ]
+        },
+        "5": {
+            "Uncanny Dodge": [
+                "REACT:Half Taken Damage"
+            ],
+            "Proficiency Bonus": [
+                "3"
+            ],
+            "Sneak Attack": [
+                "3d6"
+            ],
+            "Code": [
+                "Reaction:Uncanny Dodge"
+            ],
+            "Hit dice": [
+                "5d8"
+            ]
+        }
+    },
+    "Warlock": {
+        "1": {
+            "Armor Proficiencies": [
+                "Light Armor"
+            ],
+            "Hit dice": [
+                "1d8"
+            ],
+            "Weapon Proficiencies": [
+                "Simple"
+            ],
+            "Saving Throw Proficiencies": [
+                "Saving_WIS",
+                "Saving_CHA"
+            ],
+            "Proficiency Bonus": [
+                "2"
+            ],
+            "Primary Ability": [
+                "Charisma"
+            ],
+            "Spell Slots": [
+                "1st:1"
+            ],
+            "Slot Level": [
+                "1"
+            ],
+            "Skills": [
+                "Nature",
+                "Investigation"
+            ],
+            "Cantrip": [
+                "Eldritch Blast",
+                "Minor Illusion"
+            ],
+            "Spell": [
+                "Hellish Rebuke",
+                "Unseen Servant"
+            ],
+            "Patron": [
+                "The Celestial"
+            ]
+        },
+        "2": {
+            "Proficiency Bonus": [
+                "2"
+            ],
+            "Hit dice": [
+                "2d8"
+            ],
+            "Spell Slots": [
+                "1st:2"
+            ],
+            "Slot Level": [
+                "1"
+            ],
+            "Eldritch Invocations": [
+                "Repelling Blast",
+                "Armor of Shadows"
+            ],
+            "Spell": [
+                "Hex"
+            ]
+        }
+    },
+    "Equiped Items": {
+        "Weapons": "Rapier",
+        "Magic Weapon": "",
+        "Shield": "",
+        "Wonderous Item": "Heart of the Life Tree,Gems,Travelers Lighter,Necklace of Timidra,Cloak of Billowing",
+        "Ingredient": "Human hair,Orc Penis",
+        "Food": "Rations",
+        "Armour": "Plate",
+        "Magic Armour": "",
+        "Potions": "Potion of Greater Healing,Poison (basic),Potion of Healing,Oil flask",
+        "Special": "Piton,Candles,TinderBox,Ball Bearings,Bell,Thieves Tools,Water Skin,String,Rope,Lantern (hooded),Hammer (tool)"
+    }
+}

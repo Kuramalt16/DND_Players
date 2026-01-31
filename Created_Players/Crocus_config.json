@@ -1,0 +1,280 @@
+{
+    "Firbolg": {
+        "Size": [
+            "Char:Size",
+            "Medium"
+        ],
+        "Speed": [
+            "Char:Speed",
+            "30"
+        ],
+        "Languages": [
+            "Char:Languages",
+            "Common",
+            "Sylvan"
+        ],
+        "Code": [
+            "Feature:Firbolg Magic",
+            "Feature:Hidden Step",
+            "Feature:Powerful Build",
+            "Feature:Speech of Beast and Leaf"
+        ],
+        "Ability Score": [
+            "CHA",
+            "CHA",
+            "CHA"
+        ]
+    },
+    "Paladin": {
+        "1": {
+            "Hit dice": [
+                "1d10"
+            ],
+            "Proficiency Bonus": [
+                "2"
+            ],
+            "Armor Proficiencies": [
+                "Light Armor",
+                "Medium Armor",
+                "Heavy Armor",
+                "Shields"
+            ],
+            "Weapon Proficiencies": [
+                "Simple",
+                "Martial"
+            ],
+            "Saving Throw Proficiencies": [
+                "Saving_WIS",
+                "Saving_CHA"
+            ],
+            "Code": [
+                "Feature:Divine Sense",
+                "Feature:Lay on Hands"
+            ],
+            "Skills": [
+                "Religion",
+                "Medicine"
+            ]
+        },
+        "2": {
+            "Hit dice": [
+                "2d10"
+            ],
+            "Proficiency Bonus": [
+                "2"
+            ],
+            "Code": [
+                "Feature:Divine Smite"
+            ],
+            "Primary Ability": [
+                "Charisma"
+            ],
+            "Spell Slots": [
+                "1st:2"
+            ],
+            "Slot Level": [
+                "1"
+            ],
+            "Fighting Style": [
+                "Defense"
+            ],
+            "Spell": [
+                "Bless",
+                "Compelled Duel",
+                "Cure Wounds",
+                "Detect Evil and Good",
+                "Detect Poison and Disease",
+                "Divine Favor"
+            ]
+        },
+        "3": {
+            "Hit dice": [
+                "3d10"
+            ],
+            "Proficiency Bonus": [
+                "2"
+            ],
+            "Code": [
+                "Feature:Divine Health"
+            ],
+            "Spell Slots": [
+                "1st:3"
+            ],
+            "Slot Level": [
+                "1"
+            ],
+            "Sacred Oath": [
+                "Oath of the Open Sea"
+            ]
+        },
+        "4": {
+            "Hit dice": [
+                "4d10"
+            ],
+            "Proficiency Bonus": [
+                "2"
+            ],
+            "Spell Slots": [
+                "1st:3"
+            ],
+            "Slot Level": [
+                "1"
+            ],
+            "Ability Score": [
+                "STR",
+                "STR"
+            ]
+        },
+        "5": {
+            "Hit dice": [
+                "5d10"
+            ],
+            "Proficiency Bonus": [
+                "3"
+            ],
+            "Extra Attack": [
+                "1"
+            ],
+            "Code": [
+                "Feature:Extra Attack"
+            ],
+            "Spell Slots": [
+                "1st:4,2nd:2"
+            ],
+            "Slot Level": [
+                "2"
+            ]
+        }
+    },
+    "Blood Hunter": {
+        "1": {
+            "Hit dice": [
+                "1d10"
+            ],
+            "Proficiency Bonus": [
+                "2"
+            ],
+            "Armor Proficiencies": [
+                "Light Armor",
+                "Medium Armor",
+                "Shields"
+            ],
+            "Weapon Proficiencies": [
+                "Simple",
+                "Martial"
+            ],
+            "Tool Proficiencies": [
+                "Alchemist's supplies"
+            ],
+            "Saving Throw Proficiencies": [
+                "Saving_DEX",
+                "Saving_INT"
+            ],
+            "Hemocraft_die": [
+                "1d4"
+            ],
+            "Blood Curses Known": [
+                "1"
+            ],
+            "Code": [
+                "Feature:Hunter's Bane",
+                "Feature:Blood Maledict",
+                "Feature:Hemocraft_die"
+            ],
+            "Skills": [
+                "Survival",
+                "Insight",
+                "Investigation"
+            ]
+        },
+        "2": {
+            "Hit dice": [
+                "2d10"
+            ],
+            "Proficiency Bonus": [
+                "2"
+            ],
+            "Code": [
+                "Feature:Crimson Rite"
+            ],
+            "Hemocraft_die": [
+                "1d4"
+            ],
+            "Blood Curses Known": [
+                "1"
+            ],
+            "Fighting Style": [
+                "Two-Weapon Fighting"
+            ],
+            "Crimson Rites": [
+                "Rite of the Storm"
+            ]
+        },
+        "3": {
+            "Hemocraft_die": [
+                "1d4"
+            ],
+            "Blood Curses Known": [
+                "1"
+            ],
+            "Hit dice": [
+                "3d10"
+            ],
+            "Proficiency Bonus": [
+                "2"
+            ],
+            "Blood Hunter Order": [
+                "Order of the Ghostslayer"
+            ]
+        },
+        "4": {
+            "Hemocraft_die": [
+                "1d4"
+            ],
+            "Blood Curses Known": [
+                "1"
+            ],
+            "Hit dice": [
+                "4d10"
+            ],
+            "Proficiency Bonus": [
+                "2"
+            ],
+            "Ability Score": [
+                "CON",
+                "INT"
+            ]
+        },
+        "5": {
+            "Hit dice": [
+                "5d10"
+            ],
+            "Proficiency Bonus": [
+                "3"
+            ],
+            "Extra Attack": [
+                "1"
+            ],
+            "Code": [
+                "Feature:Extra Attack"
+            ],
+            "Hemocraft_die": [
+                "1d6"
+            ],
+            "Blood Curses Known": [
+                "1"
+            ]
+        }
+    },
+    "Equiped Items": {
+        "Weapons": "Shortsword,Battleaxe",
+        "Magic Weapon": "",
+        "Shield": "",
+        "Armour": "",
+        "Magic Armour": "",
+        "Special": "Rope,Arcane Focus",
+        "Food": "Rations"
+    },
+    "Chosen_spells": "",
+    "Notes": "Roki, Bananai Yra geltoni.\nArb\u016bzai \u017eali, ta\u010diau raudoni viduje\nBubu labai ma\u017eas.\nLuna didesne.\nLuna Beats Bubu.\\cursor1"
+}
