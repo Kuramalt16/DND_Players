@@ -234,7 +234,7 @@ def read_db_table(table_name):
 
 
 def Connect_to_MySql():
-    host = 'localhost'
+    host = '192.168.0.135'
     user = 'PyDND'
     password = 'Gythfg167!'
     database = 'dnd'
