@@ -16,16 +16,30 @@ def selected_char_display(selected, screen, clock):
     timer = 10
     text_size = 30
     pressed = -1
+
+    secret_data = F.read_db_table("communication")
+    V.SECRETS = F.add_to_dict_db_results(secret_data, V.SECRETS, "communications")
+    color = "dark grey"
+
+    if V.SECRETS.get(V.char_name) != None and V.SECRETS[V.char_name]["LevelUp"]:
+        color = "black"
+
     button_dict = {
         (3, 0): ["Update Hp", "background", "background", "rect-place-holder", "black"],
         (0, 1): ["Spells", "background", "background", "rect-place-holder", "black"],
         (1, 1): ["Skills", "background", "background", "rect-place-holder", "black"],
-        (2, 0): ["Level Up", "background", "background", "rect-place-holder", "dark gray"],
+        (2, 0): ["Level Up", "background", "background", "rect-place-holder", color],
         (2, 1): ["Actions", "background", "background", "rect-place-holder", "black"],
         (1, 0): ["Conditions", "background", "background", "rect-place-holder", "black"],
     }
+    if character.get("Slot Level") == None:
+        del button_dict[(0, 1)]
     got_damaged = -1
+    # V.SECRETS[V.char_name]["LevelUp"] = True          #  TODO ALLOWS USER TO LEVELUP
     while running:
+        button_dict[(2, 0)][4] = "dark grey"
+        if V.SECRETS.get(V.char_name) != None and V.SECRETS[V.char_name]["LevelUp"]:
+            button_dict[(2, 0)][4] = "black"
         F.add_image_to_screen(screen, "background", (0, 0, S.SCREEN_WIDTH, S.SCREEN_HEIGHT), "Background")
         # displayed_slots = F.display_spell_slots(selected, screen)
         x = S.SCREEN_WIDTH * 0.4
@@ -81,7 +95,11 @@ def selected_char_display(selected, screen, clock):
                     elif pressed == "Skills":
                         sk.display_char_skills(character, screen, clock)
                     elif pressed == "Level Up":
-                        F.print_debug("Levelup", debug="WARNING")
+                        if V.SECRETS.get(V.char_name) and V.SECRETS[V.char_name]["LevelUp"]:
+                            """Allow level up"""
+                            LevelUp(screen, clock)
+                        else:
+                            F.print_debug("Levelup", debug="WARNING")
                     elif pressed == "Actions":
                         if V.Condition not in ["Incapacitated", "Unconscious", "Stunned", "Petrified", "Paralyzed", "Over Encumbered"]:
                             A.Initialize_actions(screen, clock)
@@ -212,8 +230,10 @@ def display_char(character, screen):
     if rect == None:
         rect = F.add_image_to_screen(screen, V.character_dict[V.char_name]["Race"], (S.SCREEN_WIDTH * 0.7, S.SCREEN_HEIGHT * 0.02, S.SCREEN_WIDTH * 0.25, S.SCREEN_HEIGHT * 0.4), "Race")
     # health_bar_rect = pg.Rect(rect.x, rect.y + rect.h + S.SCREEN_HEIGHT * 0.02, rect.w, S.SCREEN_HEIGHT / 50)
-
-    remainder = round(((character["Health"][0] / character["Health"][1]) - 1) * -1, 3)
+    if character["Health"][0] == 0 or character["Health"][1] == 0:
+        remainder = 0
+    else:
+        remainder = round(((character["Health"][0] / character["Health"][1]) - 1) * -1, 3)
     health_bar_x = rect.x
     health_bar_w = rect.w
     health_bar_y = rect.y + rect.h
@@ -304,7 +324,13 @@ def display_char(character, screen):
     else:
         F.display_text(screen, character["Vulnerabilities"], 20, (r.x + r.w, 540), color="Cyan")
 
-    F.display_text(screen, "Languages: " + ", ".join(languages.split(",")), 20, (20, 580))
+    languages_text = languages.split(",")
+    if "Ranger" in character["Class"]:
+        if V.char_config.get("Choises") != None and V.char_config["Choises"].get("Favoured Enemy") != None:
+            for mob in V.char_config["Choises"]["Favoured Enemy"]:
+                if V.mob_type_to_language.get(mob) != None and V.mob_type_to_language[mob] not in languages_text:
+                    languages_text.append(V.mob_type_to_language[mob])
+    F.display_text(screen, "Languages: " + ", ".join(languages_text), 20, (20, 580))
     F.display_text(screen, "Proficiency Bonus: " + str(V.Proficiecy_bonus), 20, (20, 620), color="Red")
     # F.display_text(screen, "Alchemy: " + character["Alchemy"], 20, (20, 580))
 
@@ -313,6 +339,7 @@ def display_char(character, screen):
 
 def update_char_hp_based_on_entry(character, txt_dict, selected_entry, screen, clock, temp_hp=True):
     hp = ""
+    """character might just be mob_dict[selected]"""
     Got_Damaged = -1
     property = list(txt_dict.keys())[selected_entry]
     text = txt_dict[property][0]
@@ -381,6 +408,9 @@ def update_char_hp_based_on_entry(character, txt_dict, selected_entry, screen, c
 
 
 def calculate_skills(character):
+    if character.get("Ability_Scores") == None:
+        return
+
     ability_score_list = character["Ability_Scores"].split(",")
 
     V.score_modifiers = {
@@ -456,7 +486,6 @@ def get_player_choises(char, screen, clock, id, data):
     """current class and level id, tracking the recursion of function"""
     current_level = id[1] + 1
     class_id = id[0]
-
     """one of two character classes"""
     current_class = char["Class"].split(", ")[class_id]
 
@@ -1878,3 +1907,480 @@ def update_choise(value, char, id):
     return value
 
 
+def LevelUp(screen, clock):
+    running = True
+    character = V.character_dict[V.char_name]
+    char_class = character["Class"].split(", ")
+    if len(char_class) > 1:
+        F.print_debug("NOT AVAILABLE TO LEVEL UP MULTICLASS YET")
+    new_level = int(character["Level"].split(",")[0])+1
+    print(S.class_data[char_class[0]][str(new_level)])
+    new_data = S.class_data[char_class[0]][str(new_level)]
+    combobox_choises = {}
+    limited_choises = []
+    pressed = -1
+    big_rect = {}
+    temp_ability_score = character["Ability_Scores"].split(",")
+    choises_needed_to_be_made = {}
+    notice = ""
+    timer = 1000
+    type = ""
+    sub_type = ""
+    if "SubClass:" in character["Code"]:
+        for code_data in character["Code"].split(","):
+            if "SubClass:" in code_data:
+                type = code_data.split(":")[1]
+                sub_type = code_data.split(":")[2]
+                break
+    to_display = "Description"
+    subclass_data = {}
+    if S.subclass_data.get(type) != None and S.subclass_data[type].get(sub_type) != None:
+        subclass_data = S.subclass_data[type][sub_type]
+
+    dice_to_roll = new_data["Hit dice"][2].split("d")[1]
+    button_dict = {
+        (2, 0): ["Roll Hp", "background", "background", "rect-place-holder", "black"],
+    }
+    x_pos = [S.SCREEN_WIDTH * 0.05, S.SCREEN_WIDTH * 0.27, S.SCREEN_WIDTH * 0.52, S.SCREEN_WIDTH * 0.795]
+    y_pos = [S.SCREEN_HEIGHT * 0.9, S.SCREEN_HEIGHT * 0.12, S.SCREEN_HEIGHT * 0.3]
+
+    button_width = S.SCREEN_WIDTH * 0.2
+    button_height = S.SCREEN_HEIGHT * 0.05
+    write_entry = {}
+    y_scroll = 0
+    for s in ["Favoured Enemy"]:
+        if s in new_data:
+            saved_data = new_data[s].copy()
+            del new_data[s]
+            new_data[s] = saved_data.copy()
+            new_data[s + "_OR"] = new_data[s].copy()
+    while running:
+        text_pos = pg.Rect(0, y_scroll + S.SCREEN_HEIGHT * 0.3, 0, 0)
+
+        F.add_image_to_screen(screen, "background", (0, 0, S.SCREEN_WIDTH, S.SCREEN_HEIGHT), "Background")
+        # displayed_slots = F.display_spell_slots(selected, screen)
+        pos = F.display_text(screen, "Level Up", 28, (S.SCREEN_WIDTH * 0.5, S.SCREEN_HEIGHT * 0.1), case="C")
+        pos = F.display_text(screen, f"Now Level {new_level}", 28, (S.SCREEN_WIDTH * 0.5, pos.y + pos.h * 1.3), case="C")
+
+
+        for key, value in new_data.items():
+            if key in ["Hit dice", "Proficiency Bonus"]:
+                """Display the third value and the key as a name"""
+                pos = F.display_text(screen, f"New {key}: {value[2]}", 14, (S.SCREEN_WIDTH * 0.1, pos.y + pos.h * 1.1))
+                if key == "Hit dice":
+                    if write_entry.get(key) == None:
+                        write_entry[key] = {"Rect": pg.Rect(0, 0, 0, 0),
+                                            "Text": "",
+                                            "Marker": False,
+                                            "Marker_Time": 0}
+                    x = F.display_text(screen, f"Enter Hp: {character["Health"][0]} + ", 14, (pos.x + pos.w * 1.2, pos.y))
+                    write_entry[key]["Rect"] = pg.draw.rect(screen, "black", (x.x + x.w, x.y, S.SCREEN_WIDTH * 0.1, x.h), width=2)
+                    d = F.display_text(screen, write_entry[key]["Text"], 14, (x.x + x.w, x.y))
+                    if write_entry[key]["Marker"]:
+                        write_entry[key]["Marker_Time"] += 1
+                        if write_entry[key]["Marker_Time"] < 10:
+                            pg.draw.line(screen, "black", (write_entry[key]["Rect"].x + 4 + d.w, write_entry[key]["Rect"].y + 2),(write_entry[key]["Rect"].x + 4 + d.w, write_entry[key]["Rect"].y + 2 + write_entry[key]["Rect"].h - 2))
+                        elif write_entry[key]["Marker_Time"] >= 20:
+                            write_entry[key]["Marker_Time"] = 0
+
+            elif key in ["Spell Slots"]:
+                for slot_info in value[2].split(","):
+                    slot, amount_of_slots = slot_info.split(":")
+                    pos = F.display_text(screen, f"New {key}: {slot}: {amount_of_slots} slots", 14, (S.SCREEN_WIDTH * 0.1, pos.y + pos.h * 1.1))
+            elif key in ["Ability Score Improvement", "Feat Improvement"]:
+                """Displays the first value as simple text"""
+                pos = F.display_text(screen, f"New {key}: {value[0]}", 14, (S.SCREEN_WIDTH * 0.1, pos.y + pos.h * 1.1))
+            elif key in ["Ability Score", "Feat"]:
+                """Combobox: choose a new thing"""
+                if big_rect.get(key) == None:
+                    big_rect[key] = []
+                amount = int(value[0].split(":")[1])
+                if "--CHOOSE_OR" in value[0]:
+                    if key not in limited_choises:
+                        limited_choises.append(key)
+                    choises_needed_to_be_made[key] = [amount, 0, "OR"]
+                else:
+                    choises_needed_to_be_made[key] = [amount, 0]
+                choises = value[2:]
+                if key == "Ability Score":
+                    x = 0
+                    for i in range(6):
+                        x += F.display_text(screen, f"{V.Ability_score_list[i]}: {temp_ability_score[i]}", 14, (S.SCREEN_WIDTH * 0.2 + x * 1.1, pos.y + pos.h * 1.1)).w
+                while len(big_rect[key]) < amount:
+                    big_rect[key].append(pg.Rect(0,0,0,0))
+                choises_needed_to_be_made[key][1] = 0
+                for i in range(amount):
+                    if combobox_choises.get(key + str(i)) == None:
+                        combobox_choises[key + str(i)] = {"Text": "Choose",
+                                                          "Rect": 0,
+                                                          "Expand": False,
+                                                          "Hover": "",
+                                                          "Choises": []}
+
+                    pg.draw.rect(screen, (240, 240, 240, 255), big_rect[key][i])
+                    pos = F.display_text(screen, f"{combobox_choises[key + str(i)]["Text"]}", 14, (S.SCREEN_WIDTH * 0.1, pos.y + pos.h * 1.2))
+                    if combobox_choises[key + str(i)]["Text"] != "Choose":
+                        choises_needed_to_be_made[key][1] += 1
+                    pg.draw.rect(screen, (100, 100, 100, 255) if pressed == key + str(i) else (240, 240, 240, 255), (pos))
+                    F.display_text(screen, f"{combobox_choises[key + str(i)]["Text"]}", 14, (pos.x, pos.y)) # Redraw text
+                    pg.draw.line(screen, S.Standart_color, (pos.x, pos.y + pos.h), (pos.x + big_rect[key][i].w, pos.y + pos.h), width=2)
+                    if not combobox_choises[key + str(i)]["Expand"]:
+                        big_rect[key][i] = pos
+                        combobox_choises[key + str(i)]["Rect"] = pg.draw.rect(screen, S.Standart_color, (pos.x - 2, pos.y - 2, pos.w + 4, pos.h + 4), width=2)
+                    else:
+                        for choise in choises:
+                            pos = F.display_text(screen, f"{choise}", 14, (S.SCREEN_WIDTH * 0.1, pos.y + pos.h))
+                            pg.draw.rect(screen, (100, 100, 100, 255) if combobox_choises[key + str(i)]["Hover"] == choise + ":" + key + str(i) else (240, 240, 240, 255), (pos.x, pos.y+1, big_rect[key][i].w, pos.h-1))
+                            F.display_text(screen, f"{choise}", 14, (pos.x, pos.y))
+                            highlight = 2 if pressed == choise + ":" + key + str(i) else 1
+                            combobox_choises[key + str(i)]["Choises"].append((pg.Rect(pos.x, pos.y, big_rect[key][i].w, pos.h), choise))
+                            pg.draw.line(screen, S.Standart_color, (pos.x, pos.y + pos.h), (pos.x + big_rect[key][i].w, pos.y + pos.h), width=highlight)
+                            if big_rect[key][i].w < pos.w:
+                                big_rect[key][i].w = pos.w
+                        big_rect[key][i] = pg.Rect(big_rect[key][i].x, big_rect[key][i].y, big_rect[key][i].w, (pos.y + pos.h + 4) - big_rect[key][i].y)
+                        pg.draw.rect(screen, S.Standart_color, (big_rect[key][i].x - 2, big_rect[key][i].y - 2, big_rect[key][i].w + 4, (pos.y + pos.h + 4) - big_rect[key][i].y), width=2)
+            elif key in ["Favoured Enemy", "Favoured Enemy_OR", "Natural Explorer"]:
+                """Class feature upgrade"""
+                if big_rect.get(key) == None:
+                    big_rect[key] = []
+
+                if "_OR" not in key:
+                    text_pos = F.display_text(screen, key, 28, (S.SCREEN_WIDTH * 0.5, text_pos.y + text_pos.h * 1.6), case="C")
+
+                    text_pos = F.display_text(screen, to_display + ": ", 14, (text_pos.x, text_pos.y + text_pos.h*1.4))
+                    for w in S.Class_features[key][to_display].split(" "):
+                        w = w.replace("\n\n", "")
+                        text_pos = F.display_text(screen, w + " ", 14, (text_pos.x + text_pos.w, text_pos.y))
+                        if text_pos.x + text_pos.w > S.SCREEN_WIDTH * 0.9:
+                            text_pos.x = S.SCREEN_WIDTH * 0.5
+                            text_pos.w = 0
+                            text_pos.y += text_pos.h * 1.1
+
+                    amount = int(S.Class_features[key]["Level_Up"][1])
+                    choises = S.Class_features[key]["Level_Up"][2:]
+                else:
+                    amount = int(S.Class_features[key.replace("_OR", "")]["Level_Up_Chose_Or"][1])
+                    choises = S.Class_features[key.replace("_OR", "")]["Level_Up_Chose_Or"][2:]
+
+                if "CHOOSE_OR" in S.Class_features[key.replace("_OR", "")]["Level_Up"][0]:
+                    if key not in limited_choises:
+                        limited_choises.append(key)
+                    choises_needed_to_be_made[key] = [amount, 0, "OR"]
+                choises_needed_to_be_made[key] = [amount, 0, ""]
+                while len(big_rect[key]) < amount:
+                    big_rect[key].append(pg.Rect(0,0,0,0))
+                if "CHOOSE_OR" in S.Class_features[key.replace("_OR", "")]["Level_Up"][0]:
+                    choises_needed_to_be_made[key][1] = 0
+                for i in range(amount):
+                    if combobox_choises.get(key + str(i)) == None:
+                        combobox_choises[key + str(i)] = {"Text": "Choose",
+                                                          "Rect": 0,
+                                                          "Expand": False,
+                                                          "Hover": "",
+                                                          "Choises": []}
+                    push_x = F.display_text(screen, key, 14, (S.SCREEN_WIDTH * 0.1, pos.y + pos.h * 1.2))
+                    pg.draw.rect(screen, (240, 240, 240, 255), big_rect[key][i])
+                    pos = F.display_text(screen, f"{combobox_choises[key + str(i)]["Text"]}", 14, (push_x.x + push_x.w * 1.1, pos.y + pos.h * 1.2))
+                    if combobox_choises[key + str(i)]["Text"] != "Choose":
+                        choises_needed_to_be_made[key][1] += 1
+                    pg.draw.rect(screen, (100, 100, 100, 255) if pressed == key + str(i) else (240, 240, 240, 255), (pos))
+                    F.display_text(screen, f"{combobox_choises[key + str(i)]["Text"]}", 14, (pos.x, pos.y)) # Redraw text
+                    pg.draw.line(screen, S.Standart_color, (pos.x, pos.y + pos.h), (pos.x + big_rect[key][i].w, pos.y + pos.h), width=2)
+                    if not combobox_choises[key + str(i)]["Expand"]:
+                        big_rect[key][i] = pos
+                        combobox_choises[key + str(i)]["Rect"] = pg.draw.rect(screen, S.Standart_color, (pos.x - 2, pos.y - 2, pos.w + 4, pos.h + 4), width=2)
+                    else:
+                        for choise in choises:
+                            if V.char_config.get("Choises") != None:
+                                if V.char_config["Choises"].get(key.replace("_OR", "")) != None:
+                                    if choise in V.char_config["Choises"][key.replace("_OR", "")]:
+                                        continue
+                            pos = F.display_text(screen, f"{choise}", 14, (pos.x, pos.y + pos.h))
+                            pg.draw.rect(screen, (100, 100, 100, 255) if combobox_choises[key + str(i)]["Hover"] == choise + ":" + key + str(i) else (240, 240, 240, 255), (pos.x, pos.y+1, big_rect[key][i].w, pos.h-1))
+                            F.display_text(screen, f"{choise}", 14, (pos.x, pos.y))
+                            highlight = 2 if pressed == choise + ":" + key + str(i) else 1
+                            combobox_choises[key + str(i)]["Choises"].append((pg.Rect(pos.x, pos.y, big_rect[key][i].w, pos.h), choise))
+                            pg.draw.line(screen, S.Standart_color, (pos.x, pos.y + pos.h), (pos.x + big_rect[key][i].w, pos.y + pos.h), width=highlight)
+                            if big_rect[key][i].w < pos.w:
+                                big_rect[key][i].w = pos.w
+                        big_rect[key][i] = pg.Rect(big_rect[key][i].x, big_rect[key][i].y, big_rect[key][i].w, (pos.y + pos.h + 4) - big_rect[key][i].y)
+                        pg.draw.rect(screen, S.Standart_color, (big_rect[key][i].x - 2, big_rect[key][i].y - 2, big_rect[key][i].w + 4, (pos.y + pos.h + 4) - big_rect[key][i].y), width=2)
+
+        for key, value in subclass_data.items():
+            if int(value["Level"]) == new_level:
+                pos = F.display_text(screen, f"New Sub Class Feature: {key}: ", 14, (S.SCREEN_WIDTH * 0.1, pos.y + pos.h * 1.1))
+                for w in value[to_display].split(' '):
+                    w = w.replace("\n\n", " ")
+                    pos = F.display_text(screen, f"{w} ", 14, (pos.x + pos.w, pos.y))
+                    if pos.x + pos.w > S.SCREEN_WIDTH * 0.95:
+                        pos.x = S.SCREEN_WIDTH * 0.1
+                        pos.w = 0
+                        pos.y += pos.h * 1.1
+
+        buttons = F.display_back_button(screen, "Save")
+        buttons = buttons + F.display_any_buttons(screen, x_pos, y_pos, button_width, button_height, button_dict)
+
+        for event in pg.event.get():
+            keys = pg.key.get_pressed()
+            mouse_pos = pg.mouse.get_pos()
+            if event.type == pg.QUIT:
+                running = False
+            elif event.type == pg.VIDEORESIZE:
+                # Update window size based on new dimensions
+                S.SCREEN_WIDTH, S.SCREEN_HEIGHT = event.w, event.h
+                screen = pg.display.set_mode((S.SCREEN_WIDTH, S.SCREEN_HEIGHT), pg.RESIZABLE)
+
+                x_pos = [S.SCREEN_WIDTH * 0.05, S.SCREEN_WIDTH * 0.27, S.SCREEN_WIDTH * 0.52, S.SCREEN_WIDTH * 0.795]
+                y_pos = [S.SCREEN_HEIGHT * 0.9, S.SCREEN_HEIGHT * 0.12, S.SCREEN_HEIGHT * 0.3]
+                button_width = S.SCREEN_WIDTH * 0.2
+                button_height = S.SCREEN_HEIGHT * 0.05
+            elif event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
+                for k in write_entry:
+                    if write_entry[k]["Marker"]:
+                        write_entry[k]["Marker"] = False
+                for i in range(0, len(buttons)):
+                    if buttons[i].collidepoint(mouse_pos):
+                        if i == 0:
+                            """Back pressed"""
+                            no_save = False
+                            for k in choises_needed_to_be_made.keys():
+                                if choises_needed_to_be_made[k][0] != choises_needed_to_be_made[k][1] and len(choises_needed_to_be_made[k]) == 2: # Not OR
+                                    no_save = True
+                                elif len(choises_needed_to_be_made[k]) == 3 and choises_needed_to_be_made[k][2] == "OR": #OR
+                                    no_save = True
+                                    for kk in limited_choises:
+                                        if choises_needed_to_be_made[kk][0] == choises_needed_to_be_made[kk][1]:
+                                            """Atleast one of the OR choises is met."""
+                                            no_save = False
+                            if write_entry["Hit dice"]["Text"] == "" or not write_entry["Hit dice"]["Text"].isdigit() or int(write_entry["Hit dice"]["Text"]) > int(dice_to_roll):
+                                no_save = True
+                            if not no_save:
+                                pressed = "Save"
+                                pg.draw.rect(screen, "black", buttons[i], width=3)
+                            else:
+                                notice = "There are still choises to be made"
+                        elif i == 1:
+                            """roll hp"""
+                            pressed = "Roll Hp"
+                if combobox_choises != {}:
+                    found = False
+                    for key, value in combobox_choises.items():
+                        if value["Rect"].collidepoint(mouse_pos):
+                            pressed = key
+                        if value["Expand"]:
+                            """Expanded, check the rects for collision and secure the choise"""
+                            for (ch_rect, ch) in value["Choises"]:
+                                if ch_rect.collidepoint(mouse_pos):
+                                    pressed = "Chose_Made:" + key + ":" + ch
+                            value["Expand"] = False
+
+                if write_entry != {}:
+                    for k in write_entry:
+                        if write_entry[k]["Rect"].collidepoint(mouse_pos):
+                            pressed = "Write:" + k
+                            break
+            elif event.type == pg.MOUSEBUTTONUP and event.button == 1:
+                if pressed != -1:
+                    if pressed == "Save" and buttons[0].collidepoint(mouse_pos):
+                        """Save button pressed"""
+                        save_leveled_up_data(character, combobox_choises, write_entry)
+                        running = False
+                        return
+                    elif pressed == "Roll Hp" and buttons[1].collidepoint(mouse_pos):
+                        rolled = random.randint(1, int(dice_to_roll))
+                        write_entry["Hit dice"]["Text"] = str(rolled)
+                        F.Roll_3d_dice(screen, clock, "D" + dice_to_roll, str(rolled))
+                    elif combobox_choises.get(pressed) != None and combobox_choises[pressed]["Rect"].collidepoint(mouse_pos):
+                        """Clicked on combobox, expand it."""
+                        if combobox_choises[pressed]["Expand"]:
+                            combobox_choises[pressed]["Expand"] = False
+                        else:
+                            combobox_choises[pressed]["Expand"] = True
+                            combobox_choises[pressed]["Text"] = "Choose"
+                            if pressed[:-1] in limited_choises:
+                                """Pressed a limited choise combobox, cancel the other ones"""
+                                for k in limited_choises:
+                                    if k != pressed[:-1]:
+                                        for i in range(999):
+                                            if combobox_choises.get(k + str(i)) != None:
+                                                combobox_choises[k + str(i)]["Expand"] = False
+                                                combobox_choises[k + str(i)]["Text"] = "Choose"
+                                            else:
+                                                break
+                    elif "Chose_Made:" in pressed:
+                        key = pressed.split(":")[1]
+                        choise = pressed.split(":")[2]
+                        combobox_choises[key]["Text"] = choise
+                        combobox_choises[key]["Expand"] = False
+                    elif "Write:" in pressed:
+                        k = pressed.replace("Write:", "")
+                        if write_entry[k]["Rect"].collidepoint(mouse_pos):
+                            write_entry[k]["Marker"] = True
+                            write_entry[k]["Marker_Time"] = 0
+                    pressed = -1
+                else:
+                    for choise in combobox_choises:
+                        if combobox_choises[choise]["Expand"]:
+                            combobox_choises[choise]["Expand"] = False
+            elif event.type == pg.MOUSEBUTTONDOWN and event.button == 2 or event.type == pg.KEYDOWN and keys[pg.K_LEFT]:
+                if to_display == "Description":
+                    to_display = "Description_for_dummies"
+                elif to_display == "Description_for_dummies":
+                    to_display = "Description"
+            elif event.type == pg.MOUSEMOTION:
+                found = False
+                for choise in combobox_choises:
+                    if combobox_choises[choise]["Expand"]:
+                        for (ch_rect, ch) in combobox_choises[choise]["Choises"]:
+                            if ch_rect.collidepoint(mouse_pos):
+                                combobox_choises[choise]["Hover"] = ch + ":" + choise
+                                found = True
+                                break
+                            if found:
+                                break
+            elif event.type == pg.TEXTINPUT:
+                if write_entry != {}:
+                    for key in write_entry:
+                        if write_entry[key]["Marker"] and event.text.isdigit():
+                            write_entry[key]["Text"] += event.text
+            elif event.type == pg.KEYDOWN:
+                if write_entry != {} and keys[pg.K_BACKSPACE]:
+                    for key in write_entry:
+                        if write_entry[key]["Marker"]:
+                            if len(write_entry[key]["Text"]) > 1:
+                                write_entry[key]["Text"] = write_entry[key]["Text"][:-1]
+                            else:
+                                write_entry[key]["Text"] = ""
+            elif event.type == pg.MOUSEBUTTONDOWN and event.button == 5:
+                y_scroll -= 20
+            elif event.type == pg.MOUSEBUTTONDOWN and event.button == 4:
+                y_scroll += 20
+                if y_scroll > 0:
+                    y_scroll = 0
+        temp_ability_score = character["Ability_Scores"].split(",")
+        for k in combobox_choises:
+            if combobox_choises[k]["Text"] != "Choose" and "Ability Score" in k:
+                temp_ability_score[V.Ability_score_list.index(combobox_choises[k]["Text"])] = int(temp_ability_score[V.Ability_score_list.index(combobox_choises[k]["Text"])]) + 1
+
+        if notice != "":
+            F.display_text(screen, notice, 28, (S.SCREEN_WIDTH * 0.5, pos.y + pos.h * 1.2), case="C")
+            timer -= 20
+            if timer <= 0:
+                notice = ""
+                timer = 1000
+        pg.display.flip()
+        clock.tick(300)
+
+def save_leveled_up_data(character, combobox_choises, write_entry):
+
+
+    with open(S.local_path + '/Created_Players/' + V.char_name + '_config.json', 'r') as file:
+        char_config_data = json.load(file)
+
+
+    char_class = character["Class"].split(", ")
+    if len(char_class) > 1:
+        F.print_debug("NOT AVAILABLE TO LEVEL UP MULTICLASS YET")
+    new_level = int(character["Level"].split(",")[0])+1
+
+    char_config_data[char_class[0]][str(new_level)] = {}
+
+    new_data = S.class_data[char_class[0]][str(new_level)]
+
+    for key, value in new_data.items():
+        if key in ["Hit dice", "Proficiency Bonus", "Spell Slots"]:
+            """change specific key"""
+            character[key] = value[2]
+            char_config_data[char_class[0]][str(new_level)][key] = [value[2]]
+        elif key in ["Slot Level"]:
+            if value[2] not in character[key]:
+                character[key] += "," + value[2]
+            char_config_data[char_class[0]][str(new_level)][key] = [value[2]]
+
+        elif key in ["Ability Score"]:
+            """Combobox: choose a new thing"""
+            scores = character["Ability_Scores"].split(",")
+            for k in combobox_choises:
+                if key in k:
+                    index = V.Ability_score_list.index(combobox_choises[k]["Text"])
+                    scores[index] = str(int(scores[index]) + 1)
+            character["Ability_Scores"] = ",".join(scores)
+        elif key in ["Favoured Enemy", "Natural Explorer"]:
+            """"""
+            for k in combobox_choises:
+                if key in k and combobox_choises[k]["Text"] != "Choose":
+                    """"""
+                    new_key = key.replace("_OR", "")
+                    if char_config_data.get("Choises") == None:
+                        char_config_data["Choises"] = {}
+                    if char_config_data["Choises"].get(new_key) == None:
+                        char_config_data["Choises"][new_key] = combobox_choises[k]["Text"]
+                    else:
+                        if isinstance(char_config_data["Choises"][new_key], list):
+                            char_config_data["Choises"][new_key].append(combobox_choises[k]["Text"])
+                        else:
+                            """Is a string probbly"""
+                            char_config_data["Choises"][new_key] = [char_config_data["Choises"][new_key]]
+                            char_config_data["Choises"][new_key].append(combobox_choises[k]["Text"])
+
+
+    calculate_skills(character)
+    type = ""
+    sub_type = ""
+
+    if "SubClass:" in character["Code"]:
+        for code_data in character["Code"].split(","):
+            if "SubClass:" in code_data:
+                type = code_data.split(":")[1]
+                sub_type = code_data.split(":")[2]
+                break
+    subclass_data = {}
+    if S.subclass_data.get(type) != None and S.subclass_data[type].get(sub_type) != None:
+        subclass_data = S.subclass_data[type][sub_type]
+
+
+    for key, value in subclass_data.items():
+        if int(value["Level"]) == new_level:
+            """New subclass feature"""
+            if value["Action_Type"] in ["Passive"]:
+                character["Code"] += f",SubClass:{type}:{sub_type}:{key}"
+            else:
+                F.print_debug("IDK WHAT TO DO WITH SUBCLASS FEATURE BOSS", [value, character["Name"], subclass_data, key], "Error")
+
+    for k in write_entry:
+        if k == "Hit dice":
+            hp_to_add_to_db = int(character["Health"][1]) + int(write_entry[k]["Text"])
+            character["Health"] = [hp_to_add_to_db, hp_to_add_to_db]
+
+    if len(character["Level"].split(",")) == 2:
+        F.print_debug("DEFINATELY BAD", [character["Level"]], "ERROR")
+
+    character["Level"] = str(new_level)
+
+    for i in range(0, int(character["Hit dice"].split("d")[0])):
+        V.BASE_HIT_DICE.append(character["Hit dice"].split("d")[1])
+
+    with open(S.local_path + '/Created_Players/' + V.char_name + '_config.json', 'w') as file:
+        json.dump(char_config_data, file, indent=4)
+
+
+    if not isinstance(character["Health"], int):
+        if isinstance(character["Health"], list) or isinstance(character["Health"], tuple):
+            character["Health"] = character["Health"][1]
+    F.save_data(character, "characters", "not_text")
+    character["Health"] = [character["Health"], character["Health"]]
+
+    V.char_config = char_config_data.copy()
+    set_level_flag(0)
+    V.SECRETS[V.char_name]["LevelUp"] = 0
+
+
+def set_level_flag(flag):
+    sql = "UPDATE `{}` SET {} WHERE `Name` = '{}'".format(
+        "communication",
+        f"`LevelUp` = '{flag}'",
+        # Set column=value pairs
+        str(V.char_name)  # Where Name matches the value
+    )
+    F.print_debug(sql, debug="INFO")
+    F.Write_to_DataBase(sql)

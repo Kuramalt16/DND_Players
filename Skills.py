@@ -80,11 +80,11 @@ def display_char_skills(character, screen, clock):
     critical_fail = False
     critical_success = False
     while running:
-        V.d20_dice_images = []
-        for i in range(0, V.d20_img_count):
-            img = pg.image.load(image_path + "/D20_" + str(i) + ".png")
-            img = pg.transform.scale(img, (S.SCREEN_WIDTH * 0.2, S.SCREEN_HEIGHT * 0.2))
-            V.d20_dice_images.append(img)
+        # V.d20_dice_images = []
+        # for i in range(0, V.d20_img_count):
+        #     img = pg.image.load(image_path + "/D20_" + str(i) + ".png")
+        #     img = pg.transform.scale(img, (S.SCREEN_WIDTH * 0.2, S.SCREEN_HEIGHT * 0.2))
+        #     V.d20_dice_images.append(img)
         button_width = S.SCREEN_WIDTH * 0.3
         button_height = S.SCREEN_HEIGHT * 0.05
         F.add_image_to_screen(screen, "background", (0, 0, S.SCREEN_WIDTH, S.SCREEN_HEIGHT), "Background")
@@ -345,11 +345,11 @@ def display_mob_skills(mob, screen, clock):
     critical_fail = False
     critical_success = False
     while running:
-        V.d20_dice_images = []
-        for i in range(0, V.d20_img_count):
-            img = pg.image.load(image_path + "/D20_" + str(i) + ".png")
-            img = pg.transform.scale(img, (S.SCREEN_WIDTH * 0.2, S.SCREEN_HEIGHT * 0.2))
-            V.d20_dice_images.append(img)
+        # V.d20_dice_images = []
+        # for i in range(0, V.d20_img_count):
+        #     img = pg.image.load(image_path + "/D20_" + str(i) + ".png")
+        #     img = pg.transform.scale(img, (S.SCREEN_WIDTH * 0.2, S.SCREEN_HEIGHT * 0.2))
+        #     V.d20_dice_images.append(img)
         button_width = S.SCREEN_WIDTH * 0.3
         button_height = S.SCREEN_HEIGHT * 0.05
         F.add_image_to_screen(screen, "background", (0, 0, S.SCREEN_WIDTH, S.SCREEN_HEIGHT), "Background")

@@ -1,0 +1,238 @@
+{
+    "Elf": {
+        "Ability Score": [
+            "Char:Ability_Scores",
+            "DEX",
+            "DEX"
+        ],
+        "Size": [
+            "Char:Size",
+            "Medium"
+        ],
+        "Speed": [
+            "Char:Speed",
+            "30"
+        ],
+        "Darkvision": [
+            "Char:Darkvision",
+            "60"
+        ],
+        "Resistance": [
+            "Char:Resistance",
+            "Charmed"
+        ],
+        "Immunity": [
+            "Char:Immunity",
+            "Sleep"
+        ],
+        "Code": [
+            "Feature:Trance",
+            "Feature:Mask of the Wild"
+        ],
+        "Skills": [
+            "Char:Skills",
+            "Perception"
+        ],
+        "Languages": [
+            "Char:Languages",
+            "Common",
+            "Elvish",
+            "Draconic"
+        ],
+        "Second Ability Score": [
+            "Char:Ability_Scores",
+            "INT"
+        ],
+        "Weapon Proficiencies": [
+            "Longsword",
+            "Shortsword",
+            "Shortbow",
+            "Longbow"
+        ],
+        "Sub-Race": [
+            "High Elf"
+        ],
+        "Cantrip": [
+            "Fire Bolt"
+        ]
+    },
+    "Druid": {
+        "1": {
+            "Hit dice": [
+                "1d8"
+            ],
+            "Armor Proficiencies": [
+                "Light Armor",
+                "Medium Armor",
+                "Shields"
+            ],
+            "Weapon Proficiencies": [
+                "Club",
+                "Dagger",
+                "Dart",
+                "Javelin",
+                "Mace",
+                "Quarterstaff",
+                "Scimitar",
+                "Sickle",
+                "Sling",
+                "Spear"
+            ],
+            "Tool Proficiencies": [
+                "Herbalism kit"
+            ],
+            "Saving Throw Proficiencies": [
+                "Saving_INT",
+                "Saving_WIS"
+            ],
+            "Proficiency Bonus": [
+                "2"
+            ],
+            "Primary Ability": [
+                "Wisdom"
+            ],
+            "Spell Slots": [
+                "1st:2"
+            ],
+            "Slot Level": [
+                "1"
+            ],
+            "Languages": [
+                "Druidic"
+            ],
+            "Skills": [
+                "Survival",
+                "Animal Handling"
+            ],
+            "Cantrip": [
+                "Primal Savagery",
+                "Produce Flame"
+            ],
+            "Spell": [
+                "Ice Knife",
+                "Cure Wounds",
+                "Speak with Animals",
+                "Revivify",
+                "Dust Devil",
+                "Moonbeam",
+                "Spike Growth"
+            ]
+        },
+        "2": {
+            "Hit dice": [
+                "2d8"
+            ],
+            "Proficiency Bonus": [
+                "2"
+            ],
+            "Wild Shape": [
+                "2:SR"
+            ],
+            "Spell Slots": [
+                "1st:3"
+            ],
+            "Slot Level": [
+                "1"
+            ],
+            "Wild Companion": [
+                "Spell",
+                "Find Familiar:Wild Shape"
+            ],
+            "Code": [
+                "Feature:Wild Companion",
+                "Feature:Wild Shape"
+            ],
+            "Druid Circle": [
+                "Land"
+            ]
+        },
+        "3": {
+            "Hit dice": [
+                "3d8"
+            ],
+            "Proficiency Bonus": [
+                "2"
+            ],
+            "Slot Level": [
+                "1:2"
+            ],
+            "Spell Slots": [
+                "1st:4,2nd:2"
+            ]
+        },
+        "4": {
+            "Hit dice": [
+                "4d8"
+            ],
+            "Proficiency Bonus": [
+                "2"
+            ],
+            "Slot Level": [
+                "1:2"
+            ],
+            "Spell Slots": [
+                "1st:4,2nd:3"
+            ],
+            "Cantrip": [
+                "Shillelagh"
+            ],
+            "Ability Score": [
+                "STR",
+                "CHA"
+            ]
+        },
+        "5": {
+            "Hit dice": [
+                "5d8"
+            ],
+            "Proficiency Bonus": [
+                "3"
+            ],
+            "Slot Level": [
+                "1:2:3"
+            ],
+            "Spell Slots": [
+                "1st:4,2nd:3,3rd:2"
+            ]
+        },
+        "6": {
+            "Hit dice": [
+                "6d8"
+            ],
+            "Proficiency Bonus": [
+                "3"
+            ],
+            "Slot Level": [
+                "1:2:3"
+            ],
+            "Spell Slots": [
+                "1st:4,2nd:3,3rd:3"
+            ]
+        }
+    },
+    "Choises": {
+        "Land:Bonus Cantrip": "Shape Water",
+        "Land:Subclass path": "Forest",
+        "Beasts": [
+            "Stag",
+            "Rabbit",
+            "Cow",
+            "Fox",
+            "Wolf",
+            "Brown Bear"
+        ]
+    },
+    "Equiped Items": {
+        "Weapons": "Quarterstaff",
+        "Magic Weapon": "",
+        "Shield": "",
+        "Armour": "Leather",
+        "Magic Armour": "",
+        "Potions": "Potion of Healing",
+        "Food": "Rations",
+        "Special": "Rope,Orb"
+    },
+    "Notes": "I am Eloise\n\nFlaw: I don't understand social ques\n\nQuirky trait: I repeat stories because I don't remember who I told them\n\nHobby: I like crochet clothes\n\nGoal: Gather all knowledge possible\\cursor1",
+    "Chosen_cantrips": "Fire Bolt,Primal Savagery,Produce Flame,Shillelagh",
+    "Chosen_spells": "Cure Wounds,Speak with Animals,Dust Devil,Moonbeam,Spike Growth,Barkskin,Spider Climb,Call Lightning,Plant Growth,Ice Knife,Charm Person,Conjure Animals"
+}

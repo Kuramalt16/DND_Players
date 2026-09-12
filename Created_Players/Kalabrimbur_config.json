@@ -151,14 +151,14 @@
                 "Saving_STR",
                 "Saving_DEX"
             ],
-            "Favored Enemy": [
+            "Favoured Enemy": [
                 "1"
             ],
             "Natural Explorer": [
                 "1"
             ],
             "Code": [
-                "Feature:Favored Enemy",
+                "Feature:Favoured Enemy",
                 "Feature:Natural Explorer"
             ],
             "Skills": [

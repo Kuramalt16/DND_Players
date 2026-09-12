@@ -12,8 +12,8 @@ def check_if_spells_are_correct(character):
             index = index % 2
             level = int(character["Level"].split(",")[index])
             available_spells = V.Available_spells_data[char_class][level]
-            Cantrips = available_spells[0]
-            Spells = available_spells[1]
+            Cantrips = count_max_cantrip_count(available_spells)
+            Spells = count_max_spell_count(available_spells, level)
             Total_Spell_Slots = available_spells[2]
             Spell_Slot_levels = available_spells[3]
             if character.get("Cantrip") != None:
@@ -24,10 +24,14 @@ def check_if_spells_are_correct(character):
             for spell_slot in character["Spell Slots"].split(","):
                 player_total_Spell_Slots += int(spell_slot.split(":")[1])
             if character.get("Cantrip") != None:
-                if player_cantrips != Cantrips:
+                if player_cantrips < Cantrips:
                     F.print_debug("Not enough cantrips", player_cantrips, debug="WARNING")
-            elif player_spells != Spells:
+                elif player_cantrips > Cantrips:
+                    F.print_debug("Too many cantrips", player_cantrips, debug="WARNING")
+            elif player_spells < Spells:
                 F.print_debug("Not enough Spells", debug="WARNING")
+            elif player_spells > Spells:
+                F.print_debug("Too many Spells", debug="WARNING")
             elif player_spell_slot_level != Spell_Slot_levels:
                 F.print_debug("Spell slot level incorrect", debug="WARNING")
             elif player_total_Spell_Slots != Total_Spell_Slots:
@@ -135,6 +139,7 @@ def count_max_cantrip_count(spell_data):
     if char.get("Sub-Race") != None and char["Sub-Race"] in ["High Elf"]:
         cantrip_count += 1
     if "Druid" in char["Class"].split(", ") and char.get("SubClass") != None and char["SubClass"] in ["Land"]:
+        """Bonus Cantrip"""
         cantrip_count += 1
     return cantrip_count
 
@@ -195,6 +200,7 @@ def display_char_spells(screen, clock):
     text_surface = pg.Surface((S.SCREEN_WIDTH, S.SCREEN_HEIGHT * 4), pg.SRCALPHA)
     mode = "Description"
     notice = []
+
     while running:
         button_width = S.SCREEN_WIDTH * 0.2
         button_height = S.SCREEN_HEIGHT * 0.05
@@ -370,7 +376,13 @@ def display_only_spell_descriptions(screen, hovering_mouse, id, mode):
 
         if spell_data.get("Components") != None:
             r = F.display_text(screen, "Components: ", 15, (start_x, start_y + step_y), color=color_school[spell_data["School"]])
-            F.display_text(screen, spell_data["Components"], 15, (r.x + r.w, r.y))
+            for i, w in enumerate(spell_data["Components"].split(" ")):
+                r = F.display_text(screen, w + " ", 15, (r.x + r.w, start_y + step_y))
+                if r.x + r.w >= S.SCREEN_WIDTH - 100 and i != len(spell_data["Components"].split(" "))-1:
+                    step_y += S.SCREEN_HEIGHT * 0.02
+                    r.x = start_x
+                    r.w = 0
+
             step_y += S.SCREEN_HEIGHT * 0.03
 
         if spell_data.get("Ritual"):
@@ -414,15 +426,15 @@ def display_only_spell_descriptions(screen, hovering_mouse, id, mode):
             y_step = 0
             start_x += word_length.w
             for word in spell_data[mode].split(" "):
-                if 'â€™' in word:
-                    word = word.replace('â€™', "'")
-                if 'â€“' in word:
-                    word = word.replace('â€“', "-")
+                # if 'â€™' in word:
+                #     word = word.replace('â€™', "'")
+                # if 'â€“' in word:
+                #     word = word.replace('â€“', "-")
                 word = word.replace("\n\n", " ")
                 word = word.replace("\n", " ")
                 word_length = F.display_text(screen, word + " ", 15,(start_x, start_y + y_step))
                 start_x = word_length.x + word_length.w
-                if word_length.w + word_length.x >= S.SCREEN_WIDTH - 100:
+                if word_length.w + word_length.x >= S.SCREEN_WIDTH * 0.85:
                     y_step += S.SCREEN_HEIGHT * 0.03
                     word_length.w = 0
                     start_x = S.SCREEN_WIDTH * 0.5
@@ -437,6 +449,8 @@ def update_chosen_spells(old_spells, old_cantrips):
         if char_config_data.get("Chosen_spells") == None:
             char_config_data["Chosen_spells"] = []
         char_config_data["Chosen_spells"] = character["Spell"]
+        F.create_char_JSON(V.char_name, char_config_data)
+
     if old_cantrips != character["Cantrip"]:
         with open(S.local_path + '/Created_Players/' + V.char_name + '_config.json', 'r') as file:
             char_config_data = json.load(file)
@@ -446,3 +460,66 @@ def update_chosen_spells(old_spells, old_cantrips):
 
         F.create_char_JSON(V.char_name, char_config_data)
 
+def get_not_changable_spells(character, cantrip_list, spell_list):
+    not_changable_spells = []
+    not_changable_cantrips = []
+    with open(S.local_path + '/Created_Players/' + V.char_name + '_config.json', 'r') as file:
+        char_config_data = json.load(file)
+    if "Druid" in character["Class"]:
+        """Druid gets spells based on the class which can not be changed"""
+        if character.get("SubClass") != None:
+            """Search for: 
+             SubClass:Druid Circle:Land:Bonus Cantrip
+             SubClass:Druid Circle:Land:Natural Recovery
+             SubClass:Druid Circle:Land:Subclass path
+             SubClass:Druid Circle:Land:Circle Spells lv3
+             SubClass:Druid Circle:Land:Circle Spells lv5
+             
+             """
+            type = ""
+            sub_type = ""
+            for d in character["Code"].split(","):
+                if "SubClass:" in d:
+                    print("Subclass feature: ", d)
+                    if d.split(":")[1] in ["Druid Circle"]:
+                        type = d.split(":")[1]
+                        sub_type = d.split(":")[2]
+                        break
+
+            if S.subclass_data.get(type) != None:
+                if S.subclass_data[type].get(sub_type) != None:
+                    sub_type_sub = ""
+                    if char_config_data.get("Choises") != None:
+                        if char_config_data["Choises"].get(sub_type + ":Subclass path") != None:
+                            sub_type_sub = char_config_data["Choises"][sub_type + ":Subclass path"]
+                        else:
+                            F.print_debug("No choises made?????", [char_config_data], "ERROR")
+                    else:
+                        F.print_debug("No choises made???", [char_config_data], "ERROR")
+                    not_changable_spells_data = S.subclass_data[type][sub_type]["Subclass path"]["Outcome"][sub_type_sub]
+                    """{'3': ['Barkskin', 'Spider Climb'], '5': ['Call Lightning', 'Plant Growth'], '7': ['Divination', 'Freedom of Movement'], '9': ['Commune with Nature', 'Tree Stride']}"""
+                    char_level = character["Level"].split(",")
+                    char_class = character["Class"].split(", ").index("Druid")
+                    char_level = char_level[char_class]
+                    for i in range(0, 21):
+                        if i <= int(char_level):
+                            if not_changable_spells_data.get(str(i)) != None:
+                                for spell_name in not_changable_spells_data[str(i)]:
+                                    not_changable_spells.append(spell_name)
+                        else:
+                            break
+                else:
+                    F.print_debug("Subclass subtype doesnt exist: ", [type, character["Name"], sub_type], "Error")
+            else:
+                F.print_debug("Subclass doesnt exist: ", [type, character["Name"], sub_type], "Error")
+    else:
+        F.print_debug("Not programmed CLASS", [character["Class"]], "ERROR")
+
+    if "Elf" in character["Race"] and character.get("Sub-Race") != None and character["Sub-Race"] == "High Elf":
+        if char_config_data[character["Race"]].get("Cantrip") != None:
+            for cantrip in char_config_data[character["Race"]]["Cantrip"]:
+                not_changable_cantrips.append(cantrip)
+    else:
+        F.print_debug("Not programmed CLASS")
+
+    return not_changable_spells, not_changable_cantrips

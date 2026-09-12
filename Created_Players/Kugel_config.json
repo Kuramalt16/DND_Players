@@ -115,12 +115,23 @@
             "Code": [
                 "Feature:Extra Attack"
             ]
+        },
+        "6": {
+            "Hit dice": [
+                "6d10"
+            ],
+            "Proficiency Bonus": [
+                "3"
+            ]
         }
     },
     "Equiped Items": {
-        "Weapons": "",
+        "Weapons": "Handaxe",
         "Magic Weapon": "",
-        "Shield": ""
+        "Shield": "",
+        "Armour": "Leather",
+        "Magic Armour": "",
+        "Food": "Rations"
     },
     "Notes": "labas kuki\\cursor0"
 }

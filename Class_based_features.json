@@ -128,14 +128,16 @@
     "Spell_slot": ["ADD", "1"],
     "reset": "SR"
   },
-  "Favored Enemy": {
+  "Favoured Enemy": {
     "Class": "Ranger",
     "Description": "Beginning at 1st level, you have significant experience studying, tracking, hunting, and even talking to a certain type of enemy.\n\nChoose a type of favored enemy: aberrations, beasts, celestials, constructs, dragons, elementals, fey, fiends, giants, monstrosities, oozes, plants, or undead. Alternatively, you can select two races of humanoid (such as gnolls and orcs) as favored enemies.\n\nYou have advantage on Wisdom (Survival) checks to track your favored enemies, as well as on Intelligence checks to recall information about them.\n\nWhen you gain this feature, you also learn one language of your choice that is spoken by your favored enemies, if they speak one at all.\n\nYou choose one additional favored enemy, as well as an associated language, at 6th and 14th level. As you gain levels, your choices should reflect the types of monsters you have encountered on your adventures.",
     "Description_for_dummies": "Choose a type of favoured enemy or two humanoid races, you have advantage on WIS (Survival) checks to track the enemy and INT checks to recall information about them. You also gain their language if they have one.",
     "At higher levels": "You choose one additional favored enemy, as well as an associated language, at 6th and 14th level. As you gain levels, your choices should reflect the types of monsters you have encountered on your adventures.",
     "Action_Type": "Passive",
     "Special_Flag": ["CHOOSE_OR", "1", "Aberrations", "Beasts", "Celestials", "Constructs", "Dragons", "Elementals", "Fey", "Fiends", "Giants", "Monstrosities", "Oozes", "Plants", "Undead"],
-    "Chose_Or": ["CHOOSE_OR", "2", "Orcs", "Gnolls", "Goblins", "Humans"]
+    "Chose_Or": ["CHOOSE_OR", "2", "Orc", "Gnoll", "Goblin", "Human", "Dwarf", "Elf", "Dragonborn", "Gnome", "Halfling", "Tiefling", "Bubear", "Centaur", "Hobgoblin", "Kobold", "Aarakocra", "Aasimar", "Changeling", "Firbolg", "Genasi", "Kenku"],
+    "Level_Up": ["CHOOSE_OR", "1", "Aberrations", "Beasts", "Celestials", "Constructs", "Dragons", "Elementals", "Fey", "Fiends", "Giants", "Monstrosities", "Oozes", "Plants", "Undead"],
+    "Level_Up_Chose_Or": ["CHOOSE_OR", "1", "Orc", "Gnoll", "Goblin", "Human", "Dwarf", "Elf", "Dragonborn", "Gnome", "Halfling", "Tiefling", "Bubear", "Centaur", "Hobgoblin", "Kobold", "Aarakocra", "Aasimar", "Changeling", "Firbolg", "Genasi", "Kenku"]
   },
   "Natural Explorer": {
     "Class": "Ranger",
@@ -143,8 +145,15 @@
     "Description_for_dummies": "Choose a favoured terrain, INT and WIS checks related to the terrain give double proficiency bonuses if the skill is proficient already. while traveling for more than an hour in this terrain you get benefits: difficult terain doesnt slow your group down, your group can't become lost, when doing some other manual tasks you stay alert for danger, when moving alone traveling speed doesnt impede your stealth, foraging gives you twice as much food, when tracking creatures you also learn their exact number, sizes and how long ago they passed through the area.",
     "At higher levels": "You choose additional favored terrain types at 6th and 10th level.",
     "Action_Type": "Passive",
-    "Special_Flag": ["CHOOSE", "1", "Arctic", "Coast", "Desert", "Forest", "Grassland", "Mountain", "Swamp", "Underdark"]
+    "Special_Flag": ["CHOOSE", "1", "Arctic", "Coast", "Desert", "Forest", "Grassland", "Mountain", "Swamp", "Underdark"],
+    "Level_Up": ["CHOOSE", "1", "Arctic", "Coast", "Desert", "Forest", "Grassland", "Mountain", "Swamp", "Underdark"]
 
+  },
+  "Primeval Awareness": {
+    "Class": "Ranger",
+    "Description": "Beginning at 3rd level, you can use your action and expend one ranger spell slot to focus your awareness on the region around you. For 1 minute per level of the spell slot you expend, you can sense whether the following types of creatures are present within 1 mile of you (or within up to 6 miles if you are in your favored terrain): aberrations, celestials, dragons, elementals, fey, fiends, and undead. This feature doesn’t reveal the creatures’ location or number.",
+    "Description_for_dummies": "Use spell slot and you can sense for 1 min * spell slot level if there are any aberrations, celestials, dragons, elementals, fey, fiends, or undead within 1 mile (or 6 miles in favoured terrain)",
+    "Action_Type": "Passive"
   },
   "Fast Movement": {
     "Class": "Barbarian",

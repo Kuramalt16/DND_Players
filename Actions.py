@@ -5,6 +5,9 @@ import pygame as pg, time, Variables as V, Functions as F, Settings as S, Help a
 import Items
 import json
 
+import Special_Needs
+
+
 def pause():
     run = True
     pg.display.flip()
@@ -32,8 +35,7 @@ def Initialize_actions(screen, clock):
     spell_list = []
     feat_list = []
     free_spell_list = []
-
-    ammo_count = {}
+    ammo_count = F.get_ammo_count(weapon_list)
     for key, value in character.items():
         if key == "Weapon Proficiencies":
             for item in value.split(","):
@@ -146,6 +148,9 @@ def Initialize_actions(screen, clock):
                                     if not choise_made:
                                         res = make_a_choise(data["Subclass"], screen, clock, extra_action_values)
                                         F.save_choise_json(extra_action, res)
+                            if S.Class_features[function_name].get("Special_Flag") != None:
+                                """handle special flag for fuctions that aren't user based like cast, weapon, hit or spell slot"""
+                                special.handle_diferent_special_flags(function_name, screen, clock, character)
         elif key == "Feat":
             for feat in value.split(","):
                 if feat not in feat_list:
@@ -163,7 +168,8 @@ def Initialize_actions(screen, clock):
             if value not in V.Rites:
                 V.Rites[value] = ""
 
-        elif key not in ["Race", "Class", "Experience", "Level", "Health", "Ability_Scores", "Background", "Alignment", "Gold", "AC", "Skills", "Speed", "Immunity", "Resistance", "Vulnerabilities", "Languages", "Items", "Spell Slots", "Cantrip", "Extra", "Size", "Hit dice", "Armor Proficiencies", "Tool Proficiencies", "Saving Throw Proficiencies", "Proficiency Bonus", "Primary Ability", "Slot Level", "Rage Damage", "Name", "Wild Companion", "Wild Shape", "Rage", "Hemocraft_die", "Beasts", "Darkvision", "Second Ability Score", "Second Wind", "Extra Attack", "Action Surge", "Unarmored Defense", "SubClass", "Reckless Attack", "Fast Movement", "Blood Curses Known", "Font of Magic", "Sorcery Points", "Arcane Recovery", "Magical Guidance"]:
+
+        elif key not in ["Race", "Class", "Experience", "Level", "Health", "Ability_Scores", "Background", "Alignment", "Gold", "AC", "Skills", "Speed", "Immunity", "Resistance", "Vulnerabilities", "Languages", "Items", "Spell Slots", "Cantrip", "Extra", "Size", "Hit dice", "Armor Proficiencies", "Tool Proficiencies", "Saving Throw Proficiencies", "Proficiency Bonus", "Primary Ability", "Slot Level", "Rage Damage", "Name", "Wild Companion", "Wild Shape", "Rage", "Hemocraft_die", "Beasts", "Darkvision", "Second Ability Score", "Second Wind", "Extra Attack", "Action Surge", "Unarmored Defense", "SubClass", "Reckless Attack", "Fast Movement", "Blood Curses Known", "Font of Magic", "Sorcery Points", "Arcane Recovery", "Magical Guidance", "Favoured Enemy", "Natural Explorer", "Primeval Awareness"]:
             F.print_debug(f"Not included: {key}", value, debug="DEBUG")
 
     running = True
@@ -198,7 +204,15 @@ def Initialize_actions(screen, clock):
 
     enough_components = False # place holder for component check for spells, if spell has HIT then check there first and dont erase the value so checking in DAMAGE wouldn't be neccesary, if checking in damage first then it should be FALSE
     mode = "Description"
+    with open(S.local_path + '/Created_Players/' + V.char_name + '_config.json', 'r') as file:
+        V.char_config = json.load(file)
 
+    was_it_removed = False
+    scroll_amount = 30
+    slot_to_display = (0, 0)
+    selected_entry = -1
+    txt_dict = {"Heal": ["", 0]}
+    timer = 10
 
     while running:
         special.display_wild_shapes(screen, clock)
@@ -215,7 +229,6 @@ def Initialize_actions(screen, clock):
 
         button_width = S.SCREEN_WIDTH * 0.2
         button_height = S.SCREEN_HEIGHT * 0.05
-
         F.add_image_to_screen(screen, "background", (0, 0, S.SCREEN_WIDTH, S.SCREEN_HEIGHT), "Background")
         if not S.Seisure:
             F.display_text(screen, "Critical Success - Purple", 15, (S.SCREEN_WIDTH * 0.8, S.SCREEN_HEIGHT * 0.09), color="Purple")
@@ -232,19 +245,19 @@ def Initialize_actions(screen, clock):
 
         buttons = F.display_back_button(screen, "Back")
 
-        slot_rect = F.display_text(screen, "Spell Slots", 20, (S.SCREEN_WIDTH * 0.88, S.SCREEN_HEIGHT * 0.2))
-        pg.draw.rect(screen, "black", slot_rect, width=2)
+        # slot_rect = F.display_text(screen, "Spell Slots", 20, (S.SCREEN_WIDTH * 0.88, S.SCREEN_HEIGHT * 0.2))
+        # pg.draw.rect(screen, "black", slot_rect, width=2)
 
-        hist_rect = F.display_text(screen, "Roll History", 20, (S.SCREEN_WIDTH * 0.88, S.SCREEN_HEIGHT * 0.25))
+        hist_rect = F.display_text(screen, "Roll History", 20, (S.SCREEN_WIDTH * 0.88, S.SCREEN_HEIGHT * 0.205))
         pg.draw.rect(screen, "black", hist_rect, width=2)
 
-        note_rect = F.display_text(screen, "Notes", 20, (S.SCREEN_WIDTH * 0.88, S.SCREEN_HEIGHT * 0.3))
+        note_rect = F.display_text(screen, "Notes", 20, (S.SCREEN_WIDTH * 0.88, S.SCREEN_HEIGHT * 0.2505))
         pg.draw.rect(screen, "black", note_rect, width=2 + int(show_notes/2))
 
         x_pos = [S.SCREEN_WIDTH * 0.05, S.SCREEN_WIDTH * 0.27, S.SCREEN_WIDTH * 0.52, S.SCREEN_WIDTH * 0.795]
         y_pos = [S.SCREEN_HEIGHT * 0.9, S.SCREEN_HEIGHT * 0.12, S.SCREEN_HEIGHT * 0.3]
 
-        slot_surface = F.display_spell_slots(screen, show_slots)
+        slot_to_add_dict = F.display_spell_slots(screen, slot_to_display)
         dice_hist_surface = F.display_spell_history(screen, show_history)
         show_notes = handle_notes(screen, clock, show_notes, note_rect)
 
@@ -260,7 +273,15 @@ def Initialize_actions(screen, clock):
 
         draw_action_grid(screen)
 
+        F.display_text(screen, "HP: ", 14, (S.SCREEN_WIDTH * 0.8, S.SCREEN_HEIGHT * 0.15))
+        enter_hp = F.add_entry_to_list((S.SCREEN_WIDTH * 0.84, S.SCREEN_HEIGHT * 0.15, S.SCREEN_WIDTH * 0.05, S.SCREEN_HEIGHT * 0.04), "hp", screen, "", 20, (S.SCREEN_WIDTH * 0.2, S.SCREEN_HEIGHT * 0.5))
+        text_a = F.display_text(screen, str(character["Health"]), 14, (S.SCREEN_WIDTH * 0.89, S.SCREEN_HEIGHT * 0.15))
+        if character.get("Temp_hp") != None and character["Temp_hp"] != 0:
+            F.display_text(screen, str(character["Temp_hp"]), 14, (text_a.x + text_a.w, text_a.y), color="red")
+
         for event in pg.event.get():
+            keys = pg.key.get_pressed()
+            mouse_pos = pg.mouse.get_pos()
             if event.type == pg.QUIT:
                 """quit"""
                 running = False
@@ -271,7 +292,7 @@ def Initialize_actions(screen, clock):
                 if V.images.get("SLOT SCREEN") != None:
                     del V.images["SLOT SCREEN"]
             if event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
-                mouse_pos = pg.mouse.get_pos()
+                selected_entry = -1
                 for i in range(0, len(buttons)):
                     if buttons[i].collidepoint(mouse_pos):
                         pressed = "Back"
@@ -282,11 +303,16 @@ def Initialize_actions(screen, clock):
                 if pressed in ["Back", -1]:
                     for name, value in rect_dict.items():
                         for property, rect in value.items():
-                            if isinstance(rect, pg.Rect) and rect.collidepoint(mouse_pos) and property in ["Hit", "Damage", "Cast", "Throw", "Versatile", "Spell_slot", "Damage_extra", "Rite", "Sub_Feature_Spell_slot", "Ritual"]:
+                            if isinstance(rect, pg.Rect) and rect.collidepoint(mouse_pos) and property in ["Hit", "Damage", "Cast", "Throw", "Versatile", "Spell_slot", "Damage_extra", "Rite", "Sub_Feature_Spell_slot", "Ritual", "Use"]:
                                 pressed = [property, name]
-
+                for slot in slot_to_add_dict:
+                    for plus_or_minus, rect in slot_to_add_dict[slot].items():
+                        if rect.collidepoint(mouse_pos):
+                            pressed = (slot, plus_or_minus)
+                            break
+                if enter_hp.collidepoint(mouse_pos):
+                    selected_entry = 0
             elif event.type == pg.MOUSEBUTTONUP and event.button == 1:
-
                 if pressed != -1:
                     if isinstance(pressed, str):
                         """Handles button pressing: back, initiative, end concentration, help buttons."""
@@ -299,7 +325,7 @@ def Initialize_actions(screen, clock):
                             screen.blit(spell_screen, (0, 0))
                             screen.blit(feature_screen, (0, 0))
 
-                            F.Roll_3d_dice(screen, clock, "D20", str(dtwenty),(S.SCREEN_WIDTH * 0.5, S.SCREEN_HEIGHT * 0.4))
+                            F.Roll_3d_dice(screen, clock, "D20", str(dtwenty))
                             rolled_sum = dtwenty + V.score_modifiers["DEX"]
                             F.add_to_roll_history(dtwenty, rolled_sum, "Initiative")
 
@@ -328,11 +354,22 @@ def Initialize_actions(screen, clock):
                             cant_use_spell = False
                             enough_components, component_name = handle_component_checks(spell_tracker, rect_dict, pressed)
                             if enough_components:
-                                if rect_dict[pressed[1]]["Type"] in ["Spell", "Cantrip"]:
+                                was_it_removed = True
+                                if rect_dict[pressed[1]]["Type"] in ["Spell"]:
                                     """do we have enought spell slots for this spell? spell is not free cuz we checking for Spell not Free Spell"""
-                                    F.print_debug("SPELLS WITH HIT NOT PROGRAMMED YET PLS HELP", debug="ERROR")
-                                    F.print_debug("need to check concentration", debug="ERROR")
+                                    if ":" in pressed[1]:
+                                        spell_name, casting_level = pressed[1].split(":")
+                                        was_it_removed = F.remove_spell_slot(casting_level)
+                                    else:
+                                        was_it_removed = F.remove_spell_slot(S.spell_data[pressed[1]]["Level"])
+                                    if not was_it_removed:
+                                        notice = ["Not Enough Spell Slots", 100]
+                                if rect_dict[pressed[1]]["Type"] in ["Spell", "Cantrip"] and was_it_removed:
                                     """check consentration"""
+                                    if S.spell_data.get(pressed[1]) != None and "Concentration" in S.spell_data[pressed[1]]["Duration"]:
+                                        V.consentration[pressed[1]] = ["Spell", pg.time.get_ticks()]
+                                    if S.cantrip_data.get(pressed[1]) != None and "Concentration" in S.cantrip_data[pressed[1]]["Duration"]:
+                                        V.consentration[pressed[1]] = ["Cantrip", pg.time.get_ticks()]
 
                                 enough_ammo = True
                                 if V.item_dict.get(pressed[1]) != None and "ammo" in V.item_dict[pressed[1]]["Properties"].lower():
@@ -347,7 +384,7 @@ def Initialize_actions(screen, clock):
                                             del ammo_count["Arrows"]
                                             weapon_list.remove("Arrows")
                                         """Need to update the json as well"""
-                                if enough_ammo:
+                                if enough_ammo and was_it_removed:
                                     advantage = False
 
                                     disadvantage = handle_heavy_weapon_disadvantage(screen, clock, pressed, character)
@@ -373,7 +410,7 @@ def Initialize_actions(screen, clock):
                                     screen.blit(spell_screen, (0, 0))
                                     screen.blit(feature_screen, (0, 0))
 
-                                    F.Roll_3d_dice(screen, clock, "D20", str(dtwenty),(S.SCREEN_WIDTH * 0.5, S.SCREEN_HEIGHT * 0.5))
+                                    F.Roll_3d_dice(screen, clock, "D20", str(dtwenty))
 
                                     rolled_sum, dtwenty = sk.handle_disadvantage_rolls(screen, clock, "1D20", dtwenty, (disadvantage, advantage), int(rect_dict[pressed[1]]["Roll_mod"]))
                                     F.add_to_roll_history(dtwenty, rolled_sum, "Hit:" + str(pressed[1]))
@@ -391,7 +428,7 @@ def Initialize_actions(screen, clock):
                                     """Only if the value is set to false are we checking again, because if the item was checked in the HIT section and it passed we dont need to check again,
                                     if the item was not checked in the HIT that means it should be false"""
                                     enough_components, component_name = handle_component_checks(spell_tracker, rect_dict, pressed)
-                                if enough_components:
+                                if was_it_removed == False:
                                     was_it_removed = True
                                     if rect_dict[pressed[1]]["Type"] in ["Spell"]:
                                         """this is a spell are there enough spell slots? and later add checking if this spell was already rolled for to use a spell slot. maybe add a must click HIT beofre Dammage becomes usable. but it's shit, what if with advantage or sth.. maybe a timer? check how long after clicking hit and damage. but it's too unreliable"""
@@ -404,10 +441,17 @@ def Initialize_actions(screen, clock):
                                         if not was_it_removed:
                                             notice = ["Not Enough Spell Slots", 100]
 
+                                if enough_components and was_it_removed:
+                                    enough_components = False
                                     if was_it_removed:
                                         if component_name != "-":
                                             """enough components was an item not a boolean"""
                                             F.remove_item_from_char(component_name, character)
+                                            if component_name == "Arrows":
+                                                ammo_count["Arrows"] -= 1
+                                                if ammo_count["Arrows"] == 0:
+                                                    del ammo_count["Arrows"]
+                                                    weapon_list.remove("Arrows")
                                         if S.spell_data.get(pressed[1]) != None and "Concentration" in S.spell_data[pressed[1]]["Duration"]:
                                             V.consentration[pressed[1]] = ["Spell", pg.time.get_ticks()]
                                         if S.cantrip_data.get(pressed[1]) != None and "Concentration" in S.cantrip_data[pressed[1]]["Duration"]:
@@ -427,11 +471,15 @@ def Initialize_actions(screen, clock):
                                         screen.blit(spell_screen, (0, 0))
                                         screen.blit(feature_screen, (0, 0))
                                         enough_components = False
-                                        F.Roll_3d_dice(screen, clock, dice[1:].upper(), multiple_rolls, (S.SCREEN_WIDTH * 0.5, S.SCREEN_HEIGHT * 0.5))
+                                        F.Roll_3d_dice(screen, clock, dice[1:].upper(), multiple_rolls)
                                         rolled_sum = int(dtwenty) + int(rect_dict[pressed[1]]["Damage_mod"])
                                         F.add_to_roll_history(dtwenty, rolled_sum, "Damage:" + str(pressed[1]))
+                                        was_it_removed = False
                                 else:
-                                    notice = ["Not enough components, Need: " + component_name, 100]
+                                    if enough_components:
+                                        notice = ["Not enough Spell Slots", 100]
+                                    else:
+                                        notice = ["Not enough components, Need: " + component_name, 100]
                                     component_name = ""
                                     enough_components = False
                         elif pressed[0] == "Cast":
@@ -476,7 +524,7 @@ def Initialize_actions(screen, clock):
 
                                 dtwenty = random.randint(1, int(rect_dict[pressed[1]]["Damage_Die"].split("d")[1]))
 
-                                F.Roll_3d_dice(screen, clock, "D" + rect_dict[pressed[1]]["Damage_Die"].split("d")[1], str(dtwenty),(S.SCREEN_WIDTH * 0.5, S.SCREEN_HEIGHT * 0.5))
+                                F.Roll_3d_dice(screen, clock, "D" + rect_dict[pressed[1]]["Damage_Die"].split("d")[1], str(dtwenty))
                                 # rolled_sum, dtwenty = sk.handle_disadvantage_rolls(screen, clock, "D" + rect_dict[pressed[1]]["Damage_Die"].split("d")[1], dtwenty, (disadvantage, advantage), int(rect_dict[pressed[1]]["Damage_mod"]))
                                 rolled_sum = dtwenty + int(rect_dict[pressed[1]]["Damage_mod"])
 
@@ -498,7 +546,7 @@ def Initialize_actions(screen, clock):
                                     dtwenty = int(multiple_rolls)
                                 else:
                                     dtwenty = sum(multiple_rolls)
-                                F.Roll_3d_dice(screen, clock, dice[1:].upper(), multiple_rolls, (S.SCREEN_WIDTH * 0.5, S.SCREEN_HEIGHT * 0.5))
+                                F.Roll_3d_dice(screen, clock, dice[1:].upper(), multiple_rolls)
                                 rolled_sum = int(dtwenty) + int(rect_dict[pressed[1]]["Damage_mod"])
                                 F.add_to_roll_history(dtwenty, rolled_sum, "Two-handed:" + str(pressed[1]))
                         elif pressed[0] == "Spell_slot":
@@ -557,7 +605,7 @@ def Initialize_actions(screen, clock):
                                                 add = V.character_dict[V.char_name]["Level"].split(",")[class_index]
                                         add = int(add)
                                     dtwenty = random.randint(1, int(dice.split("d")[1]))
-                                    F.Roll_3d_dice(screen, clock, dice[1:].upper(), str(dtwenty),(S.SCREEN_WIDTH * 0.5, S.SCREEN_HEIGHT * 0.5))
+                                    F.Roll_3d_dice(screen, clock, dice[1:].upper(), str(dtwenty))
                                     rolled_sum = dtwenty + add
                                     F.add_to_roll_history(dtwenty, rolled_sum, "Feature:" + str(pressed[1]))
 
@@ -585,7 +633,7 @@ def Initialize_actions(screen, clock):
                                 screen.blit(weapon_screen, (0, 0))
                                 screen.blit(spell_screen, (0, 0))
                                 screen.blit(feature_screen, (0, 0))
-                                F.Roll_3d_dice(screen, clock, dice[1:].upper(), multiple_rolls, (S.SCREEN_WIDTH * 0.5, S.SCREEN_HEIGHT * 0.5))
+                                F.Roll_3d_dice(screen, clock, dice[1:].upper(), multiple_rolls)
 
                                 rolled_sum = int(dtwenty) + int(rect_dict[pressed[1]]["Damage_mod_extra"])
                                 F.add_to_roll_history(dtwenty, rolled_sum, "Extra Damage:" + str(pressed[1]))
@@ -593,7 +641,7 @@ def Initialize_actions(screen, clock):
                             add = 0
                             hemocraft_die = character["Hemocraft_die"]
                             dtwenty = random.randint(1, int(hemocraft_die.split("d")[1]))
-                            F.Roll_3d_dice(screen, clock, hemocraft_die[1:].upper(), str(dtwenty),(S.SCREEN_WIDTH * 0.5, S.SCREEN_HEIGHT * 0.5))
+                            F.Roll_3d_dice(screen, clock, hemocraft_die[1:].upper(), str(dtwenty))
                             rolled_sum = dtwenty + add
                             F.add_to_roll_history(dtwenty, rolled_sum, "Rite:" + str(pressed[1]))
                         elif pressed[0] == "Sub_Feature_Spell_slot":
@@ -632,8 +680,20 @@ def Initialize_actions(screen, clock):
                                 enough_components = False
                                 notice = ["Not enough components, Need: " + component_name, 100]
                                 component_name = ""
-
+                        elif pressed[0] == "Use":
+                            if pressed[1] == "Ranger's Companion":
+                                Special_Needs.WildShape(screen, clock, V.char_config["Choises"][pressed[1]], "Ranger's Companion")
+                    elif isinstance(pressed, tuple):
+                        if slot_to_add_dict[pressed[0]][pressed[1]].collidepoint(mouse_pos):
+                            if pressed[1] == "Plus":
+                                if int(V.spell_slots[pressed[0]]) + 1 <= int(V.max_spell_slots[pressed[0]]):
+                                    V.spell_slots[pressed[0]] += 1
+                            elif pressed[1] == "Minus":
+                                V.spell_slots[pressed[0]] -= 1
+                                if V.spell_slots[pressed[0]] < 0:
+                                    V.spell_slots[pressed[0]] = 0
                     pressed = -1
+
             elif event.type == pg.MOUSEMOTION:
                 mouse_pos = pg.mouse.get_pos()
                 didnt_find_it = True
@@ -643,12 +703,18 @@ def Initialize_actions(screen, clock):
                             hovering_mouse = [name, property, rect, rect_dict[name]["Type"]]
                             didnt_find_it = False
                             break
+                slot_to_display = (0, 0)
+                for slot in slot_to_add_dict:
+                    for plus_or_minus, rect in slot_to_add_dict[slot].items():
+                        if rect.collidepoint(mouse_pos):
+                            slot_to_display = (slot, plus_or_minus)
+                            break
                 if didnt_find_it:
                     hovering_mouse = -1
-                if slot_rect.collidepoint(mouse_pos):
-                    """When colliding with this rect shows spells"""
-                    show_slots = True
-                    show_history = False
+                # if slot_rect.collidepoint(mouse_pos):
+                #     """When colliding with this rect shows spells"""
+                #     show_slots = True
+                #     show_history = False
                 elif hist_rect.collidepoint(mouse_pos):
                     """When colliding with this rect shows spells"""
                     show_slots = False
@@ -665,25 +731,25 @@ def Initialize_actions(screen, clock):
                 mouse_pos = pg.mouse.get_pos()
                 if hovering_mouse == -1:
                     if mouse_pos[0] in range(int(S.SCREEN_WIDTH * 0.29), int(S.SCREEN_WIDTH * 0.54)):
-                        spell_scroll += 20
+                        spell_scroll += scroll_amount
                     elif mouse_pos[0] in range(int(S.SCREEN_WIDTH * 0.54), int(S.SCREEN_WIDTH * 0.79)):
-                        feature_scroll += 20
+                        feature_scroll += scroll_amount
                     elif mouse_pos[0] in range(0, int(S.SCREEN_WIDTH * 0.29)):
-                        weapon_scroll += 20
+                        weapon_scroll += scroll_amount
                 else:
-                    mini_screen_scroll += 20
+                    mini_screen_scroll += scroll_amount/2
 
             elif event.type == pg.MOUSEBUTTONDOWN and event.button == 5 or event.type == pg.KEYDOWN and event.key == pg.K_DOWN:
                 mouse_pos = pg.mouse.get_pos()
                 if hovering_mouse == -1:
                     if mouse_pos[0] in range(int(S.SCREEN_WIDTH * 0.29), int(S.SCREEN_WIDTH * 0.54)):
-                        spell_scroll -= 20
+                        spell_scroll -= scroll_amount
                     elif mouse_pos[0] in range(int(S.SCREEN_WIDTH * 0.54), int(S.SCREEN_WIDTH * 0.79)):
-                        feature_scroll -= 20
+                        feature_scroll -= scroll_amount
                     elif mouse_pos[0] in range(0, int(S.SCREEN_WIDTH * 0.29)):
-                        weapon_scroll -= 20
+                        weapon_scroll -= scroll_amount
                 else:
-                    mini_screen_scroll -= 20
+                    mini_screen_scroll -= scroll_amount/2
             elif event.type == pg.MOUSEBUTTONDOWN and event.button == 2 or event.type == pg.KEYDOWN and event.key == pg.K_LEFT:
                 if mode == "Description":
                     mode = "Description_for_dummies"
@@ -692,6 +758,23 @@ def Initialize_actions(screen, clock):
                 elif mode == "At higher levels":
                     mode = "Description"
 
+            elif event.type == pg.TEXTINPUT and selected_entry != -1:
+                property = list(txt_dict.keys())[selected_entry]
+                txt_dict[property][0] += event.text
+
+            # elif event.type == pg.KEYDOWN:
+            if keys[pg.K_BACKSPACE] and selected_entry != -1 and not keys[pg.K_LCTRL]:
+                property = list(txt_dict.keys())[selected_entry]
+                txt_dict[property][0] = txt_dict[property][0][:-1]
+            elif keys[pg.K_BACKSPACE] and selected_entry != -1 and keys[pg.K_LCTRL]:
+                property = list(txt_dict.keys())[selected_entry]
+                text_list = txt_dict[property][0].split(", ")[:-1]
+                txt_dict[property][0] = ""
+                for text in text_list:
+                    txt_dict[property][0] += text + ", "
+                txt_dict[property][0] = txt_dict[property][0][:-2]
+            elif keys[pg.K_RETURN] or keys[pg.K_KP_ENTER]:
+                txt_dict, selected_entry, got_damaged = dCh.update_char_hp_based_on_entry(character, txt_dict, selected_entry, screen, clock)
 
         text_surface = display_mini_screen(hovering_mouse, mini_window_w, mini_window_h, text_surface, mode, scroll=mini_screen_scroll)
 
@@ -708,12 +791,19 @@ def Initialize_actions(screen, clock):
             screen.blit(text_surface, mouse_pos)
 
         critical_fail, critical_success = F.display_nat_20_or_1(screen, critical_fail, critical_success)
-        if slot_surface != 0:
-            screen.blit(slot_surface, (0, 0))
+        # if slot_surface != 0:
+        #     screen.blit(slot_surface, (0, 0))
         if dice_hist_surface != 0:
             screen.blit(dice_hist_surface, (0, 0))
+
+        F.update_text(txt_dict, [enter_hp], screen)
+
+        if selected_entry != -1:
+            F.flash_marker(selected_entry, [enter_hp], screen, timer, txt_dict)
+
         pg.display.flip()
         clock.tick(60)
+        timer = F.reset_timer(timer)
 
 def display_mini_screen(hovering_mouse, mini_window_w, mini_window_h, text_surface, mode="Description", scroll=0):
     if hovering_mouse != -1 and hovering_mouse[1].lower() == "info":
@@ -774,7 +864,7 @@ def display_mini_screen(hovering_mouse, mini_window_w, mini_window_h, text_surfa
 
         elif hovering_mouse[3] in ["Feature", "Feat", "Eldritch Invocations", "Spell_slot"]:
             data_dict = S.Class_features.copy()
-            properties = ["Action_Type"]
+            properties = ["Action_Type", "Choice"]
 
         elif hovering_mouse[3] in ["Ability", "Beast_Weapon"]:
             properties = []
@@ -809,6 +899,12 @@ def display_mini_screen(hovering_mouse, mini_window_w, mini_window_h, text_surfa
 
                 F.display_text(temp_surface, prop + ": " + data_dict[hovering_mouse[0]][prop], 10,(mini_window_w * 0.02, mini_window_h * 0.15 + step_y + scroll), color=color)
                 step_y += mini_window_h * 0.1
+            elif prop == "Choice" and hovering_mouse[3] in ["Feature"]:
+                if "Special_Flag" in data_dict[hovering_mouse[0]]:
+                    if isinstance(data_dict[hovering_mouse[0]]["Special_Flag"], list) and "CHOOSE" in data_dict[hovering_mouse[0]]["Special_Flag"][0]:
+                        if V.char_config.get("Choises") != None and V.char_config["Choises"].get(hovering_mouse[0]) != None:
+                            F.display_text(temp_surface, prop + ": " + str(V.char_config["Choises"][hovering_mouse[0]]), 10, (mini_window_w * 0.02, mini_window_h * 0.15 + step_y + scroll))
+                            step_y += mini_window_h * 0.1
 
         r = pg.Rect(0, 0, 0, 0) # initialise the rect used by weapons that do not have a description (eg arrows)
         if data_dict[hovering_mouse[0]].get(mode) != None and hovering_mouse[3] == "Weapon":
@@ -885,7 +981,7 @@ def display_mini_screen(hovering_mouse, mini_window_w, mini_window_h, text_surfa
 
 def display_actions(screen, weapon_list, ammo_count, cantrip_list, spell_list, unknown_list, feat_list, free_spell_list, scroll):
     screen, weapon_screen, spell_screen, feature_screen = screen
-    displayed_rects = display_weapons(weapon_screen, weapon_list, ammo_count, scroll[0])
+    displayed_rects, start_y = display_weapons(weapon_screen, weapon_list, ammo_count, scroll[0])
     displayed_rects.update(display_spells(spell_screen, cantrip_list, spell_list, free_spell_list, scroll[1]))
     displayed_rects.update(display_features(feature_screen, unknown_list, feat_list, scroll[2]))
     return displayed_rects
@@ -1047,7 +1143,7 @@ def display_weapons(screen, weapon_list, ammo_count, scroll):
 
 
 
-    return displayed_rects
+    return displayed_rects, start_y
 
 def display_spells(screen, cantrip_list, spell_list, free_spell_list, scroll):
     start_y = S.SCREEN_HEIGHT * 0.01 + scroll
@@ -1203,6 +1299,12 @@ def display_features(screen, unknown_list, feat_list, scroll):
         rect_info = F.display_text(screen, name, 15, (start_X, start_y + step_y))
         if name not in list(displayed_rects.keys()) and action in ["Eldritch Invocations", "Spell_slot"]:
             displayed_rects[name] = {"Info": rect_info, "Type": action, "Action": action}
+        elif name not in list(displayed_rects.keys()) and name in ["Ranger's Companion"]:
+            displayed_rects[name] = {"Info": rect_info, "Type": "Feature", "Action": "Use"}
+            step_y += S.SCREEN_HEIGHT * 0.031
+            r = F.display_text(screen, "Cast", 15, (start_X + tab, start_y + step_y))
+            pg.draw.rect(screen, "black", r, width=1)
+            displayed_rects[name]["Use"] = r
         elif name not in list(displayed_rects.keys()):
             displayed_rects[name] = {"Info": rect_info, "Type": "Feature", "Action": action}
 
@@ -1235,7 +1337,6 @@ def display_features(screen, unknown_list, feat_list, scroll):
             displayed_rects[name]["Spell_slot"] = r
             if "Dice" in S.Class_features[name]:
                 displayed_rects[name]["Dice"] = S.Class_features[name]["Dice"]
-
 
         step_y += S.SCREEN_HEIGHT * 0.031
 
@@ -1598,6 +1699,7 @@ def handle_slot_commands_from_subclass_json(subclass_data, feature_name):
         F.print_debug("I dont know, help boss with handle_slot_commands_from_subclass_json : ", subclass_data, debug="ERROR")
     result.append("Spell_slot:" + feature_name)
     V.spell_slots[feature_name] = v
+    V.max_spell_slots[feature_name] = v
     return result
 
 def make_a_choise(subclass_data, screen, clock, feature_name):
@@ -1950,13 +2052,16 @@ def Manage_spells(screen, clock):
         (0, 2): ["Back", "background", "background", "rect-place-holder", "black"],
         (1, 2): ["Switch to: " + case, "background", "background", "rect-place-holder", "black"],
         (2, 2): ["Switch Class", "background", "background", "rect-place-holder", "black"],
-        (3, 2): ["Switch Level: " + str(level_to_show), "background", "background", "rect-place-holder", "black"],
     }
+    if len(character["Class"].split(", ")) == 1:
+        del button_dict[(2, 2)]
     class_id = 0
     case = "Cantrips"
     current_class, no_exist, cantrip_list, spell_list, cantrip_count, spell_count, unknown_cantrip_rects, unknown_spell_rects, known_spell_rects, known_cantrip_rects, known_cantrips, known_spells, running, level_to_show = get_spell_data(character, class_id, level_to_show)
     y_scroll = 0
+    y_scroll_spell = 0
     hovering_mouse = []
+    not_changable_spells, not_changable_cantrips = Sp.get_not_changable_spells(character, cantrip_list, spell_list)
     scroll_surface = pg.Surface((S.SCREEN_WIDTH, S.SCREEN_HEIGHT * 3), pg.SRCALPHA).convert_alpha()
     text_surface = pg.Surface((S.SCREEN_WIDTH, S.SCREEN_HEIGHT), pg.SRCALPHA).convert_alpha()
     mode = "Description"
@@ -1968,18 +2073,24 @@ def Manage_spells(screen, clock):
         x_pos = [S.SCREEN_WIDTH * 0.77, S.SCREEN_WIDTH * 0.52, S.SCREEN_WIDTH * 0.27, S.SCREEN_WIDTH * 0.02]
         y_pos = [S.SCREEN_HEIGHT * 0.05, S.SCREEN_HEIGHT * 0.12, S.SCREEN_HEIGHT * 0.9]
         buttons = F.display_any_buttons(screen, x_pos, y_pos, button_width, button_height, button_dict)
-        F.display_text(screen, "Click Mouse Wheel", 15, (S.SCREEN_WIDTH * 0.75, S.SCREEN_HEIGHT * 0.03), case="C")
+        F.display_text(screen, "Click Mouse Wheel or Left arrow key", 15, (S.SCREEN_WIDTH * 0.75, S.SCREEN_HEIGHT * 0.03), case="C")
         F.display_text(scroll_surface, current_class +" "+ case, 20, (S.SCREEN_WIDTH * 0.26, S.SCREEN_HEIGHT * 0.03))
 
         y_step = 0
         if case == "Cantrips":
             for cantrip in cantrip_list:
-                r = F.display_text(scroll_surface, cantrip, 13, (S.SCREEN_WIDTH * 0.28, S.SCREEN_HEIGHT * 0.09 + y_step))
+                color = "black"
+                if cantrip in known_cantrips:
+                    color = "dark green"
+                r = F.display_text(scroll_surface, cantrip, 13, (S.SCREEN_WIDTH * 0.28, S.SCREEN_HEIGHT * 0.09 + y_step), color=color)
                 unknown_cantrip_rects[cantrip] = r
                 y_step += S.SCREEN_HEIGHT * 0.03
         else:
             for spell in spell_list:
-                r = F.display_text(scroll_surface, spell, 13, (S.SCREEN_WIDTH * 0.28, S.SCREEN_HEIGHT * 0.09 + y_step))
+                color = "black"
+                if spell in known_spells:
+                    color = "dark green"
+                r = F.display_text(scroll_surface, spell, 13, (S.SCREEN_WIDTH * 0.28, S.SCREEN_HEIGHT * 0.09 + y_step), color=color)
                 unknown_spell_rects[spell] = r
                 y_step += S.SCREEN_HEIGHT * 0.03
 
@@ -1998,7 +2109,10 @@ def Manage_spells(screen, clock):
         y_step += S.SCREEN_HEIGHT * 0.04
         if known_cantrips != []:
             for cantrip in known_cantrips:
-                r = F.display_text(screen, cantrip, 13,(S.SCREEN_WIDTH * 0.01, S.SCREEN_HEIGHT * 0.08 + y_step))
+                color = "black"
+                if cantrip in not_changable_cantrips:
+                    color = (150, 30, 30, 255)
+                r = F.display_text(screen, cantrip, 13,(S.SCREEN_WIDTH * 0.01, S.SCREEN_HEIGHT * 0.08 + y_step), color=color)
                 y_step += S.SCREEN_HEIGHT * 0.03
                 known_cantrip_rects[cantrip] = r
 
@@ -2010,7 +2124,10 @@ def Manage_spells(screen, clock):
         y_step += S.SCREEN_HEIGHT * 0.04
         if known_spells != []:
             for spell in known_spells:
-                r = F.display_text(screen, spell, 13,(S.SCREEN_WIDTH * 0.01, S.SCREEN_HEIGHT * 0.08 + y_step))
+                color = "black"
+                if spell in not_changable_spells:
+                    color = (150, 30, 30, 255)
+                r = F.display_text(screen, spell, 13,(S.SCREEN_WIDTH * 0.01, S.SCREEN_HEIGHT * 0.08 + y_step), color=color)
                 y_step += S.SCREEN_HEIGHT * 0.03
                 known_spell_rects[spell] = r
 
@@ -2035,11 +2152,11 @@ def Manage_spells(screen, clock):
                                 break
                 if pressed == -1:
                     for spell, rect in known_spell_rects.items():
-                        if rect.collidepoint(mouse_pos):
+                        if rect.collidepoint(mouse_pos) and spell not in not_changable_spells:
                             pressed = [spell, rect, "KSpell"]
                             break
                     for cantrip, rect in known_cantrip_rects.items():
-                        if rect.collidepoint(mouse_pos):
+                        if rect.collidepoint(mouse_pos) and cantrip not in not_changable_cantrips:
                             pressed = [cantrip, rect, "KCantrip"]
                             break
                     mouse_pos = (mouse_pos[0], mouse_pos[1] - y_scroll)
@@ -2060,8 +2177,11 @@ def Manage_spells(screen, clock):
                         button_dict[(1, 2)][0] = "Switch to: " + case
                         if case == "Cantrips":
                             case = "Spells"
+                            button_dict[(3, 2)] = ["Switch Level: " + str(level_to_show), "background", "background", "rect-place-holder", "black"]
+
                         elif case == "Spells":
                             case = "Cantrips"
+                            del button_dict[(3, 2)]
                         unknown_spell_rects = {}
                         unknown_cantrip_rects = {}
                     elif pressed == "Switch Class":
@@ -2104,17 +2224,23 @@ def Manage_spells(screen, clock):
             elif event.type == pg.MOUSEBUTTONDOWN and event.button == 5 or event.type == pg.KEYDOWN and event.key == pg.K_DOWN:
                 """Going down"""
                 mouse_pos = pg.mouse.get_pos()
-                if mouse_pos[0] > S.SCREEN_WIDTH * 0.3:
+                if mouse_pos[0] > S.SCREEN_WIDTH * 0.3 and mouse_pos[0] < S.SCREEN_WIDTH * 0.5:
                     y_scroll -= 20
+                elif mouse_pos[0] > S.SCREEN_WIDTH * 0.5:
+                    y_scroll_spell -= 20
             elif event.type == pg.MOUSEBUTTONDOWN and event.button == 4 or event.type == pg.KEYDOWN and event.key == pg.K_UP:
                 mouse_pos = pg.mouse.get_pos()
-                if mouse_pos[0] > S.SCREEN_WIDTH * 0.3:
+                if mouse_pos[0] > S.SCREEN_WIDTH * 0.3 and mouse_pos[0] < S.SCREEN_WIDTH * 0.5:
                     y_scroll += 20
                     if y_scroll > 0:
                         y_scroll = 0
+                elif mouse_pos[0] > S.SCREEN_WIDTH * 0.5:
+                    y_scroll_spell += 20
+                    if y_scroll_spell > 0:
+                        y_scroll_spell = 0
             elif event.type == pg.MOUSEMOTION:
                 mouse_pos = pg.mouse.get_pos()
-                hovering_mouse = []
+                # hovering_mouse = []
                 for spell, rect in unknown_spell_rects.items():
                     if rect.collidepoint((mouse_pos[0], mouse_pos[1] - y_scroll)):
                         hovering_mouse = [spell, rect, "Spell"]
@@ -2145,7 +2271,7 @@ def Manage_spells(screen, clock):
             Sp.display_only_spell_descriptions(text_surface, hovering_mouse, id, mode)
 
         screen.blit(scroll_surface, (0, y_scroll))
-        screen.blit(text_surface, (0, 0))
+        screen.blit(text_surface, (0, y_scroll_spell))
         pg.display.flip()
         clock.tick(60)
 
@@ -2155,8 +2281,10 @@ def get_spell_data(character, class_id, level_to_show):
     spell_count = 0
     current_class = character["Class"].split(", ")[class_id]
     current_level = int(character["Level"].split(",")[class_id])
-
-    highest_spell_level = int(character["Slot Level"].split(":")[-1])
+    if ":" in character["Slot Level"]:
+        highest_spell_level = int(character["Slot Level"].split(":")[-1])
+    else:
+        highest_spell_level = int(character["Slot Level"].split(",")[-1])
     if level_to_show > highest_spell_level:
         level_to_show = 1
     running = False
@@ -2180,18 +2308,17 @@ def get_spell_data(character, class_id, level_to_show):
     if character.get("Spell") != None and character["Spell"] != "":
         for spell in character["Spell"].split(","):
             spell_in_features = False
-            if current_class in S.spell_data[spell]["Class"]:
-                """If the spell can be learned in this class append it"""
-                for key in character["Code"].split(","):
-                    if "Feature:" in key:
-                        temp_key = key.replace("Feature:", "")
-                        if S.Class_features.get(temp_key) != None:
-                            if S.Class_features[temp_key].get("Race") != None and S.Class_features[temp_key]["Race"] == character["Race"] or S.Class_features[temp_key].get("Class") != None and S.Class_features[temp_key]["Class"] == current_class:
-                                if S.Class_features[temp_key].get("Spell") != None and spell in S.Class_features[temp_key]["Spell"]:
-                                    spell_in_features = True
-                                    break
-                if not spell_in_features:
-                    known_spells.append(spell)
+            """If the spell can be learned in this class append it"""
+            for key in character["Code"].split(","):
+                if "Feature:" in key:
+                    temp_key = key.replace("Feature:", "")
+                    if S.Class_features.get(temp_key) != None:
+                        if S.Class_features[temp_key].get("Race") != None and S.Class_features[temp_key]["Race"] == character["Race"] or S.Class_features[temp_key].get("Class") != None and S.Class_features[temp_key]["Class"] == current_class:
+                            if S.Class_features[temp_key].get("Spell") != None and spell in S.Class_features[temp_key]["Spell"]:
+                                spell_in_features = True
+                                break
+            if not spell_in_features:
+                known_spells.append(spell)
 
     """Cantrips already known"""
     known_cantrips = []
@@ -2298,7 +2425,7 @@ def handle_notes(screen, clock, show_notes, note_rect):
                     if note_screen_rect.collidepoint(mouse_pos) and not flash_marker:
                         flash_marker = True
                         marker_timer = 10
-                        text += "\cursor0"
+                        text += "\\cursor0"
                         # cursor_pos = [(S.SCREEN_WIDTH * 0.1, S.SCREEN_HEIGHT * 0.05), (S.SCREEN_WIDTH * 0.1, S.SCREEN_HEIGHT * 0.05 + text_size * 1.8)]
             elif event.type == pg.MOUSEBUTTONUP and event.button == 1:
                 if pressed != -1:
@@ -2310,12 +2437,12 @@ def handle_notes(screen, clock, show_notes, note_rect):
                     pressed = -1
             elif event.type == pg.TEXTINPUT and flash_marker:
                 index = len(text)
-                if "\cursor0" in text:
-                    index = text.index("\cursor0")
-                    text = text.replace("\cursor0", "")
-                elif "\cursor1" in text:
-                    index = text.index("\cursor1")
-                    text = text.replace("\cursor1", "")
+                if "\\cursor0" in text:
+                    index = text.index("\\cursor0")
+                    text = text.replace("\\cursor0", "")
+                elif "\\cursor1" in text:
+                    index = text.index("\\cursor1")
+                    text = text.replace("\\cursor1", "")
                 if shift_track != -1:
                     current_marker_pos = index + cursor_push[0]
                     if current_marker_pos > shift_track:
@@ -2332,35 +2459,35 @@ def handle_notes(screen, clock, show_notes, note_rect):
                         text += event.text
 
                 marker_timer = -1
-                text += "\cursor0"
+                text += "\\cursor0"
             elif keys[pg.K_RETURN]:
                 shift_pressed = False
                 shift_track = -1
-                text = text.replace("\cursor0", "")
-                text = text.replace("\cursor1", "")
+                text = text.replace("\\cursor0", "")
+                text = text.replace("\\cursor1", "")
                 if cursor_push[0] != 0:
                     text = text[:cursor_push[0]] + '\n' + text[cursor_push[0]:]
                 else:
                     text += '\n'
 
                 marker_timer = -1
-                text += "\cursor0"
+                text += "\\cursor0"
             elif keys[pg.K_TAB]:
                 shift_pressed = False
                 shift_track = -1
-                text = text.replace("\cursor0", "")
-                text = text.replace("\cursor1", "")
+                text = text.replace("\\cursor0", "")
+                text = text.replace("\\cursor1", "")
                 text += '    '
-                text += "\cursor0"
+                text += "\\cursor0"
                 marker_timer = -1
 
         if keys[pg.K_LSHIFT]:
             shift_pressed = True
             if shift_track == -1:
-                if "\cursor0" in text:
-                    index = text.index("\cursor0")
+                if "\\cursor0" in text:
+                    index = text.index("\\cursor0")
                 else:
-                    index = text.index("\cursor1")
+                    index = text.index("\\cursor1")
                 shift_track = index + cursor_push[0]
         else:
             shift_pressed = False
@@ -2372,12 +2499,12 @@ def handle_notes(screen, clock, show_notes, note_rect):
                 if not pressed_timer[pg.K_BACKSPACE][1]:
                     pressed_timer[pg.K_BACKSPACE][0] = pg.time.get_ticks()
                 index = len(text)
-                if "\cursor0" in text:
-                    index = text.index("\cursor0")
-                    text = text.replace("\cursor0", "")
-                elif "\cursor1" in text:
-                    index = text.index("\cursor1")
-                    text = text.replace("\cursor1", "")
+                if "\\cursor0" in text:
+                    index = text.index("\\cursor0")
+                    text = text.replace("\\cursor0", "")
+                elif "\\cursor1" in text:
+                    index = text.index("\\cursor1")
+                    text = text.replace("\\cursor1", "")
                 current_marker_pos = index + cursor_push[0]
 
                 if shift_track != -1:
@@ -2403,7 +2530,7 @@ def handle_notes(screen, clock, show_notes, note_rect):
                                 text = text[:current_marker_pos - stop_index] + text[current_marker_pos:]
                         else:
                             text = text[current_marker_pos:]
-                text += "\cursor0"
+                text += "\\cursor0"
                 marker_timer = -1
         elif keys[pg.K_DELETE]:
             if pressed_timer.get(pg.K_DELETE) == None:
@@ -2413,12 +2540,12 @@ def handle_notes(screen, clock, show_notes, note_rect):
                 if not pressed_timer[pg.K_DELETE][1]:
                     pressed_timer[pg.K_DELETE][0] = pg.time.get_ticks()
                 index = len(text)
-                if "\cursor0" in text:
-                    index = text.index("\cursor0")
-                    text = text.replace("\cursor0", "")
-                elif "\cursor1" in text:
-                    index = text.index("\cursor1")
-                    text = text.replace("\cursor1", "")
+                if "\\cursor0" in text:
+                    index = text.index("\\cursor0")
+                    text = text.replace("\\cursor0", "")
+                elif "\\cursor1" in text:
+                    index = text.index("\\cursor1")
+                    text = text.replace("\\cursor1", "")
                 current_marker_pos = index + cursor_push[0]
                 if shift_track != -1:
                     if current_marker_pos > shift_track:
@@ -2449,7 +2576,7 @@ def handle_notes(screen, clock, show_notes, note_rect):
                         else:
                             text = text[:len(text) + cursor_push[0]]
                             cursor_push[0] = 0
-                text += "\cursor0"
+                text += "\\cursor0"
                 marker_timer = -1
 
         elif keys[pg.K_LEFT]:
@@ -2461,8 +2588,8 @@ def handle_notes(screen, clock, show_notes, note_rect):
                     pressed_timer[pg.K_LEFT][0] = pg.time.get_ticks()
                 if not shift_pressed:
                     shift_track = -1
-                text = text.replace("\cursor0", "")
-                text = text.replace("\cursor1", "")
+                text = text.replace("\\cursor0", "")
+                text = text.replace("\\cursor1", "")
                 if not keys[pg.K_LCTRL]:
                     cursor_push[0] -= 1
                     if cursor_push[0] < -1 * len(text):
@@ -2478,7 +2605,7 @@ def handle_notes(screen, clock, show_notes, note_rect):
                             break
                     if not marked:
                         cursor_push[0] = -1 * len(text)
-                text += "\cursor0"
+                text += "\\cursor0"
                 marker_timer = -1
         elif keys[pg.K_RIGHT]:
             if pressed_timer.get(pg.K_RIGHT) == None:
@@ -2489,8 +2616,8 @@ def handle_notes(screen, clock, show_notes, note_rect):
                     pressed_timer[pg.K_RIGHT][0] = pg.time.get_ticks()
                 if not shift_pressed:
                     shift_track = -1
-                text = text.replace("\cursor0", "")
-                text = text.replace("\cursor1", "")
+                text = text.replace("\\cursor0", "")
+                text = text.replace("\\cursor1", "")
                 if not keys[pg.K_LCTRL]:
                     cursor_push[0] += 1
                     if cursor_push[0] > 0:
@@ -2505,7 +2632,7 @@ def handle_notes(screen, clock, show_notes, note_rect):
                                 break
                         else:
                             cursor_push[0] = 0
-                text += "\cursor0"
+                text += "\\cursor0"
                 marker_timer = -1
         elif keys[pg.K_UP]:
             if pressed_timer.get(pg.K_UP) == None:
@@ -2517,12 +2644,12 @@ def handle_notes(screen, clock, show_notes, note_rect):
                 if not shift_pressed:
                     shift_track = -1
                 index = len(text)
-                if "\cursor0" in text:
-                    index = text.index("\cursor0")
-                    text = text.replace("\cursor0", "")
-                elif "\cursor1" in text:
-                    index = text.index("\cursor1")
-                    text = text.replace("\cursor1", "")
+                if "\\cursor0" in text:
+                    index = text.index("\\cursor0")
+                    text = text.replace("\\cursor0", "")
+                elif "\\cursor1" in text:
+                    index = text.index("\\cursor1")
+                    text = text.replace("\\cursor1", "")
                 if not keys[pg.K_LCTRL]:
                     if '\n' not in text:
                         cursor_push[0] = -1 * len(text)
@@ -2551,7 +2678,7 @@ def handle_notes(screen, clock, show_notes, note_rect):
 
                 else:
                     cursor_push[0] = -1 * len(text)
-                text += "\cursor0"
+                text += "\\cursor0"
                 marker_timer = -1
         elif keys[pg.K_DOWN]:
             if pressed_timer.get(pg.K_DOWN) == None:
@@ -2564,12 +2691,12 @@ def handle_notes(screen, clock, show_notes, note_rect):
                     shift_track = -1
                 slash_n_gap = 1
                 index = len(text)
-                if "\cursor0" in text:
-                    index = text.index("\cursor0")
-                    text = text.replace("\cursor0", "")
-                elif "\cursor1" in text:
-                    index = text.index("\cursor1")
-                    text = text.replace("\cursor1", "")
+                if "\\cursor0" in text:
+                    index = text.index("\\cursor0")
+                    text = text.replace("\\cursor0", "")
+                elif "\\cursor1" in text:
+                    index = text.index("\\cursor1")
+                    text = text.replace("\\cursor1", "")
                 if not keys[pg.K_LCTRL]:
                     if '\n' not in text:
                         cursor_push[0] = 0
@@ -2605,7 +2732,7 @@ def handle_notes(screen, clock, show_notes, note_rect):
                                 cursor_push[0] = 0
                 else:
                     cursor_push[0] = 0
-                text += "\cursor0"
+                text += "\\cursor0"
                 marker_timer = -1
         elif keys[pg.K_LCTRL] and keys[pg.K_z]:
             """CTRL + Z"""
@@ -2615,15 +2742,15 @@ def handle_notes(screen, clock, show_notes, note_rect):
             if pressed_timer[pg.K_z][0] == 0:
                 if not pressed_timer[pg.K_z][1]:
                     pressed_timer[pg.K_z][0] = pg.time.get_ticks()
-                    text_to_bring_back = text.replace("\cursor0", "")
-                    text_to_bring_back = text_to_bring_back.replace("\cursor1", "")
+                    text_to_bring_back = text.replace("\\cursor0", "")
+                    text_to_bring_back = text_to_bring_back.replace("\\cursor1", "")
                     if text_to_bring_back in undo_memory:
                         text_index = undo_memory.index(text_to_bring_back)
                         if text_index != 0:
                             text = undo_memory[text_index - 1]
                             undo_memory.pop(text_index)
                         marker_timer = -1
-                        text += "\cursor0"
+                        text += "\\cursor0"
         elif keys[pg.K_LCTRL] and keys[pg.K_a]:
             """CTRL + A"""
             shift_track = 0
@@ -2631,16 +2758,16 @@ def handle_notes(screen, clock, show_notes, note_rect):
         elif keys[pg.K_LCTRL] and keys[pg.K_c] and shift_track != -1 or keys[pg.K_LCTRL] and keys[pg.K_x] and shift_track != -1:
             """CTRL + C | CTRL + X"""
             index = len(text)
-            if "\cursor0" in text:
-                index = text.index("\cursor0")
-            elif "\cursor1" in text:
-                index = text.index("\cursor1")
+            if "\\cursor0" in text:
+                index = text.index("\\cursor0")
+            elif "\\cursor1" in text:
+                index = text.index("\\cursor1")
             current_marker_pos = index + cursor_push[0]
             if current_marker_pos > shift_track:
                 copyied_text = text[shift_track:current_marker_pos]
                 if keys[pg.K_x]:
                     text = text[:shift_track] + text[current_marker_pos:]
-                    text += "\cursor0"
+                    text += "\\cursor0"
                     marker_timer = -1
                     shift_track = -1
                     shift_pressed = False
@@ -2649,7 +2776,7 @@ def handle_notes(screen, clock, show_notes, note_rect):
                 if keys[pg.K_x]:
                     cursor_push[0] += len(text[current_marker_pos:shift_track])
                     text = text[:current_marker_pos] + text[shift_track:]
-                    text += "\cursor0"
+                    text += "\\cursor0"
                     marker_timer = -1
                     shift_track = -1
                     shift_pressed = False
@@ -2664,16 +2791,16 @@ def handle_notes(screen, clock, show_notes, note_rect):
                 if not pressed_timer[pg.K_v][1]:
                     pressed_timer[pg.K_v][0] = pg.time.get_ticks()
                     index = len(text)
-                    if "\cursor0" in text:
-                        index = text.index("\cursor0")
-                        text = text.replace("\cursor0", "")
-                    elif "\cursor1" in text:
-                        index = text.index("\cursor1")
-                        text = text.replace("\cursor1", "")
+                    if "\\cursor0" in text:
+                        index = text.index("\\cursor0")
+                        text = text.replace("\\cursor0", "")
+                    elif "\\cursor1" in text:
+                        index = text.index("\\cursor1")
+                        text = text.replace("\\cursor1", "")
                     current_marker_pos = index + cursor_push[0]
                     text = text[:current_marker_pos] + copyied_text + text[current_marker_pos:]
 
-                    text += "\cursor0"
+                    text += "\\cursor0"
                     marker_timer = -1
 
 
@@ -2689,9 +2816,9 @@ def handle_notes(screen, clock, show_notes, note_rect):
         screen.blit(note_surface, (S.SCREEN_WIDTH * 0.1, S.SCREEN_HEIGHT * 0.05))
         if flash_marker:
             if marker_timer < 0:
-                text = text.replace("\cursor1", "\cursor0")
+                text = text.replace("\\cursor1", "\\cursor0")
             else:
-                text = text.replace("\cursor0", "\cursor1")
+                text = text.replace("\\cursor0", "\\cursor1")
             marker_timer -= 1
             if marker_timer < -10:
                 marker_timer = 10
@@ -2705,9 +2832,9 @@ def handle_notes(screen, clock, show_notes, note_rect):
                 pressed_timer[key][0] = 0
                 pressed_timer[key][1] = True
 
-        if text.replace("\cursor0", "") not in undo_memory and text.replace("\cursor1", "") not in undo_memory:
-            text_to_save = text.replace("\cursor0", "")
-            text_to_save = text_to_save.replace("\cursor1", "")
+        if text.replace("\\cursor0", "") not in undo_memory and text.replace("\\cursor1", "") not in undo_memory:
+            text_to_save = text.replace("\\cursor0", "")
+            text_to_save = text_to_save.replace("\\cursor1", "")
             undo_memory.append(text_to_save)
             if len(undo_memory) > 100:
                 undo_memory.pop(0)
@@ -2724,33 +2851,32 @@ def fill_note(screen, text, text_size, cursor_push, shift_track):
     marker_index = -1
     lines = text.split('\n')
     mrk_index_for_shift = -1
-    if "\cursor0" in text:
-        marker_index = text.index("\cursor0") + cursor_push[0]
+    if "\\cursor0" in text:
+        marker_index = text.index("\\cursor0") + cursor_push[0]
         mrk_index_for_shift = marker_index
-    elif "\cursor1" in text:
-        mrk_index_for_shift = text.index("\cursor1") + cursor_push[0]
+    elif "\\cursor1" in text:
+        mrk_index_for_shift = text.index("\\cursor1") + cursor_push[0]
 
 
     letter_count = 0
     step_y = 0
-    show_marker = -1
     line_pos = -1
-
     for line in lines:
         step_x = 0
         words = line.split(" ")
         for word in words:
-            if "\cursor0" in word:
-                word = word.replace("\cursor0","")
-                show_marker = "0"
-            elif "\cursor1" in word:
-                word = word.replace("\cursor1", "")
-                show_marker = "1"
+            if "\\cursor0" in word:
+                word = word.replace("\\cursor0","")
+            elif "\\cursor1" in word:
+                word = word.replace("\\cursor1", "")
             if len(words) != 1:
                 word = word + " "
+                letter_count -= 1
             for i in range(0, len(word)+1):
                 invert = False
                 if marker_index != -1 and letter_count == marker_index:
+                    if " " in word:
+                        step_x -= l.w
                     line_pos = [(step_x, step_y), (step_x, step_y + text_size * 1.8)]
                 if len(word) > i:
                     if mrk_index_for_shift != -1 and shift_track != -1:
@@ -2758,12 +2884,14 @@ def fill_note(screen, text, text_size, cursor_push, shift_track):
                             invert = True
                     l = F.display_text(note_surface, word[i], text_size, (step_x, step_y), invert_colors=invert)
                     step_x += l.w
-                    letter_count += 1
+                letter_count += 1
 
-            l = F.display_text(note_surface, " ", text_size, (step_x, step_y))
+            l = F.display_text(note_surface, "", text_size, (step_x, step_y))
+
         step_y = l.y + l.h
-
     if line_pos != -1:
+        print(line_pos, marker_index, letter_count)
+
         pg.draw.line(note_surface, "black", line_pos[0], line_pos[1])
 
 
@@ -2771,10 +2899,10 @@ def fill_note(screen, text, text_size, cursor_push, shift_track):
 
 def display_shift(screen, shift_track, text, cursor_push):
     if shift_track != -1:
-        if "\cursor0" in text:
-            index = text.index("\cursor0")
+        if "\\cursor0" in text:
+            index = text.index("\\cursor0")
         else:
-            index = text.index("\cursor1")
+            index = text.index("\\cursor1")
         current_marker_pos = index + cursor_push[0]
 
 def update_cantrip_spell_damage(spell_damage, cantrip):

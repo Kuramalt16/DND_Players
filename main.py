@@ -12,21 +12,31 @@ def Start(CODE, screen, clock):
     # todo Undcomment after done debbuging
     image_path = S.local_path + "/Images/Background/Roling_Dice/D20/"
     V.d20_img_count = len([f for f in os.listdir(image_path) if os.path.isfile(os.path.join(image_path, f))])
+    start = time.perf_counter()
     for dice_type in ["D4", "D6", "D8", "D10", "D12", "D20"]:
+    #     make_sheets(S.local_path + f"/Images/Background/Roling_Dice/{dice_type}/", int(dice_type.split("D")[1]))
         thread = threading.Thread(target=load_dice_images, args=(dice_type, ))
-        thread.daemon = True
+        thread.daemon = False
         thread.start()
+    print(f"End: {(time.perf_counter() - start)}") # 4.6 sec with reduced quality 5 percent memory increase
 
 
     read_json_data()
 
     secret_data = F.read_db_table("communication")
+    if secret_data == None:
+        print("Failed to connect to DB")
+        return
     V.SECRETS = F.add_to_dict_db_results(secret_data, V.SECRETS, "communications")
 
     char_name = Choose_char(CODE, screen, clock)
     if char_name == 0:
         return
     V.char_name = char_name
+
+    if V.char_config == {}:
+        with open(S.local_path + f"/Created_Players/{V.char_name}_config.json", 'r') as file:
+            V.char_config = json.load(file)
 
     V.Roll_history = []
 
@@ -42,9 +52,9 @@ def Start(CODE, screen, clock):
             Enter_char_details(screen, clock)
             # F.print_debug("UNCOMMENT THIS", "", "Warning")
 
-        if "Druid" in V.character_dict[V.char_name]["Class"]:
-            mob_data = F.read_db_table("monsters")
-            V.mob_dict = F.add_to_dict_db_results(mob_data, V.mob_dict, "mobs")
+        mob_data = F.read_db_table("monsters")
+        V.mob_dict = F.add_to_dict_db_results(mob_data, V.mob_dict, "mobs")
+        F.get_mob_actions()
     else:
         F.print_debug("DIDN'T GET CHAR DICT", debug="ERROR")
         return
@@ -307,22 +317,74 @@ def ReadData_Clicked(screen, clock):
 def load_dice_images(dice_type):
     S.dice_images[dice_type] = {}
     S.dice_images["Finished"][dice_type] = {}
+    img_w = 1920 * 0.2
+    img_h = 1080 * 0.2
     for dice_number in range(1, int(dice_type.replace("D", "")) + 1):
         S.dice_images[dice_type][str(dice_number)] = []
         S.dice_images["Finished"][dice_type][str(dice_number)] = False
-        for i in range(0, 100):
-            try:
-                img = pg.image.load(S.local_path + "/Images/Background/Roling_Dice/" + dice_type + "/" + str(dice_number) + "/" + str(dice_number) + "_" + str(i) + ".png")
-                while S.Thread_lock:
-                    time.sleep(0.1)
-                S.Thread_lock = True
-                S.dice_images[dice_type][str(dice_number)].append(img)
-                S.Thread_lock = False
-            except FileNotFoundError:
-                break
+        # for i in range(0, 100):
+        #     try:
+        #         img = pg.image.load(S.local_path + "/Images/Background/Roling_Dice/" + dice_type + "/" + str(dice_number) + "/" + str(dice_number) + "_" + str(i) + ".png")
+        #         while S.Thread_lock:
+        #             time.sleep(0.05)
+        #         S.Thread_lock = True
+        #         S.dice_images[dice_type][str(dice_number)].append(img)
+        #         S.Thread_lock = False
+        #     except FileNotFoundError:
+        #         break
+        while S.Thread_lock:
+            time.sleep(0.1)
+        S.Thread_lock = True
+        img = extract_frames(S.local_path + "/Images/Background/Roling_Dice/" + dice_type + f"/Sprite_{dice_number}.png", img_w, img_h)
+        images = []
+        for image in img:
+            images.append(pg.transform.scale_by(image, 2))
+        S.dice_images[dice_type][str(dice_number)] = images
+        S.Thread_lock = False
         S.dice_images["Finished"][dice_type][str(dice_number)] = True
     F.print_debug(dice_type, " Finished", debug="INFO")
     # S.dice_images["Finished"][dice_type] = True
+
+def make_sheets(path, amount):
+    original_w = 1920
+    original_h = 1080
+    frame_rect = pg.Rect(original_w * 0.3, original_h * 0.3, original_w * 0.3, original_h * 0.3)
+    for dice_num in range(1, amount + 1):
+        frames = []
+        for i in range(0, 1000):
+            try:
+                a = pg.image.load(path + f"/{dice_num}/{dice_num}_{i}.png").convert_alpha()
+                a = a.subsurface(frame_rect).copy()  # copy to make independent
+                frames.append(a)
+            except FileNotFoundError:
+                break
+        if frames != []:
+            f_w, f_h = frames[0].get_size()
+            sheet_surface = pg.Surface((f_w * len(frames), f_h), pg.SRCALPHA)
+            for i, f in enumerate(frames):
+                sheet_surface.blit(f, (i * f_w, 0))
+
+            pg.image.save(sheet_surface, path + f"Sprite_Crop{dice_num}.png")
+            print(path + f"Sprite_{dice_num}.png Saved")
+
+def extract_frames(path, frame_width, frame_height):
+    if not os.path.exists(path):
+        return None
+    sprite_sheet = pg.image.load(path).convert_alpha()
+    img_w, img_h = sprite_sheet.get_size()
+    frames = []
+    y = 0
+    x = 0
+    for i in range(0, 1000):
+        try:
+            frame_rect = pg.Rect(x * frame_width, y * frame_height, frame_width, frame_height)
+            frame = sprite_sheet.subsurface(frame_rect).copy()  # copy to make independent
+            frames.append(frame)
+            x += 1
+        except ValueError:
+            break
+
+    return frames
 
 def read_json_data():
     if S.class_data == {}:
@@ -363,6 +425,7 @@ def read_json_data():
         with open(S.local_path + "/Feat-list.json", 'r') as file:
             S.feat_data = json.load(file)
 
+
     S.Seisure = False
     if S.Setting_data["Seisures"] == "True":
         S.Seisure = True
@@ -402,7 +465,7 @@ def update_character_data(char_name):
         for subclass_type, values in final_data.items():
             if subclass_type == "Roguish Archetype":
                 char_class = "Rogue"
-            elif sub_class_Type == "Patron":
+            elif subclass_type == "Patron":
                 char_class = "Warlock"
             elif subclass_type == "Primal Path":
                 char_class = "Barbarian"
@@ -418,6 +481,8 @@ def update_character_data(char_name):
                 char_class = "Wizard"
             elif subclass_type == "Sorcerous Origin":
                 char_class = "Sorcerer"
+            elif subclass_type == "Ranger Archetype":
+                char_class = "Ranger"
             for subclass_name, value in values.items():
                 for ability, val in value.items():
                     class_index = char["Class"].split(", ").index(char_class)

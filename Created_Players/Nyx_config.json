@@ -1,0 +1,183 @@
+{
+    "Human": {
+        "Ability Score": [
+            "Char:Ability_Scores",
+            "STR",
+            "DEX",
+            "CON",
+            "INT",
+            "WIS",
+            "CHA"
+        ],
+        "Size": [
+            "Char:Size",
+            "Medium"
+        ],
+        "Speed": [
+            "Char:Speed",
+            "30"
+        ],
+        "Languages": [
+            "Char:Languages",
+            "Common",
+            "Elvish"
+        ]
+    },
+    "Ranger": {
+        "1": {
+            "Hit dice": [
+                "1d10"
+            ],
+            "Proficiency Bonus": [
+                "2"
+            ],
+            "Armor Proficiencies": [
+                "Light Armor",
+                "Medium Armor",
+                "Shields"
+            ],
+            "Weapon Proficiencies": [
+                "Simple",
+                "Martial"
+            ],
+            "Saving Throw Proficiencies": [
+                "Saving_STR",
+                "Saving_DEX"
+            ],
+            "Favoured Enemy": [
+                "1"
+            ],
+            "Natural Explorer": [
+                "1"
+            ],
+            "Code": [
+                "Feature:Favoured Enemy",
+                "Feature:Natural Explorer"
+            ],
+            "Skills": [
+                "Athletics",
+                "Investigation",
+                "Stealth"
+            ]
+        },
+        "2": {
+            "Hit dice": [
+                "2d10"
+            ],
+            "Proficiency Bonus": [
+                "2"
+            ],
+            "Primary Ability": [
+                "Wisdom"
+            ],
+            "Spell Slots": [
+                "1st:2"
+            ],
+            "Slot Level": [
+                "1"
+            ],
+            "Spell": [
+                "Hunter's Mark",
+                "Zephyr Strike"
+            ],
+            "Fighting Style": [
+                "Archery"
+            ]
+        },
+        "3": {
+            "Hit dice": [
+                "3d10"
+            ],
+            "Proficiency Bonus": [
+                "2"
+            ],
+            "Spell Slots": [
+                "1st:3"
+            ],
+            "Slot Level": [
+                "1"
+            ],
+            "Primeval Awareness": [
+                "1"
+            ],
+            "Code": [
+                "Feature:Primeval Awareness"
+            ],
+            "Spell": [
+                "Ensnaring Strike"
+            ],
+            "Ranger Archetype": [
+                "Beastmaster"
+            ]
+        },
+        "4": {
+            "Hit dice": [
+                "4d10"
+            ],
+            "Proficiency Bonus": [
+                "2"
+            ]
+        },
+        "5": {
+            "Hit dice": [
+                "5d10"
+            ],
+            "Proficiency Bonus": [
+                "3"
+            ],
+            "Spell Slots": [
+                "1st:4,2nd:2"
+            ],
+            "Slot Level": [
+                "2"
+            ],
+            "Spell": [
+                "Protection from Poison"
+            ],
+            "Extra Attack": [
+                "1"
+            ],
+            "Code": [
+                "Feature:Extra Attack"
+            ]
+        },
+        "6": {
+            "Hit dice": [
+                "6d10"
+            ],
+            "Proficiency Bonus": [
+                "3"
+            ],
+            "Spell Slots": [
+                "1st:4,2nd:2"
+            ],
+            "Slot Level": [
+                "2"
+            ]
+        }
+    },
+    "Equiped Items": {
+        "Weapons": "Shortbow,Arrows",
+        "Magic Weapon": "",
+        "Shield": "",
+        "Armour": "Leather",
+        "Magic Armour": "",
+        "Potions": "Potion of Healing",
+        "Food": "Rations",
+        "Special": "Rope"
+    },
+    "Notes": "R.I.P Cody\\cursor1",
+    "Choises": {
+        "Favoured Enemy": [
+            "Elf",
+            "Aarakocra",
+            "Fey"
+        ],
+        "Natural Explorer": [
+            "Forest",
+            "Swamp"
+        ],
+        "Ranger's Companion": "Wolf"
+    },
+    "Chosen_spells": "Locate Animals or Plants,Healing Spirit,Cordon of Arrows,Entangle"
+}

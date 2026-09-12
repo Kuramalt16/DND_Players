@@ -179,7 +179,8 @@ def display_char_items(screen, char_name, clock):
                         color = "blue"
                     else:
                         color = "green"
-                    pg.draw.rect(screen, color, item_buttons[equiped_item], width=5)
+                    if item_buttons.get(equiped_item):
+                        pg.draw.rect(screen, color, item_buttons[equiped_item], width=5)
         if delete_flag == 1:
             pg.draw.rect(screen, "red", buttons[2], width=2)
         elif delete_flag == 2:
@@ -385,6 +386,7 @@ def add_item(screen, clock, char_name):
                     selected_entry = -1
                 if pressed != -1 and buttons[pressed].collidepoint(pos):
                     if pressed == 0:
+
                         send_key = "get_item"
                     if pressed == 1:
                         send_key = "add_gold"
@@ -571,10 +573,18 @@ def handle_equip_items(pressed, equiped_item_dict):
 
         """Two handed weapons"""
         if V.item_dict[pressed]["Type"] in ["Weapons", "Magic Weapon"] and "Two-handed" in V.item_dict[pressed]["Properties"]:
-            equiped_item_dict["Weapons"] = ""
-            equiped_item_dict["Magic Weapon"] = ""
-            equiped_item_dict["Shield"] = ""
-            equiped_item_dict[V.item_dict[pressed]["Type"]] = pressed
+            if equiped_item_dict["Weapons"] != "Arrows":
+                add_arrows = False
+                if "Arrows" in equiped_item_dict["Weapons"]:
+                    add_arrows = True
+                equiped_item_dict["Weapons"] = ""
+                equiped_item_dict["Magic Weapon"] = ""
+                equiped_item_dict["Shield"] = ""
+                equiped_item_dict[V.item_dict[pressed]["Type"]] = pressed
+                if add_arrows:
+                    equiped_item_dict[V.item_dict[pressed]["Type"]] += ",Arrows"
+            else:
+                equiped_item_dict[V.item_dict[pressed]["Type"]] += "," + pressed
 
         """ Not Two Handed weapons """
         if V.item_dict[pressed]["Type"] in ["Weapons", "Magic Weapon"] and "Two-handed" not in V.item_dict[pressed]["Properties"]:
@@ -583,7 +593,8 @@ def handle_equip_items(pressed, equiped_item_dict):
                 """if there is a two handed weapon or single one handed weapon already"""
                 if "Two-handed" in V.item_dict[equiped_item_dict["Weapons"]]["Properties"]:
                     """if there is a two handed weapon already, unequip it"""
-                    equiped_item_dict["Weapons"] = ""
+                    if pressed != "Arrows":
+                        equiped_item_dict["Weapons"] = ""
             if equiped_item_dict["Magic Weapon"] != "" and "," not in equiped_item_dict["Magic Weapon"]:
                 """if there is a two handed weapon or single one handed weapon already"""
                 if "Two-handed" in V.item_dict[equiped_item_dict["Magic Weapon"]]["Properties"]:

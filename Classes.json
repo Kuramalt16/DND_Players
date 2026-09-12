@@ -194,6 +194,12 @@
       "Proficiency Bonus": ["--ADD", "key", "3"],
       "Slot Level": ["--ADD", "key", "1:2:3"],
       "Spell Slots": ["--ADD", "key", "1st:4,2nd:3,3rd:3"]
+    },
+    "7": {
+      "Hit dice": ["--ADD", "key", "7d8"],
+      "Proficiency Bonus": ["--ADD", "key", "3"],
+      "Slot Level": ["--ADD", "key", "1:2:3:4"],
+      "Spell Slots": ["--ADD", "key", "1st:4,2nd:3,3rd:3,4th:1"]
     }
   },
   "Barbarian":
@@ -312,7 +318,11 @@
     },
     "6": {
       "Hit dice": ["--ADD", "key", "6d10"],
-      "Proficiency Bonus": ["--ADD", "key", "3"]
+      "Proficiency Bonus": ["--ADD", "key", "3"],
+      "Ability Score Improvement": ["Choose Two Ability Score improvements"],
+      "Ability Score": ["--CHOOSE_OR:2", "INCLUDING_FROM", "STR", "DEX", "CON", "INT", "WIS", "CHA"],
+      "Feat Improvement": ["Or one feat"],
+      "Feat": ["--CHOOSE_OR:1", "FROM", "--FEAT-LIST"]
     },
     "7": {
       "Hit dice": ["--ADD", "key", "7d10"],
@@ -329,7 +339,7 @@
       "Tool Proficiencies": "",
       "Saving Throw Proficiencies": ["--ADD", "PROFICIENCY", "Saving_STR", "Saving_DEX"],
       "Skills": ["--CHOOSE:3", "PROFICIENCY", "Animal Handling", "Athletics", "Insight", "Investigation", "Nature", "Perception", "Stealth", "Survival"],
-      "Favored Enemy": ["--ADD", "key", "1"],
+      "Favoured Enemy": ["--ADD", "key", "1"],
       "Natural Explorer": ["--ADD", "key", "1"],
       "Code": ["--CODE", "Feature:Favoured Enemy", "Feature:Natural Explorer"]
     },
@@ -361,6 +371,7 @@
     },
     "5": {
       "Hit dice": ["--ADD", "key", "5d10"],
+      "Extra Attack": ["--ADD", "key", "1"],
       "Proficiency Bonus": ["--ADD", "key", "3"],
       "Spell": ["--CHOOSE:1", "FROM", "--Spells"],
       "Spell Slots": ["--ADD", "key", "1st:4,2nd:2"],
@@ -368,7 +379,11 @@
     },
     "6": {
       "Hit dice": ["--ADD", "key", "6d10"],
-      "Proficiency Bonus": ["--ADD", "key", "3"]
+      "Proficiency Bonus": ["--ADD", "key", "3"],
+      "Spell Slots": ["--ADD", "key", "1st:4,2nd:2"],
+      "Slot Level": ["--ADD", "key", "2"],
+      "Favoured Enemy": ["--ADD", "key", "1"],
+      "Natural Explorer": ["--ADD", "key", "1"]
     }
   },
   "Paladin":

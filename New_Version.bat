@@ -16,3 +16,5 @@ echo New version: !number!
 
 pyinstaller --onefile --icon="Images/DND_Icon.ico" --hidden-import=pkg_resources.extern  Password.py
 move "dist\Password.exe" ".\"
+
+pause

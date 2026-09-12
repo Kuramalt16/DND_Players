@@ -5,6 +5,8 @@ import json, random, math, datetime
 import base64
 from PIL import Image
 from io import BytesIO
+
+
 def display_text(screen ,text ,size, pos_tuple, color="black", case="TL", alpha=255, italic=True, rotate=0, invert_colors=False):
     if color == "black":
         color = S.Standart_color
@@ -14,9 +16,12 @@ def display_text(screen ,text ,size, pos_tuple, color="black", case="TL", alpha=
     else:
         font = S.Fonts[('Times New Roman', int(size + S.RESOLUTION * 10))]
     if text != None:
-        text = text.encode('utf-8').decode('utf-8')
+        # text = text.encode('utf-8').decode('utf-8')
         text = text.replace("'", "'")
         text = text.replace('â€™', "'")
+        text = text.replace('ā€™', "'")
+        text = text.replace('â€“', "-")
+        text = text.replace('ā€“', "-")
     text_surface = font.render(text, True, color)
     if rotate != 0:
         text_surface = pg.transform.rotate(text_surface, rotate)
@@ -133,11 +138,12 @@ def add_image_to_screen(screen, name, rect, case):
     if isinstance(rect, tuple) and len(rect) == 4:
         rect = pg.Rect(rect[0], rect[1], rect[2], rect[3])
     if isinstance(rect, pg.Rect) and len(rect) == 4:
+        filepath = None
         if os.path.exists(S.local_path + "/" + case + "/" + name + ".png") and name.lower() + ".png" != "con.png":
             filepath = S.local_path + "/" + case + "/" + name + ".png"
         elif os.path.exists(S.local_path + "/" + case + "/" + name + ".jpg") and name.lower() + ".jpg" != "con.jpg":
             filepath = S.local_path + "/" + case + "/" + name + ".jpg"
-        elif case.lower() != "player":
+        elif case != "Images/Players":
             print_debug("path doesn't exist", S.local_path + "/" + case + "/" + name + ".png", debug="ERROR")
             return None
 
@@ -228,7 +234,7 @@ def read_db_table(table_name):
 
 
 def Connect_to_MySql():
-    host = 'lockyourdoors'
+    host = 'localhost'
     user = 'PyDND'
     password = 'Gythfg167!'
     database = 'dnd'
@@ -327,6 +333,7 @@ def add_to_dict_db_results(add_dict, to_dict, type):
                 "Apperance": int(value[7]),
                 "Race": int(value[8]),
                 "Class": int(value[9]),
+                "LevelUp": int(value[10])
             }
 
         elif not type:
@@ -428,7 +435,7 @@ def add_button_to_screen(screen, name, rect, case):
     return rect
 
 
-def save_data(data, table):
+def save_data(data, table, case=None):
     """
     Insert a new entry into the database, or update if the entry already exists.
 
@@ -437,11 +444,11 @@ def save_data(data, table):
     :param db_config: A dictionary with database connection details (host, user, password, database)
     """
     db_dict = {
-        "characters": ["Name", "Race", "Class", "Exp", "Lv", "Hp", "Language", "Ability_Scores", "Gold", "Items", "Extra"],
+        "characters": ["Name", "Race", "Class", "Lv", "Hp", "Language", "Ability_Scores", "Gold", "Items", "Extra"],
         "campaign": ["Name", "Number_of_players", "First", "Second", "Third", "Fourth", "Fifth", "Sixth"]
     }
     local_dict = {
-        "characters": ["Name", "Race", "Class", "Experience", "Level", "Health", "Languages", "Ability_Scores", "Gold", "Items", "Extra"],
+        "characters": ["Name", "Race", "Class", "Level", "Health", "Languages", "Ability_Scores", "Gold", "Items", "Extra"],
         "campaign": ["Name", "Player Count", "Player Num 1", "Player Num 2", "Player Num 3", "Player Num 4", "Player Num 5", "Player Num 6"]
 
     }
@@ -455,28 +462,56 @@ def save_data(data, table):
         db_dict[table].pop(i)
 
 
-    result = select_from_DataBase(table, data["Name"][0])
-    if result == ():
-        """new entry"""
-        sql = "INSERT INTO `{}` ({}) VALUES ({})".format(
-            table,
-            ', '.join(db_dict[table]),  # Column names
-            ', '.join([f'"{str(data[local_dict[table][i]][0])}"' for i in range(len(db_dict[table]))])  # Corresponding values
-        )
-        print_debug(sql, debug="INFO")
-        Write_to_DataBase(sql)
+    if case == None:
+        result = select_from_DataBase(table, data["Name"][0])
+        if result == ():
+            """new entry"""
+            sql = "INSERT INTO `{}` ({}) VALUES ({})".format(
+                table,
+                ', '.join(db_dict[table]),  # Column names
+                ', '.join([f'"{str(data[local_dict[table][i]][0])}"' for i in range(len(db_dict[table]))])  # Corresponding values
+            )
+            print_debug(sql, debug="INFO")
+            Write_to_DataBase(sql)
 
+        else:
+            """update entry"""
+            local_dict[table].remove("Ability_Scores")
+            db_dict[table].remove("Ability_Scores")
+            sql = "UPDATE `{}` SET {} WHERE `Name` = '{}'".format(
+                table,
+                ', '.join(
+                    [f"`{db_dict[table][i]}` = '{data[local_dict[table][i]][0]}'" for i in range(len(db_dict[table]))]),
+                # Set column=value pairs
+                str(data[local_dict[table][0]][0])  # Where Name matches the value
+            )
+            print_debug(sql, debug="INFO")
+            Write_to_DataBase(sql)
     else:
-        """update entry"""
-        sql = "UPDATE `{}` SET {} WHERE `Name` = '{}'".format(
-            table,
-            ', '.join(
-                [f"`{db_dict[table][i]}` = '{data[local_dict[table][i]][0]}'" for i in range(len(db_dict[table]))]),
-            # Set column=value pairs
-            str(data[local_dict[table][0]][0])  # Where Name matches the value
-        )
-        print_debug(sql, debug="INFO")
-        Write_to_DataBase(sql)
+        result = select_from_DataBase(table, data["Name"])
+        if result == ():
+            """new entry"""
+            sql = "INSERT INTO `{}` ({}) VALUES ({})".format(
+                table,
+                ', '.join(db_dict[table]),  # Column names
+                ', '.join([f'"{str(data[local_dict[table][i]])}"' for i in range(len(db_dict[table]))])  # Corresponding values
+            )
+            print_debug(sql, debug="INFO")
+            Write_to_DataBase(sql)
+
+        else:
+            """update entry"""
+            sql = "UPDATE `{}` SET {} WHERE `Name` = '{}'".format(
+                table,
+                ', '.join(
+                    [f"`{db_dict[table][i]}` = '{data[local_dict[table][i]]}'" for i in range(len(db_dict[table]))]),
+                # Set column=value pairs
+                str(data[local_dict[table][0]])  # Where Name matches the value
+            )
+            print_debug(sql, debug="INFO")
+            Write_to_DataBase(sql)
+
+
 
 
 def save_char_to_localhost(data, table):
@@ -551,35 +586,47 @@ def Excecute_MySQL_string(sql):
     connection.close()
     return result
 
-def display_spell_slots(screen, show_slots):
-    slot_surf = 0
-    if V.spell_slots != {} and show_slots == 1:
-
-        if V.images.get("SLOT SCREEN") == None:
-            V.images["SLOT SCREEN"] = pg.Surface((S.SCREEN_WIDTH, S.SCREEN_HEIGHT), pg.SRCALPHA).convert_alpha()
-        slot_surf = V.images["SLOT SCREEN"]
-        slot_surf.fill((0,0,0,0))
-        add_image_to_screen(slot_surf, "background", (0, 0, S.SCREEN_WIDTH, S.SCREEN_HEIGHT), "Background")
+def display_spell_slots(screen, slot_to_display):
+    plus_minus_slot_rects = {}
+    if V.spell_slots != {}:
 
         x = S.SCREEN_WIDTH * 0.95
         w = S.SCREEN_WIDTH * 0.05
         h = S.SCREEN_WIDTH * 0.05
         x_step = S.SCREEN_WIDTH * 0.06
-        for slot, amount in V.spell_slots.items():
-            y = S.SCREEN_HEIGHT * 0.02
-            y_step = S.SCREEN_HEIGHT * 0.03
+        y = S.SCREEN_HEIGHT * 0.32
+        y_step = S.SCREEN_HEIGHT * 0.03
+        diferent_slot_count = 0
+        for slot, amount in V.max_spell_slots.items():
+            diferent_slot_count += 1
             if slot in ["1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th", "9th"] and V.SECRETS.get(V.char_name) != None and V.SECRETS[V.char_name]["Spells"] == 1:
                 continue
             elif V.SECRETS.get(V.char_name) != None and V.SECRETS[V.char_name]["Features"] == 1:
                 continue
-            display_text(slot_surf, slot, 15, (x-S.SCREEN_WIDTH * 0.02, y-S.SCREEN_HEIGHT * 0.02), rotate=90)
-            for i in range(0, int(amount)):
-                r = add_image_to_screen(slot_surf, slot, (x, y + y_step, w, h), "background")
-                if r == None:
-                    add_image_to_screen(slot_surf, "1st", (x, y + y_step, w, h), "background")
-                y_step += h
+            display_text(screen, slot, 15, (x-S.SCREEN_WIDTH * 0.02, y-S.SCREEN_HEIGHT * 0.02), rotate=90)
+            r = add_image_to_screen(screen, slot, (x, y + y_step, w, h), "background")
+            display_text(screen, str(V.spell_slots[slot]) + "/" + str(amount), 15, (r.x + r.w * 0.5, r.y + r.h * 0.8))
+            plus_r = pg.Rect(r.x, r.y, r.w * 0.5, r.h)
+            minus_r = pg.Rect(r.x + r.w * 0.5, r.y, r.w * 0.5, r.h)
+            if slot_to_display == (slot, "Plus"):
+                pg.draw.rect(screen, "green", plus_r)
+                display_text(screen, "+", 15, (plus_r.x + plus_r.w * 0.5, plus_r.y + plus_r.h * 0.5), case="C")
+
+            if slot_to_display == (slot, "Minus"):
+                pg.draw.rect(screen, "red", minus_r)
+                display_text(screen, "-", 15, (minus_r.x + minus_r.w * 0.5, minus_r.y + minus_r.h * 0.5), case="C")
+
+            plus_minus_slot_rects[slot] = {}
+            plus_minus_slot_rects[slot]["Plus"] = plus_r
+            plus_minus_slot_rects[slot]["Minus"] = minus_r
+            if r == None:
+                add_image_to_screen(screen, "1st", (x, y + y_step, w, h), "background")
             x -= x_step
-    return slot_surf
+            if diferent_slot_count == 3:
+                diferent_slot_count = 0
+                x = S.SCREEN_WIDTH * 0.95
+                y += y_step*3
+    return plus_minus_slot_rects
 
 def display_spell_history(screen, show_hist):
     surf = 0
@@ -638,25 +685,26 @@ def display_spell_history(screen, show_hist):
 
 def remove_item_from_char(item_name, char):
     item_list = char["Items"].split(",")
-    print(item_name)
+    if item_name == "Spellcasting_Focus":
+        return
     item_list.remove(item_name)
     char["Items"] = ",".join(item_list)
     update_items_db(char)
+    if item_name not in char["Items"]:
+        with open(S.local_path + '/Created_Players/' + V.char_name + '_config.json', 'r') as file:
+            char_config_data = json.load(file)
+        if char_config_data.get("Equiped Items") == None:
+            return
+        for key, item in char_config_data["Equiped Items"].items():
+            if item_name in item:
+                if "," in item:
+                    items = item.split(",")
+                    items.remove(item_name)
+                    char_config_data["Equiped Items"][key] = ",".join(items)
+                else:
+                    char_config_data["Equiped Items"][key] = ""
 
-    with open(S.local_path + '/Created_Players/' + V.char_name + '_config.json', 'r') as file:
-        char_config_data = json.load(file)
-    if char_config_data.get("Equiped Items") == None:
-        return
-    for key, item in char_config_data["Equiped Items"].items():
-        if item_name in item:
-            if "," in item:
-                items = item.split(",")
-                items.remove(item_name)
-                char_config_data["Equiped Items"][key] = ",".join(items)
-            else:
-                char_config_data["Equiped Items"][key] = ""
-
-    create_char_JSON(V.char_name, char_config_data)
+        create_char_JSON(V.char_name, char_config_data)
 
 def upload_to_json(data, json_filename, key_name):
     """
@@ -949,7 +997,9 @@ def Roll_Dice_gif(screen, clock, image_count, dice_images, rolled_score, pos):
         pg.display.flip()
         clock.tick(60)
 
-def Roll_3d_dice(screen, clock, dice_type, dice_rolled, pos):
+def Roll_3d_dice(screen, clock, dice_type, dice_rolled, pos=None):
+    if pos == None:
+        pos = (S.SCREEN_WIDTH * 0.25, S.SCREEN_HEIGHT * 0.25)
     if isinstance(dice_rolled, str):
         """singular dice roll"""
         if S.dice_images["Finished"].get(dice_type) != None and S.dice_images["Finished"][dice_type].get(dice_rolled) != None and S.dice_images["Finished"][dice_type][dice_rolled] == True:
@@ -957,9 +1007,9 @@ def Roll_3d_dice(screen, clock, dice_type, dice_rolled, pos):
             image_count = len(S.dice_images[dice_type][dice_rolled])
             image_id = 0
             images = S.dice_images[dice_type][dice_rolled].copy()
-            for i in range(0, image_count-1):
-                img = pg.transform.scale(images[i], (S.SCREEN_WIDTH * 0.4, S.SCREEN_HEIGHT * 0.4))
-                images[i] = img
+            # for i in range(0, image_count-1):
+            #     img = pg.transform.scale(images[i], (S.SCREEN_WIDTH * 0.4, S.SCREEN_HEIGHT * 0.4))
+            #     images[i] = img
             start_time = pg.time.get_ticks()
             screen_copy = screen.copy()
             while True:
@@ -1187,6 +1237,7 @@ def reset_spellSlots(SR_or_LR):
     """Adds spell slots based on class"""
     if SR_or_LR != "SR":
         V.spell_slots = {}
+        V.max_spell_slots = {}
         classes = []
         classes.append(V.character_dict[V.char_name]["Class"].split(", "))
         if V.character_dict[V.char_name].get("SubClass") != None:
@@ -1202,7 +1253,10 @@ def reset_spellSlots(SR_or_LR):
                             type, amount = slot.split(":")
                             if V.spell_slots.get(type) == None:
                                 V.spell_slots[type] = 0
+                            if V.max_spell_slots.get(type) == None:
+                                V.max_spell_slots[type] = 0
                             V.spell_slots[type] += int(amount)
+                            V.max_spell_slots[type] += int(amount)
 
     for feature, values in S.Class_features.items():
         if values['Action_Type'] == "Spell_Slot" and values.get("Class") != None and values["Class"] in V.character_dict[V.char_name]["Class"]:
@@ -1234,16 +1288,20 @@ def reset_spellSlots(SR_or_LR):
                             else:
                                 value -= int(amount)
                     V.spell_slots[feature] = value
+                    V.max_spell_slots[feature] = value
                 elif values["Spell_slot"][0] == "ADD":
                     if values["Spell_slot"][1] == "Proficiency Bonus":
                         V.spell_slots[feature] = V.Proficiecy_bonus
+                        V.max_spell_slots[feature] = V.Proficiecy_bonus
                     else:
                         V.spell_slots[feature] = int(values["Spell_slot"][1])
+                        V.max_spell_slots[feature] = int(values["Spell_slot"][1])
                 else:
                     slots = values["Spell_slot"].split(":")
                     index = V.character_dict[V.char_name]["Class"].split(", ").index(slots[0])
                     level = V.character_dict[V.char_name]["Level"].split(",")[index]
                     V.spell_slots[feature] = int(level) + int(slots[1].split("+")[1])
+                    V.max_spell_slots[feature] = int(level) + int(slots[1].split("+")[1])
         if values["Action_Type"] == "Changed_Spell_Slot" and values.get("Class") != None and values["Class"] in V.character_dict[V.char_name]["Class"]:
             if "ADD" in S.Class_features[feature]["Change"][0]:
                 amount = 1
@@ -1252,6 +1310,7 @@ def reset_spellSlots(SR_or_LR):
 
                 if feature not in V.spell_slots:
                     V.spell_slots[feature] = amount
+                    V.max_spell_slots[feature] = amount
         if values['Action_Type'] in ["Spell_Slot"] and values.get("Race") != None and values["Race"] in V.character_dict[V.char_name]["Race"]:
             if "reset" in values and SR_or_LR == values["reset"] or SR_or_LR == "LR":
                 """If reset matches the rest or its a long rest"""
@@ -1286,16 +1345,20 @@ def reset_spellSlots(SR_or_LR):
                         else:
                             print_debug("Probbly doesnt work", value, "Error")
                     V.spell_slots[feature] = value
+                    V.max_spell_slots[feature] = value
                 elif values["Spell_slot"][0] == "ADD":
                     if values["Spell_slot"][1] == "Proficiency Bonus":
                         V.spell_slots[feature] = V.Proficiecy_bonus
+                        V.max_spell_slots[feature] = V.Proficiecy_bonus
                     else:
                         V.spell_slots[feature] = int(values["Spell_slot"][1])
+                        V.max_spell_slots[feature] = int(values["Spell_slot"][1])
                 else:
                     slots = values["Spell_slot"].split(":")
                     index = V.character_dict[V.char_name]["Class"].split(", ").index(slots[0])
                     level = V.character_dict[V.char_name]["Level"].split(",")[index]
                     V.spell_slots[feature] = int(level) + int(slots[1].split("+")[1])
+                    V.max_spell_slots[feature] = int(level) + int(slots[1].split("+")[1])
     if V.Rites != {}:
         for rite in V.Rites:
             V.Rites[rite] = ""
@@ -1305,11 +1368,12 @@ def reset_spellSlots(SR_or_LR):
 def remove_spell_slot(spell_slot_lv):
     slots = V.spell_slots
     slot_level = level_to_name(spell_slot_lv)
-    if slots.get(slot_level) != None:
+    if slots.get(slot_level) != None and slots[slot_level] != 0:
         if slots[slot_level] != 1:
             slots[slot_level] -= 1
         else:
-            del slots[slot_level]
+            # del slots[slot_level]
+            slots[slot_level] = 0
         return True
     else:
         return False
@@ -1447,6 +1511,17 @@ def get_equiped_weapons():
                     weapon_list.append(value)
     return weapon_list
 
+def get_ammo_count(weapon_list):
+    ammo_count = {}
+    for weapon in weapon_list:
+        if V.item_dict[weapon].get("Extra") != None and V.item_dict[weapon].get("Properties") != None:
+            if "Ammunition" in V.item_dict[weapon]["Properties"] and weapon in V.character_dict[V.char_name]["Items"]:
+                items = V.character_dict[V.char_name]["Items"].split(",")
+                ammo_count[weapon] = items.count(weapon)
+                if items[0] == "":
+                    V.character_dict[V.char_name]["Items"] = ",".join(items[1:])
+    return ammo_count
+
 def get_equiped_armor():
     """Gets equiped ermor list, excludes shields"""
     armor_list = []
@@ -1507,4 +1582,469 @@ def save_text_to_json(text):
     create_char_JSON(V.char_name, char_config_data)
 
 
+def get_mob_actions():
+    for mob in V.mob_dict:
+        if mob in ["Azrael", "Lilit"]:
+            continue
+        print_results = False
+        abilities = V.mob_dict[mob]["Abilities"].split(", ")
+        actions = V.mob_dict[mob]["Actions"].split(", ")
+        V.mob_dict[mob]["Real_Abilities"] = {}
+        V.mob_dict[mob]["Real_Actions"] = {}
+        ability_score = V.mob_dict[mob]["Ability Score"].split(",")
+        mob_name = mob.replace("Ochre Jelly", "jelly").replace("Rock Gnome Recluse", "gnome").replace("Giant Rat",
+                                                                                                      "rat").replace(
+            "Vine Blight", "blight").replace("Anchorite of Talos", "anchorite").replace("Dire Wolf", "wolf").replace(
+            "Young White Dragon", "dragon").replace("Young Red Dragon", "dragon").replace("Vampire Spawn",
+                                                                                          "vampire").replace(
+            "Brown Bear", "bear").lower()
+
+        mob_modifyers = {
+            "STR": (int(ability_score[0]) - 10) // 2,
+            "DEX": (int(ability_score[1]) - 10) // 2,
+            "CON": (int(ability_score[2]) - 10) // 2,
+            "INT": (int(ability_score[3]) - 10) // 2,
+            "WIS": (int(ability_score[4]) - 10) // 2,
+            "CHA": (int(ability_score[5]) - 10) // 2,
+        }
+        if print_results: print(mob)
+        prof_bonus = 2
+        if mob in ["Vampire Spawn", "Wraith", "Young White Dragon"]:
+            prof_bonus = 3
+        elif mob in ["Young Red Dragon"]:
+            prof_bonus = 4
+
+        if abilities != [""]:
+            for ability in abilities:
+                text = ""
+                if ability in ["Aggressive"]:
+                    text += "As a bonus action, "
+
+                if ability in ["Shapechanger"]:
+                    if mob == "Mimic":
+                        into_ = "an object"
+                    elif mob == "Anchorite of Talos":
+                        into_ = "a boar"
+                    text = f"The {mob_name} can use its action to polymorph into {into_} or back into its true form. Its statistics are the same in each form. Any equipment it is wearing or carrying isn't transformed. It reverts to its true form if it dies."
+                elif ability in ["Grappler"]:
+                    text = f"The {mob_name} has advantage on attack rolls against any creature grappled by it."
+                elif ability in ["Adhesive (object)"]:
+                    text = f"The {mob_name} adheres to anything that touches it. A Huge or smaller creature adhered to the {mob_name} is also grappled by it (escape DC 13). Ability checks made to escape this grapple have disadvantage."
+                elif ability in ["False Appearance (object)", "False Appearance"]:
+                    if mob == "Mimic":
+                        from_ = "an ordinary object"
+                    elif mob == "Vine Blight":
+                        from_ = "a tangle of vines"
+                    text = f"While the {mob_name} remains motionless, it is indistinguishable from {from_}."
+                elif ability in ["Tail Spike Regrowth"]:
+                    text = f"The {mob_name} has twenty-four tail spikes. Used spikes regrow when the {mob_name} finishes a long rest."
+                elif ability in ["Amorphous"]:
+                    text = f"The {mob_name} can move through a space as narrow as 1 inch wide without squeezing."
+                elif ability in ["Spider Climb"]:
+                    text = f"The {mob_name} can climb difficult surfaces, including upside down on ceilings, without needing to make an ability check."
+                elif ability in ["Gnome Cunning"]:
+                    text = f"The {mob_name} has advantage on Intelligence, Wisdom, and Charisma saving throws against magic."
+                elif ability in ["Spellcasting"]:
+                    text = f"The {mob_name} is a 2nd-level spellcaster. Its spellcasting ability is Intelligence (spell save DC 12, +4 to hit with spell attacks). It has the following wizard spells prepared: Cantrips (at will): mage hand, prestidigitation, ray of frost 1st level (3 slots): detect magic, mage armor, magic missile, shield"
+                elif ability in ["Aggressive"]:
+                    text += f"the {mob_name} can move up to its speed toward a hostile creature that it can see."
+                elif ability in ["Charge"]:
+                    if mob == "Cow":
+                        damage = "7 (2d6) piercing"
+                    elif mob == "Boar":
+                        damage = "3 (1d6) slashing"
+                    text += f"If the {mob_name} moves at least 20 feet straight toward a target and then hits it with an attack on the same turn, the target takes an extra {damage} damage. If the target is a creature, it must succeed on a DC 11 Strength saving throw or be knocked prone."
+
+                elif ability in ["Pack Tactics"]:
+                    text += f"The {mob_name} has advantage on an attack roll against a creature if at least one of the {mob_name}'s allies is within 5 feet of the creature and the ally isn't incapacitated."
+                elif ability in ["Innate Spellcasting"]:
+                    text += f"The {mob_name}'s innate spellcasting ability is Wisdom (spell save DC 12). It can innately cast the following spells, requiring no material components: 3/day: thunderwave (2d8 damage) 1/day each: augury, bless, lightning bolt (8d6 damage), revivify"
+                elif ability in ["Relentless"]:
+                    text += f"(Recharges after a Short or Long Rest). If the {mob_name} takes 7 damage or less that would reduce it to 0 hit points, it is reduced to 1 hit point instead."
+
+                elif ability in ["Reabsorbing Skin"]:
+                    text += f"If a creature touches the {mob_name} or hits it with a melee attack while within 5 feet of it, the {mob_name} deals 3(1d6) acid damage to that creature and regains hit points equal to half the damage dealt."
+                elif ability in ["Gliding"]:
+                    text += f"It takes a successful DC 16 Wisdom (Perception) check to hear the {mob_name} move."
+                elif ability in ["Small Creature"]:
+                    text += f"The {mob_name} Armour Class increases to 16 when target is at least 60 ft. away."
+                elif ability in ["Silent Flight"]:
+                    text += f"The {mob_name} makes no sound when flying."
+                elif ability in ["Keen Hearing and Sight", "Keen Smell", "Keen Hearing", "Keen Hearing and Smell",
+                                 "Keen Sight and Smell"]:
+                    text += f"The {mob_name} has advantage on Wisdom (Perception) checks that rely on"
+                    text += ability.lower().replace("and", "or").replace("keen", "") + "."
+                elif ability in ["Hidden"]:
+                    text += f"The {mob_name} has Advantage on Dexterity (Stealth) checks when remaining motionless."
+                elif ability in ["Ice Walk"]:
+                    text += f"The {mob_name} can move across and climb icy surfaces without needing to make an ability check. Additionally, difficult terrain composed of ice or snow doesn't cost it extra movement."
+                elif ability in ["Nimble Escape"]:
+                    text += f"The {mob_name} can take the Disengage or Hide action as a bonus action on each of its turns."
+                elif ability in ["Stench"]:
+                    text += f"Any creature that starts its turn within 5 feet of the {mob_name} must succeed on a DC 10 Constitution saving throw or be poisoned until the start of its next turn. On a successful saving throw, the creature is immune to the {mob_name}'s Stench for 24 hours."
+                elif ability in ["Turning Defiance"]:
+                    text += f"The {mob_name} and any ghouls within 30 feet of it have advantage on saving throws against effects that turn undead."
+                elif ability in ["Detect Life"]:
+                    text += f"The banshee can magically sense the presence of creatures up to 5 miles away that aren’t undead or constructs. She knows the general direction they’re in but not their exact locations."
+                elif ability in ["Incorporeal Movement"]:
+                    text += f"The {mob_name} can move through other creatures and objects as if they were difficult terrain. It takes 5 (1d10) force damage if it ends its turn inside an object."
+                elif ability in ["Regeneration"]:
+                    text += f"The vampire regains 10 hit points at the start of its turn if it has at least 1 hit point and isn't in sunlight or running water. If the vampire takes radiant damage or damage from holy water, this trait doesn't function at the start of the vampire's next turn."
+                elif ability in ["Vampire Weaknesses"]:
+                    text += f"The vampire has the following flaws: Forbiddance. The vampire can't enter a residence without an invitation from one of the occupants. Harmed by Running Water. The vampire takes 20 acid damage when it ends its turn in running water. Stake to the Heart. The vampire is destroyed if a piercing weapon made of wood is driven into its heart while it is incapacitated in its resting place. Sunlight Hypersensitivity. The vampire takes 20 radiant damage when it starts its turn in sunlight. While in sunlight, it has disadvantage on attack rolls and ability checks."
+                elif ability in ["Sunlight Sensitivity"]:
+                    text += f"While in sunlight, the wraith has disadvantage on attack rolls, as well as on Wisdom (Perception) checks that rely on sight."
+                elif ability in ["Ethereal Sight"]:
+                    text += f"The ghost can see 60 feet into the Ethereal Plane when it is on the Material Plane, and vice versa."
+                elif ability in ["Undead Fortitude"]:
+                    text += f"If damage reduces the zombie to 0 hit points, it must make a Constitution saving throw with a DC of 5 + the damage taken, unless the damage is radiant or from a critical hit. On a success, the zombie drops to 1 hit point instead."
+                elif ability in ["Reckless"]:
+                    text += f"The orc can choose to gain advantage on all melee weaopn attacks during its turn, but in return all attack rolls against it also have advantage untill the start of its next turn."
+                elif ability in ["Ice"]:
+                    text += f""
+
+                if V.mob_dict[mob]["Real_Abilities"].get(ability) == None:
+                    V.mob_dict[mob]["Real_Abilities"][ability] = {"Text": "",
+                                                                  "Can_Damage": False,
+                                                                  "Damage": "",
+                                                                  "Hit_mod": "",
+                                                                  }
+                V.mob_dict[mob]["Real_Abilities"][ability]["Text"] = text
+
+                if print_results: print(ability.replace("object", "Object Form Only") + ".",
+                                        V.mob_dict[mob]["Real_Abilities"][ability]["Text"])
+
+        if actions != [""]:
+            for action in actions:
+                can_damage = False
+                damage_saved = ""
+                Hit_mod = ""
+                text = ""
+                attack_type = ""
+                extra_to_hit = "0"
+                reach = ""
+                target_count = ""
+                damage = ""
+                damage_type = ""
+                extra_type = ""
+                extra_damage = ""
+                extra_text = "."
+                if action in ["Bite", "Pseudopod", "Claw", "Greatclub", "Club", "Greataxe", "Claws", "Gore", "Hooves",
+                              "Longsword", "Shortsword", "Constrict", "Clawed Gauntlet", "Tusk", "Pseudobeak", "Talons",
+                              "Beak", "Horns", "Scimitar", "Slam", "Greatsword", "Fist", "Life Drain",
+                              "Withering Touch"]:
+                    attack_type = "Melee Weapon Attack: "
+                    can_damage = True
+                elif action in ["Tail Spike", "Heavy Crossbow", "Shortbow", "Rock"]:
+                    attack_type = "Ranged Weapon Attack: "
+                    can_damage = True
+                elif action in ["Javelin"]:
+                    attack_type = "Melee or Ranged Weapon Attack: "
+                    can_damage = True
+                elif action in ["Ray of Frost"]:
+                    attack_type = "Ranged Spell Attack: "
+                    can_damage = True
+                elif action in ["Corrupting Touch"]:
+                    attack_type = "Melee Spell Attack: "
+                    can_damage = True
+
+                if action in ["Bite", "Pseudopod", "Claw", "Tail Spike", "Greatclub", "Javelin", "Club", "Greataxe",
+                              "Claws", "Gore", "Longsword", "Shortsword", "Constrict", "Clawed Gauntlet", "Tusk",
+                              "Fist", "Rock", "Hooves", "Greatsword", "Shortbow", "Slam", "Scimitar", "Pseudobeak",
+                              "Talons", "Beak", "Horns", "Corrupting Touch", "Life Drain"]:
+                    if mob_modifyers["STR"] > mob_modifyers["DEX"]:
+                        extra_to_hit = f"+{str(mob_modifyers['STR'] + prof_bonus)} to hit,"
+                    else:
+                        if mob_modifyers["DEX"] > mob_modifyers["CON"]:
+                            extra_to_hit = f"+{str(mob_modifyers['DEX'] + prof_bonus)} to hit,"
+                        else:
+                            extra_to_hit = f"+{str(mob_modifyers['CON'] + prof_bonus)} to hit,"
+
+                    if action == "Bite" and mob == "Ghast":
+                        extra_to_hit = f"+{mob_modifyers['STR']} to hit,"
+
+                elif action in ["Ray of Frost"]:
+                    extra_to_hit = f"+{str(mob_modifyers['INT'] + prof_bonus)} to hit,"
+                elif action in ["Heavy Crossbow"]:
+                    extra_to_hit = f"+{str(mob_modifyers['DEX'] + prof_bonus)} to hit,"
+                elif action in ["Withering Touch"]:
+                    extra_to_hit = f"+{str(mob_modifyers['CHA'] + prof_bonus)} to hit,"
+                Hit_mod = extra_to_hit
+
+                if action in ["Bite", "Pseudopod", "Claw", "Greatclub", "Javelin", "Club", "Claws", "Greataxe", "Gore",
+                              "Longsword", "Shortsword", "Clawed Gauntlet", "Tusk", "Talons", "Beak", "Horns", "Hooves",
+                              "Scimitar", "Corrupting Touch", "Life Drain", "Withering Touch", "Slam", "Greatsword",
+                              "Fist"]:
+                    reach = " reach 5 ft"
+                elif action in ["Constrict", "Pseudobeak"]:
+                    reach = " reach 10 ft"
+                elif action in ["Tail Spike"]:
+                    reach = " range 100/200 ft"
+                elif action in ["Heavy Crossbow"]:
+                    reach = " range 100/400 ft"
+                elif action in ["Ray of Frost"]:
+                    reach = " range 60 ft"
+                elif action in ["Shortbow"]:
+                    reach = " range 80/320 ft"
+                elif action in ["Rock"]:
+                    reach = " range 25/50 ft"
+
+                if action == "Bite" and mob in ["Young Red Dragon", "Young White Dragon"]:
+                    reach = " reach 10 ft"
+
+                if action in ["Javelin"]:
+                    reach += f". or range 30/120 ft"
+                reach += ".,"
+
+                if action in ["Bite", "Pseudopod", "Claw", "Tail Spike", "Greatclub", "Javelin", "Club", "Claws",
+                              "Ray of Frost", "Greataxe", "Gore", "Longsword", "Shortsword", "Heavy Crossbow",
+                              "Constrict", "Clawed Gauntlet", "Tusk", "Pseudobeak", "Talons", "Beak", "Horns",
+                              "Scimitar", "Corrupting Touch", "Life Drain", "Withering Touch", "Slam", "Fist",
+                              "Shortbow", "Rock"]:
+                    target_count = " one target."
+                elif action in ["Hooves"]:
+                    target_count = " one prone target."
+                elif action in ["Greatsword"]:
+                    target_count = " two seperate targets."
+
+                if action in ["Bite"] and mob == "Vampire Spawn":
+                    target_count = " one willing creature, or a creature that is grappled by the vampire, incapacitated, or restrained."
+
+                if action in ["Bite", "Pseudopod", "Tail Spike", "Greatclub", "Javelin", "Claws", "Club", "Greataxe",
+                              "Ray of Frost", "Claw", "Gore", "Longsword", "Shortsword", "Heavy Crossbow", "Constrict",
+                              "Clawed Gauntlet", "Tusk", "Pseudobeak", "Talons", "Beak", "Horns", "Scimitar",
+                              "Corrupting Touch", "Life Drain", "Withering Touch", "Slam", "Greatsword", "Fist",
+                              "Hooves", "Shortbow", "Rock"]:
+                    die = "1d8"
+                    if mob_modifyers["STR"] > mob_modifyers["DEX"]:
+                        mod = mob_modifyers['STR']
+                    else:
+                        mod = mob_modifyers['DEX']
+                    if mob in ["Rock Gnome Recluse"]:
+                        mod = 0
+                    if action in ["Heavy Crossbow"]:
+                        mod = mob_modifyers['DEX']
+                    if action in ["Withering Touch"]:
+                        mod = mob_modifyers['CHA']
+
+                    extra = 0
+                    if (mob, action) in [("Young Red Dragon", "Bite"), ("Young White Dragon", "Bite")] or mob in []:
+                        die = "2d10"
+                    elif (mob, action) in [("Orc", "Greataxe")] or mob in []:
+                        die = "1d12"
+                    elif (mob, action) in [("Veteran", "Heavy Crossbow"), ("Owlbear", "Beak"),
+                                           ("Red Dragon Wyrmling", "Bite")] or mob in []:
+                        die = "1d10"
+                    elif (mob, action) in [("Wraith", "Life Drain")] or mob in []:
+                        die = "4d8"
+                    elif (mob, action) in [("Ogre", "Greatclub"), ("Owlbear", "Claws"), ("Ghast", "Bite")] or mob in []:
+                        die = "2d8"
+                    elif (mob, action) in [("Ghost", "Withering Touch")] or mob in []:
+                        die = "4d6"
+                    elif (mob, action) in [("Banshee", "Corrupting Touch")] or mob in []:
+                        die = "3d6"
+                    elif (mob, action) in [("Ogre", "Javelin"), ("Ankheg", "Bite"), ("Dire Wolf", "Bite"),
+                                           ("Young Red Dragon", "Claw"), ("Young White Dragon", "Claw"),
+                                           ("Ghast", "Claws"), ("Half Orc", "Greatsword"),
+                                           ("Brown Bear", "Claws")] or mob in ["Ochre Jelly", "Vine Blight"]:
+                        die = "2d6"
+                    elif (mob, action) in [("Manticore", "Claw"), ("Orc", "Javelin"), ("Veteran", "Shortsword"),
+                                           ("Anchorite of Talos", "Tusk"), ("Boar", "Tusk"), ("Stag", "Horns"),
+                                           ("Vampire Spawn", "Bite")] or mob in ["Cow", "Goblin", "Skeleton", "Zombie",
+                                                                                 "Ape"]:
+                        die = "1d6"
+                    elif (mob, action) in [("Harpy", "Claws"), ("Wolf", "Bite"), ("Stag", "Hooves"),
+                                           ("Vampire Spawn", "Claws")] or mob in ["Pony"]:
+                        die = "2d4"
+                    elif (mob, action) in [("Harpy", "Club"), ("Anchorite of Talos", "Clawed Gauntlet"),
+                                           ("Gooze", "Pseudobeak")] or mob in ["Giant Rat", "Commoner", "Fox", "Rabbit",
+                                                                               "Owl"]:
+                        die = "1d4"
+
+                    if mob in ["Ochre Jelly", "Ogre", "Harpy", "Vine Blight", "Ankheg", "Wolf", "Dire Wolf",
+                               "Young Red Dragon", "Young White Dragon", "Ghast", "Banshee", "Vampire Spawn", "Ghost",
+                               "Half Orc"]:
+                        if mob == "Harpy" and action == "Club" or mob == "Vampire Spawn" and action == "Bite":
+                            extra = 0
+                        else:
+                            extra = 1
+                    average_roll = (int(die.split("d")[1]) * int(die.split("d")[0])) // 2 + mod + extra
+                    damage = f" Hit: {average_roll} ({die}"
+                    if mod != 0:
+                        damage += f" + {mod}"
+                    damage += ")"
+                    damage_saved = damage
+
+                if action in ["Bite", "Tail Spike", "Javelin", "Gore", "Shortsword", "Heavy Crossbow", "Beak", "Horns",
+                              "Shortbow"]:
+                    damage_type = " piercing damage"
+                elif action in ["Pseudopod", "Greatclub", "Club", "Constrict", "Pseudobeak", "Hooves", "Slam", "Fist",
+                                "Rock"]:
+                    damage_type = " bludgeoning damage"
+                elif action in ["Claw", "Claws", "Greataxe", "Longsword", "Clawed Gauntlet", "Tusk", "Talons",
+                                "Scimitar", "Greatsword"]:
+                    damage_type = " slashing damage"
+                elif action in ["Ray of Frost"]:
+                    damage_type = " cold damage"
+                elif action in ["Corrupting Touch", "Life Drain", "Withering Touch"]:
+                    damage_type = " necrotic damage"
+
+                if action in ["Bite", "Pseudobeak"]:
+                    extra_type = " acid damage"
+                    if mob in ["Young Red Dragon", "Red Dragon Wyrmling"]:
+                        extra_type = " fire damage"
+                    elif mob in ["Young White Dragon"]:
+                        extra_type = " cold damage"
+                    elif mob in ["Vampire Spawn"]:
+                        extra_type = " necrotic damage"
+
+                    if mob in ["Vampire Spawn"]:
+                        extra_damage = " plus 7 (2d6)"
+                    elif mob in ["Mimic", "Young White Dragon"]:
+                        extra_damage = " plus 4 (1d8)"
+                    elif mob in ["Ankheg", "Gooze", "Young Red Dragon", "Red Dragon Wyrmling"]:
+                        extra_damage = " plus 3 (1d6)"
+                    damage_saved += extra_damage
+                    if extra_damage == "":
+                        extra_type = ""
+
+                if action in ["Pseudopod"]:
+                    if mob in ["Mimic"]:
+                        extra_text = f". If the {mob_name} is in object form, the target is subjected to its Adhesive trait."
+                    elif mob in ["Ochre Jelly"]:
+                        extra_text = f" plus 3 (1d6) acid damage."
+                elif action in ["Multiattack"]:
+                    reach = ""
+                    amount = "three"
+                    if mob in ["Harpy", "Veteran", "Owlbear", "Brown Bear", "Ape", "Vampire Spawn"]:
+                        amount = "two"
+
+                    if mob in ["Harpy", "Owlbear", "Vampire Spawn", "Brown Bear"]:
+                        """Only two named attacks"""
+                        if mob == "Harpy":
+                            attacks = ["one", "claws", "one", "club"]
+                        elif mob == "Owlbear":
+                            attacks = ["one", "beak", "one", "claws"]
+                        elif mob in ["Vampire Spawn", "Brown Bear"]:
+                            attacks = ["one", "bite", "one", "claws"]
+                        extra_text = f"The {mob_name} makes {amount} attacks: {attacks[0]} with its {attacks[1]} and {attacks[2]} with its {attacks[3]}"
+                        if mob == "Vampire Spawn":
+                            extra_text += " or two with its claws"
+                    elif mob in ["Veteran", "Gooze", "Ape"]:
+                        """Only one named attack"""
+                        attacks = "longsword"
+                        if mob == "Gooze":
+                            attacks = "pseudobeak"
+                        elif mob == "Ape":
+                            attacks = "fist"
+                        extra_text = f"The {mob_name} makes {amount} {attacks} attacks"
+                        if mob == "Veteran":
+                            extra_text += ". If it has a shortsword drawn, it can also make a shortsword attack"
+
+                    elif mob in ["Manticore", "Young Red Dragon", "Young White Dragon"]:
+                        if mob == "Manticore":
+                            attacks = ["one", "bite", "two", "claws"]
+                        elif "Dragon" in mob:
+                            attacks = ["one", "bite", "two", "claws"]
+                        extra_text = f"The {mob_name} makes {amount} attacks: {attacks[0]} with its {attacks[1]} and {attacks[2]} with its {attacks[3]}"
+                        if "Manticore" in mob:
+                            extra_text += " or three with its tail spikes"
+                    extra_text += "."
+
+                elif action in ["R:Split"]:
+                    reach = ""
+                    extra_text = f"When a jelly that is Medium or larger is subjected to lightning or slashing damage, it splits into two new jellies if it has at least 10 hit points. Each new jelly has hit points equal to half the original jelly's, rounded down. New jellies are one size smaller than the original jelly."
+                elif action in ["Luring Song"]:
+                    reach = ""
+                    extra_text = f"The harpy sings a magical melody. Every humanoid and giant within 300 feet of the harpy that can hear the song must succeed on a DC 11 Wisdom saving throw or be charmed until the song ends. The harpy must take a bonus action on its subsequent turns to continue singing. It can stop singing at any time. The song ends if the harpy is incapacitated. While charmed by the harpy, a target is incapacitated and ignores the songs of other harpies. If the charmed target is more than 5 feet away from the harpy, the target must move on its turn toward the harpy by the most direct route, trying to get within 5 feet. It doesn't avoid opportunity attacks, but before moving into damaging terrain, such as lava or a pit, and whenever it takes damage from a source other than the harpy, the target can repeat the saving throw. A charmed target can also repeat the saving throw at the end of each of its turns. If the saving throw is successful, the effect ends on it. A target that successfully saves is immune to this harpy's song for the next 24 hours."
+                elif action in ["Magic Missile"]:
+                    reach = ""
+                    extra_text = f"The gnome creates three magical darts. Each dart hits a creature the gnome chooses within 120 feet of it and deals 3 (1d4 + 1) force damage."
+                elif action in ["Ray of Frost"]:
+                    extra_text = f", and the target's speed is reduced by 10 feet until the start of the gnome's next turn."
+                elif action in ["Longsword"]:
+                    extra_text = f", or 8 (1d10 + 3) slashing damage if used with two hands."
+                elif action in ["Constrict"]:
+                    extra_text = f", and a Large or smaller target is grappled (escape DC 12). Until this grapple ends, the target is restrained, and the blight can't constrict another target."
+                elif action in ["Entangling Plants"]:
+                    reach = ""
+                    extra_text = f"(Recharge 5–6). Grasping roots and vines sprout in a 15-foot radius centered on the blight, withering away after 1 minute. For the duration, that area is difficult terrain for nonplant creatures. In addition, each creature of the blight's choice in that area when the plants appear must succeed on a DC 12 Strength saving throw or become restrained. A creature can use its action to make a DC 12 Strength check, freeing itself or another entangled creature within reach on a success."
+                elif action in ["Acid Spray"]:
+                    reach = ""
+                    extra_text = f"(Recharge 6). The ankheg spits acid in a line that is 30 feet long and 5 feet wide, provided that it has no creature grappled. Each creature in that line must make a DC 13 Dexterity saving throw, taking 10 (3d6) acid damage on a failed save, or half as much damage on a successful one."
+                elif action in ["Bite"]:
+                    if mob == "Ankheg":
+                        extra_text = ". If the target is a Large or smaller creature, it is grappled (escape DC 13). Until this grapple ends, the ankheg can bite only the grappled creature and has advantage on attack rolls to do so."
+                    elif mob in ["Wolf", "Dire Wolf"]:
+                        dc = "11"
+                        if mob == "Dire Wolf": dc = "13"
+                        extra_text = f". If the target is a creature, it must succeed on a DC {dc} Strength saving throw or be knocked prone."
+                    elif mob in ["Vampire Spawn"]:
+                        extra_text = f". The target's hit point maximum is reduced by an amount equal to the necrotic damage taken, and the vampire regains hit points equal to that amount. The reduction lasts until the target finishes a long rest. The target dies if this effect reduces its hit point maximum to 0."
+                elif action in ["Pseudobeak"]:
+                    extra_text += f" The {mob_name} regains hit points equal to half the acid damage dealt."
+                elif action in ["Bubbling Hiss"]:
+                    reach = ""
+                    extra_text = f"The gooze ferociously hisses and exhales acidic bubbles in a 15-foot cone. Each creature in that area must make a DC 14 Dexterity saving throw, taking 21 (6d6) acidic damage on a failed save, or half as much damage on a successful one. A creature taking 10 or more acidic damage in this way is also frightened untill the end of its next turn."
+                elif action in ["Slug Hug"]:
+                    reach = ""
+                    extra_text = f"The hug slug reaches out toward a creature within 5 feet of it while emitting squeaking, croaking and grunting sounds. The creature must succeed on a DC 7 Wisdom saving throw, or use its reaction to grapple the hug slug. The creature can choose to fail the saving throw. A creature grappling the hug slug gains 3 (1d6) temporary hit points at the start of each of its turns. When the grapple ends, the creature must succeed on a DC 12 Consititution saving throw or be poisoned for 1 minute. The creature must repeat the saving throw ath the end of each of its turns, taking 3 (1d6) poison damage on a failure or ending the poison on itself on a success."
+                elif action in ["Fire Breath", "Cold Breath"]:
+                    reach = ""
+                    size = "30"
+                    if "Wyrmling" in mob:
+                        size = "15"
+                    if "Fire" in action:
+                        save = "17 Dexterity"
+                        dmg = "56 (16d6)"
+                        if "Wyrmling" in mob:
+                            save = "13 Dexterity"
+                            dmg = "24 (7d6)"
+                    elif "Cold" in action:
+                        save = "15 Constitution"
+                        dmg = "45 (10d8)"
+                    extra_text = f"(Recharge 5–6). The dragon exhales {action.split(' ')[0].lower()} in a {size}-foot cone. Each creature in that area must make a DC {save} saving throw, taking {dmg} {action.split(' ')[0].lower()} damage on a failed save, or half as much damage on a successful one."
+                elif action in ["Claws"]:
+                    if mob == "Ghast":
+                        extra_text = f". If the target is a creature other than an undead, it must succeed on a DC 10 Constitution saving throw or be paralyzed for 1 minute. The target can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success."
+                    if mob == "Vampire Spawn":
+                        extra_text = f". Instead of dealing damage, the vampire can grapple the target (escape DC 13)."
+                elif action in ["Horrifying Visage"]:
+                    reach = ""
+                    if mob == "Banshee":
+                        extra2 = "with disadvantage if the banshee is within line of sight, "
+                        extra = ""
+                        extra3 = ""
+                    if mob == "Ghost":
+                        extra = "If the save fails by 5 or more, the target also ages 1d4 × 10 years. "
+                        extra2 = ""
+                        extra3 = " The aging effect can be reversed with a greater restoration spell, but only within 24 hours of it occurring."
+                    extra_text = f"Each non-undead creature within 60 feet of the {mob_name} that can see it must succeed on a DC 13 Wisdom saving throw or be frightened for 1 minute. {extra}A frightened target can repeat the saving throw at the end of each of its turns, {extra2}ending the effect on itself on a success. If a target's saving throw is successful or the effect ends for it, the target is immune to the {mob_name}'s Horrifying Visage for the next 24 hours.{extra3}"
+                elif action in ["Wail"]:
+                    reach = ""
+                    extra_text = f"(1/Day). The banshee releases a mournful wail, provided that she isn’t in sunlight. This wail has no effect on constructs and undead. All other creatures within 30 feet of her that can hear her must make a DC 13 Constitution saving throw. On a failure, a creature drops to 0 hit points. On a success, a creature takes 10 (3d6) psychic damage."
+                elif action in ["Create Specter"]:
+                    reach = ""
+                    extra_text = f"The wraith targets a humanoid within 10 feet of it that has been dead for no longer than 1 minute and died violently. The target's spirit rises as a specter in the space of its corpse or in the nearest unoccupied space. The specter is under the wraith's control. The wraith can have no more than seven specters under its control at one time."
+                elif action in ["Life Drain"]:
+                    extra_text = f". The target must succeed on a DC 14 Constitution saving throw or its hit point maximum is reduced by an amount equal to the damage taken. This reduction lasts until the target finishes a long rest. The target dies if this effect reduces its hit point maximum to 0."
+                elif action in ["Etherealness"]:
+                    reach = ""
+                    extra_text = f"The ghost enters the Ethereal Plane from the Material Plane, or vice versa. It is visible on the Material Plane while it is in the Border Ethereal, and vice versa, yet it can't affect or be affected by anything on the other plane."
+                elif action in ["Possession"]:
+                    reach = ""
+                    extra_text = f"(Recharge 6). One humanoid that the ghost can see within 5 feet of it must succeed on a DC 13 Charisma saving throw or be possessed by the ghost; the ghost then disappears, and the target is incapacitated and loses control of its body. The ghost now controls the body but doesn't deprive the target of awareness. The ghost can't be targeted by any attack, spell, or other effect, except ones that turn undead, and it retains its alignment, Intelligence, Wisdom, Charisma, and immunity to being charmed and frightened. It otherwise uses the possessed target's statistics, but doesn't gain access to the target's knowledge, class features, or proficiencies. The possession lasts until the body drops to 0 hit points, the ghost ends it as a bonus action, or the ghost is turned or forced out by an effect like the dispel evil and good spell. When the possession ends, the ghost reappears in an unoccupied space within 5 feet of the body. The target is immune to this ghost's Possession for 24 hours after succeeding on the saving throw or after the possession ends."
+
+                text = f"{attack_type}{extra_to_hit}{reach}{target_count}{damage}{damage_type}{extra_damage}{extra_type}{extra_text}"
+                if V.mob_dict[mob]["Real_Actions"].get(action) == None:
+                    V.mob_dict[mob]["Real_Actions"][action] = {"Text": "",
+                                                               "Can_Damage": False,
+                                                               "Damage": "",
+                                                               "Hit_mod": "",
+                                                               }
+                V.mob_dict[mob]["Real_Actions"][action]["Text"] = text
+                V.mob_dict[mob]["Real_Actions"][action]["Can_Damage"] = can_damage
+                V.mob_dict[mob]["Real_Actions"][action]["Damage"] = damage_saved
+                V.mob_dict[mob]["Real_Actions"][action]["Hit_mod"] = Hit_mod
+                if print_results: print(action.replace("R:", "") + ".", V.mob_dict[mob]["Real_Actions"][action]["Text"])
 

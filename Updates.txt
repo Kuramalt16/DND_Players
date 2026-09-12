@@ -11,6 +11,9 @@ Melee weapon effect needs to be checked probably does nothing in spells
 might be a bug in items when trying to equip its possible another "," shows up. needs testing
 
 BUG: missing passive perception
+BUG: crash on spell simplified view Ranger spells
+BUG: players getting new chars mix up in the Variables.py file
+BUG: Ranger Beast master doesnt exist.
 
 TEST:
 

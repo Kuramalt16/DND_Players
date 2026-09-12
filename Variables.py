@@ -11,6 +11,7 @@ SECRETS = {}
 images = {}
 
 spell_slots = {} # this variable holds unused spell slots, once it's used gets reduced. format: {'1st': 4, '2nd': 3, '3rd': 2, 'Natural Recovery': 2}
+max_spell_slots = {}
 
 short_rest = []
 long_rest = []
@@ -22,15 +23,37 @@ Proficiecy_bonus = 0
 spellcasting_ability_mod = 0
 
 d20_img_count = 0
-d20_dice_images = []
+# d20_dice_images = []
 
 Special_Flags = {} # check Help.py
 
 consentration = {}
 
-Players_to_Chars = {"Laura": ["New", "Etheria", "Ru`ahala", "Kugel"],"Rokas": ["New", "Conan", "Crocus"],"Simonas": ["New", "Kalabrimbur", "Galandir"],"Rita": ["New"],"Admin": ["New", "GAR"],}
+Players_to_Chars = {"Laura": ["New", "Etheria", "Ru`ahala", "Kugel"],"Rokas": ["New", "Conan", "Crocus", "Nyx"],"Simonas": ["New", "Kalabrimbur", "Galandir"],"Rita": ["New", "Eloise"],"Admin": ["New", "GAR", "L", "Nyx2"],}
 
 Languages = ["Common", "Elvish", "Thieves Cant", "Dwarvish", "Orcish", "Draconic", "Goblin", "Druidic", "Celestial", "Giant", "Gnomish", "Abyssal", "Infernal", "Sylvan", "Undercommon"]
+
+mob_type_to_language = {
+    "Dragons": "Draconic",
+    "Dwarf": "Dwarvish",
+    "Elf": "Elvish",
+    "Gnome": "Gnomish",
+    "Giants": "Giant",
+    "Goblin": "Goblin",
+    "Orc": "Orcish",
+    "Celestials": "Celestial",
+    "Fey": "Sylvan",
+    "Fiends": "Infernal",
+    "Gnoll": "Gnoll",
+    "Dragonborn": "Draconic",
+    "Kobold": "Draconic",
+    "Bugbear": "Goblin",
+    "Aarakocra": "Auran",
+    "Aasimar": "Celestial",
+    "Genasi": "Primordial",
+    "Kenku": "Auran"
+
+}
 
 Skills = {
     "Acrobatics": [0, "DEX"],
@@ -276,8 +299,8 @@ Actions = {
 
 Other_caviots = {
                      "Turn dynamics":{"Description": "During one round which is aprox 6 sec. you can: \n 1: walk up to your speed; \n 2: Use an Action; \n 3: Use a Bonus Action; \n 4: Use a Reaction;"},
-                     "Reactions": {"Description": "A Reaction is an action made in response to something."},
-                     "Bonus Actions": {"Description": "A Bonus action is basically another Action"},
+                     "Reactions": {"Description": "A Reaction is an action made in response to something. Some actions names are written in a Red color, that means it is a Reaction"},
+                     "Bonus Actions": {"Description": "A Bonus action is basically another Action, Some actions names are written in a Navy (blueish) color, that means it is a bonus action"},
                      "Two-weapon fighting": {"Description": "When having two weapons in your hands you can make a second attack with your weapon as a bonus action but don't add the modifier on the second attack"},
                      "Shove": {"Description": "If the target is not more than one size larger than you, you can knock it prone or push it 5ft away from you make an Athletics check vs opponents Athletics or Acrobatics check."},
                      "Grapple": {"Description": "If the target is not more than one size larger than you, you can roll Atheltics check vs opponents Athletics or Acrobatics check. If you succeed target has the Grappled Condition, you can end it without an action."},
@@ -301,7 +324,17 @@ char_max_hp_tracker = "" # specificly for the exhaustion lv4 condition
 
 spell_effects = {} # effects of spells such as Mage Armour spell
 
-available_subclasses = ["Roguish Archetype", "Patron", "Druid Circle", "Primal Path", "Martial Archetype", "Sacred Oath", "Blood Hunter Order", "Arcane Tradition", "Sorcerous Origin"]
+available_subclasses = [
+    "Roguish Archetype",
+    "Patron",
+    "Druid Circle",
+    "Primal Path",
+    "Martial Archetype",
+    "Sacred Oath",
+    "Blood Hunter Order",
+    "Arcane Tradition",
+    "Sorcerous Origin",
+    "Ranger Archetype"]
 available_classes = ["Barbarian", "Blood Hunter", "Druid", "Fighter", "Paladin", "Ranger", "Rogue", "Sorcerer", "Warlock", "Wizard"]
 BASE_SPEED = 0
 SPEED_OFFSET = 0
@@ -324,3 +357,7 @@ EQUIPED_CHAR_ITEMS = {}
 Rites = {}
 
 Roll_history = []
+
+char_config = {}
+
+Ranger_Companion = {}

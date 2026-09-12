@@ -19,9 +19,7 @@ def check_text_pass(text_dict):
             return "Admin"
     return None
 
-S.local_path = os.getcwd() + "/DND_Players"
-
-
+S.local_path = os.getcwd()
 # F.rename_images_in_folder(S.local_path + "/Images/Background/Roling_Dice/D4/1")  #at the end of the path last folder doesn't need /
 # F.fix_files(S.local_path + "/Images/Background/Roling_Dice/D20/20")
 

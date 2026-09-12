@@ -339,19 +339,40 @@ def selected_mob_display(selected, screen, clock):
         pg.display.flip()
         clock.tick(60)  # limits FPS to 60
 
-def display_mob(mob, screen, mob_name):
-    rect = F.add_image_to_screen(screen, mob_name, (S.SCREEN_WIDTH * 0.7, S.SCREEN_HEIGHT * 0.05, S.SCREEN_WIDTH * 0.25, S.SCREEN_HEIGHT * 0.3), "mob")
+def display_mob(mob, screen, mob_name, pos=None, disp_hp=True, override=None):
+    img_x = S.SCREEN_WIDTH * 0.7
+    img_y = S.SCREEN_HEIGHT * 0.05
+    img_w = S.SCREEN_WIDTH * 0.25
+    img_h = S.SCREEN_HEIGHT * 0.3
+    start_y = S.SCREEN_HEIGHT * 0.02
+    start_x = S.SCREEN_WIDTH * 0.02
+    step_y = S.SCREEN_HEIGHT * 0.05
+    if override != None and "Health" in override:
+        mob_hp = override["Health"]
+    else:
+        mob_hp = mob["Health"]
 
-    remainder = round(((int(mob["Health"][0]) / int(mob["Health"][1])) - 1) * -1, 3)
-    health_bar_x = rect.x
-    health_bar_w = rect.w
-    health_bar_y = rect.y + rect.h
-    health_bar_h = 0
-    health_bar_h_final = rect.h
-    pg.draw.rect(screen, "red", pg.Rect(health_bar_x, health_bar_y - (health_bar_h_final * remainder), health_bar_w,health_bar_h + (health_bar_h_final * remainder)))
+    if pos != None:
+        img_x = pos[0]
+        img_y = pos[1]
+        img_w = pos[2]
+        img_h = pos[3]
+        start_y = pos[4]
+        start_x = pos[5]
+        step_y = pos[6]
 
-    if remainder >= 1:
-        F.display_text(screen, "DEAD", 30, (rect.x + rect.w / 2, rect.y + rect.h / 2), case="C")
+    rect = F.add_image_to_screen(screen, mob_name, (img_x, img_y, img_w, img_h), "mob")
+    if disp_hp:
+        remainder = round(((int(mob_hp[0]) / int(mob_hp[1])) - 1) * -1, 3)
+        health_bar_x = rect.x
+        health_bar_w = rect.w
+        health_bar_y = rect.y + rect.h
+        health_bar_h = 0
+        health_bar_h_final = rect.h
+        pg.draw.rect(screen, "red", pg.Rect(health_bar_x, health_bar_y - (health_bar_h_final * remainder), health_bar_w,health_bar_h + (health_bar_h_final * remainder)))
+
+        if remainder >= 1:
+            F.display_text(screen, "DEAD", 30, (rect.x + rect.w / 2, rect.y + rect.h / 2), case="C")
 
 
 
@@ -386,12 +407,6 @@ def display_mob(mob, screen, mob_name):
         4: "WIS: ",
         5: "CHA: ",
     }
-    start_y = S.SCREEN_HEIGHT * 0.02
-    start_x = S.SCREEN_WIDTH * 0.02
-    step_y = S.SCREEN_HEIGHT * 0.05
-
-    if isinstance(mob["Health"], str) or isinstance(mob["Health"], int):
-        mob["Health"] = [int(mob["Health"]), int(mob["Health"])]
 
     F.display_text(screen, "Name: " + mob_name, 20, (start_x, start_y))
     start_y += step_y
@@ -400,7 +415,7 @@ def display_mob(mob, screen, mob_name):
     start_y += step_y
 
     r = F.display_text(screen, "Health: ", 20, (20, start_y))
-    F.display_text(screen, str(mob["Health"][0]) + "|" + str(mob["Health"][1]), 20, (start_x + r.w, start_y), color="red")
+    F.display_text(screen, str(mob_hp[0]) + "|" + str(mob_hp[1]), 20, (start_x + r.w, start_y), color="red")
     start_y += step_y
 
     r = F.display_text(screen, "Type: " + mob["Type"], 20, (20, start_y))
@@ -500,7 +515,7 @@ def display_mob(mob, screen, mob_name):
     start_y += step_y
 
 
-def WildShape(screen, clock, selected):
+def WildShape(screen, clock, selected, special_case="Wildshape"):
     running = True
     pressed = -1
 
@@ -514,8 +529,24 @@ def WildShape(screen, clock, selected):
     txt_dict = {"Heal": ["", 0]}
     selected_entry = -1
 
+    if special_case == "Ranger's Companion" and V.Ranger_Companion == {}:
+        if int(V.character_dict[V.char_name]["Level"]) * 4 > int(V.mob_dict[selected]["Health"][1]):
+            disp_hp = int(V.character_dict[V.char_name]["Level"]) * 4
+        else:
+            disp_hp = int(V.mob_dict[selected]["Health"][1])
+
+        V.Ranger_Companion = {
+            "Name": selected,
+            "Health": [disp_hp, disp_hp],
+        }
+        V.mob_dict[selected]["Health"] = V.Ranger_Companion["Health"]
+
+    elif special_case == "Ranger's Companion" and V.Ranger_Companion != {}:
+        V.mob_dict[selected]["Health"] = V.Ranger_Companion["Health"]
+
     while running:
-        if int(V.mob_dict[selected]["Health"][0]) <= 0:
+        if int(V.mob_dict[selected]["Health"][0]) <= 0 and special_case == "Wildshape":
+            """IF mob gets too hurt reduce player hp tiek kiek persinesa wildshape only"""
             V.character_dict[V.char_name]["Health"][0] += int(V.mob_dict[selected]["Health"][0])
             V.mob_dict[selected]["Health"] = [int(V.mob_dict[selected]["Health"][1]), int(V.mob_dict[selected]["Health"][1])]
             return
@@ -530,6 +561,7 @@ def WildShape(screen, clock, selected):
 
         """Display mob data"""
         display_mob(V.mob_dict[selected], screen, selected)
+
 
         """Display back button"""
         buttons = F.display_back_button(screen, "Switch back")
@@ -593,6 +625,7 @@ def WildShape(screen, clock, selected):
             if keys[pg.K_BACKSPACE] and selected_entry != -1 and not keys[pg.K_LCTRL]:
                 property = list(txt_dict.keys())[selected_entry]
                 txt_dict[property][0] = txt_dict[property][0][:-1]
+
             elif keys[pg.K_BACKSPACE] and selected_entry != -1 and keys[pg.K_LCTRL]:
                 property = list(txt_dict.keys())[selected_entry]
                 text_list = txt_dict[property][0].split(", ")[:-1]
@@ -600,10 +633,10 @@ def WildShape(screen, clock, selected):
                 for text in text_list:
                     txt_dict[property][0] += text + ", "
                 txt_dict[property][0] = txt_dict[property][0][:-2]
+
             elif keys[pg.K_RETURN] or keys[pg.K_KP_ENTER]:
                 """Update hp"""
                 txt_dict, selected_entry, got_damaged = dCh.update_char_hp_based_on_entry(V.mob_dict[selected], txt_dict, selected_entry, screen, clock, temp_hp=False)
-
         F.update_text(txt_dict, [enter_hp], screen)
 
         if selected_entry != -1:
@@ -612,6 +645,9 @@ def WildShape(screen, clock, selected):
         pg.display.flip()
         clock.tick(60)
         timer = F.reset_timer(timer)
+
+    if special_case == "Ranger's Companion":
+        V.Ranger_Companion["Health"] = V.mob_dict[selected]["Health"]
 
 def Initialize_mob_actions(character, screen, clock, mob_name):
     """Items have actions spell slots have actions"""
@@ -707,9 +743,12 @@ def Initialize_mob_actions(character, screen, clock, mob_name):
     weapon_scroll = 0
 
     notice = [] # Place holder for notes to the user
-    unknown_list.remove("Feature:Wild Shape")
+    if "Feature:Wild Shape" in unknown_list:
+        unknown_list.remove("Feature:Wild Shape")
 
     show_slots = False  # a flag used to show the player his spell slots
+    ammo_count = F.get_ammo_count(weapon_list)
+    slot_to_display = (0, 0)
 
     while running:
         if V.Condition == 'Exhaustion lv6':
@@ -734,20 +773,20 @@ def Initialize_mob_actions(character, screen, clock, mob_name):
 
         buttons = F.display_back_button(screen, "Back")
 
-        slot_rect = F.display_text(screen, "Spell Slots", 20, (S.SCREEN_WIDTH * 0.88, S.SCREEN_HEIGHT * 0.2))
-        pg.draw.rect(screen, "black", slot_rect, width=2)
+        # slot_rect = F.display_text(screen, "Spell Slots", 20, (S.SCREEN_WIDTH * 0.88, S.SCREEN_HEIGHT * 0.2))
+        # pg.draw.rect(screen, "black", slot_rect, width=2)
 
         x_pos = [S.SCREEN_WIDTH * 0.05, S.SCREEN_WIDTH * 0.27, S.SCREEN_WIDTH * 0.52]
         y_pos = [S.SCREEN_HEIGHT * 0.9, S.SCREEN_HEIGHT * 0.12]
 
-        slot_surface = F.display_spell_slots(screen, show_slots)
+        slot_to_add_dict = F.display_spell_slots(screen, slot_to_display)
 
         button_dict = A.handle_Consentration(screen, button_dict)
 
         buttons = buttons + F.display_any_buttons(screen, x_pos, y_pos, button_width, button_height, button_dict)
 
-        rect_dict = A.display_weapons(weapon_screen, weapon_list, ammo_count, weapon_scroll)
-        rect_dict.update(display_mob_attacks(weapon_screen, mob_attacks, weapon_scroll, mob_name, rect_dict))
+        rect_dict, start_y = A.display_weapons(weapon_screen, weapon_list, ammo_count, weapon_scroll)
+        rect_dict.update(display_mob_attacks(weapon_screen, mob_attacks, weapon_scroll, mob_name, rect_dict, start_y))
         rect_dict.update(display_mob_abilities(spell_screen, mob_abilities, spell_scroll, mob_name))
         rect_dict.update(A.display_features(feature_screen, unknown_list, feat_list, feature_scroll))
 
@@ -949,13 +988,19 @@ def Initialize_mob_actions(character, screen, clock, mob_name):
                             hovering_mouse = [name, property, rect, rect_dict[name]["Type"], mob_name]
                             didnt_find_it = False
                             break
+                slot_to_display = (0, 0)
+                for slot in slot_to_add_dict:
+                    for plus_or_minus, rect in slot_to_add_dict[slot].items():
+                        if rect.collidepoint(mouse_pos):
+                            slot_to_display = (slot, plus_or_minus)
+                            break
                 if didnt_find_it:
                     hovering_mouse = -1
-                if slot_rect.collidepoint(mouse_pos):
-                    """When colliding with this rect shows spells"""
-                    show_slots = True
-                else:
-                    show_slots = False
+                # if slot_rect.collidepoint(mouse_pos):
+                #     """When colliding with this rect shows spells"""
+                #     show_slots = True
+                # else:
+                #     show_slots = False
             elif event.type == pg.MOUSEBUTTONDOWN and event.button == 4 or event.type == pg.KEYDOWN and event.key == pg.K_UP:
                 mouse_pos = pg.mouse.get_pos()
                 if mouse_pos[0] in range(int(S.SCREEN_WIDTH * 0.31), int(S.SCREEN_WIDTH * 0.5)):
@@ -985,16 +1030,15 @@ def Initialize_mob_actions(character, screen, clock, mob_name):
             screen.blit(text_surface, mouse_pos)
 
         critical_fail, critical_success = F.display_nat_20_or_1(screen, critical_fail, critical_success)
-        if slot_surface != 0:
-            screen.blit(slot_surface, (0, 0))
+        # if slot_surface != 0:
+        #     screen.blit(slot_surface, (0, 0))
         pg.display.flip()
         clock.tick(60)
 
 def get_mob_attacks(mob_dict):
     mob_actions = mob_dict["Actions"].split(", ")
     return  mob_actions
-def display_mob_attacks(screen, mob_actions, scroll, mob_name, rect_dict):
-    start_y = 0
+def display_mob_attacks(screen, mob_actions, scroll, mob_name, rect_dict, start_y):
     for weapon_name, values in rect_dict.items():
         for key, rect in values.items():
             if isinstance(rect, pg.Rect) and rect.y > start_y:
@@ -1179,55 +1223,124 @@ def handle_diferent_special_flags(function_name, screen, clock, character):
 
 def universal_combobox_screen(screen, clock, character, first_combobox_data, function_name):
 
-
-    functions_implemented = ["Favored Enemy"]
+    with open(S.local_path + '/Created_Players/' + V.char_name + '_config.json', 'r') as file:
+        char_config_data = json.load(file)
+    functions_implemented = ["Favoured Enemy", "Natural Explorer", "Ranger's Companion"]
     running = True
+    combobox_choises = {}
+    big_rect = {}
+    if char_config_data.get("Choises") != None and char_config_data["Choises"].get(function_name) != None:
+        return
 
     if function_name not in functions_implemented:
         F.print_debug("DONT KNOW THE FUNCTION, pLS HELP SPECIAL_NEEDS.py universal_combobox_screen", function_name, debug="ERROR")
         running = False
 
-    if "CHOOSE_OR" == first_combobox_data[0]:
-        first_combobox_count = int(first_combobox_data[1])
-        second_combobox_data = S.Class_features[function_name]["Chose_Or"][2:]
-        second_combobox_count = int(S.Class_features[function_name]["Chose_Or"][1])
+    if "--" in first_combobox_data[2]:
+        """--Mob:Beast"""
+        new_list = []
+        if first_combobox_data[2].split(":")[0] == "--Mob":
+            type = first_combobox_data[2].split(":")[1]
+            if V.mob_dict == {}:
+                mob_data = F.read_db_table("monsters")
+                V.mob_dict = F.add_to_dict_db_results(mob_data, V.mob_dict, "mobs")
+                F.get_mob_actions()
+            for mob in V.mob_dict:
+                if type == V.mob_dict[mob]["Type"]:
+                    if function_name == "Ranger's Companion" and float(V.mob_dict[mob]["Challange"]) <= 0.25:
+                        """Added check that CR must be lower or equal to 0.25"""
+                        new_list.append(mob)
+            first_combobox_data[2:] = new_list
 
+    if "CHOOSE_OR" == first_combobox_data[0]:
+        amounts = [int(first_combobox_data[1]), int(S.Class_features[function_name]["Chose_Or"][1])]
+        choises_list = [first_combobox_data[2:], S.Class_features[function_name]["Chose_Or"][2:]]
+        functions = [function_name, function_name + "|Humanoid"]
     elif "CHOOSE" == first_combobox_data[0]:
-        first_combobox_count = int(first_combobox_data[1])
-        second_combobox_count = 0
-        second_combobox_data = []
+        amounts = [int(first_combobox_data[1])]
+        choises_list = [first_combobox_data[2:]]
+        functions = [function_name]
     else:
-        first_combobox_count = 0
-        second_combobox_count = 0
-        second_combobox_data = []
+        amounts = [0]
+        functions = []
+        choises_list = []
     pressed = -1
-    combobox_selected = -1
+    limited_choises = []
+
+
+    to_display = "Description"
+    y_scroll = 0
     while running:
         F.add_image_to_screen(screen, "background", (0, 0, S.SCREEN_WIDTH, S.SCREEN_HEIGHT), "Background")
-        buttons = F.display_back_button(screen, "Back")
+        buttons = F.display_back_button(screen, "Save")
+        pos = F.display_text(screen, function_name, 28, (S.SCREEN_WIDTH * 0.5, S.SCREEN_HEIGHT * 0.1), case="C")
 
-        combobox_x = [S.SCREEN_WIDTH * 0.1, S.SCREEN_WIDTH * 0.3]
-        combobox_y = [S.SCREEN_HEIGHT * 0.2, S.SCREEN_HEIGHT * 0.2]
-        combobox_w = S.SCREEN_WIDTH * 0.15
-        combobox_h = S.SCREEN_HEIGHT * 0.03
-        combobox_y_index = 0
-        combobox_rects = []
-        for i in range(0, first_combobox_count):
-            if i == combobox_selected:
-                rect = draw_combobox(screen, (combobox_x[i], combobox_y[combobox_y_index], combobox_w, combobox_h), "Choose " + function_name, "open", first_combobox_data)
-            else:
-                rect = draw_combobox(screen, (combobox_x[i], combobox_y[combobox_y_index], combobox_w, combobox_h), "Choose " + function_name, "Closed")
-            combobox_rects.append(rect)
-        for i in range(len(combobox_rects), second_combobox_count):
-            if i == combobox_selected:
-                rect = draw_combobox(screen, (combobox_x[i], combobox_y[combobox_y_index], combobox_w, combobox_h), "Choose " + function_name, "open", second_combobox_data)
-            else:
-                rect = draw_combobox(screen, (combobox_x[i], combobox_y[combobox_y_index], combobox_w, combobox_h), "Choose " + function_name, "Closed")
-            combobox_rects.append(rect)
+        d = F.display_text(screen, to_display + ": ", 14, (S.SCREEN_WIDTH * 0.5, S.SCREEN_HEIGHT * 0.1 + pos.h * 2 + y_scroll))
+        for w in S.Class_features[function_name][to_display].split(" "):
+            w = w.replace("\n\n", "")
+            d = F.display_text(screen, w + " ", 14, (d.x + d.w, d.y))
+            if d.x + d.w > S.SCREEN_WIDTH * 0.9:
+                d.x = S.SCREEN_WIDTH * 0.5
+                d.w = 0
+                d.y += d.h * 1.1
 
-        F.display_text(screen, function_name, 30, (S.SCREEN_WIDTH * 0.5, S.SCREEN_HEIGHT * 0.1), case="C")
+        for ii, key in enumerate(functions):
+            if big_rect.get(key) == None:
+                big_rect[key] = []
+            if "CHOOSE_OR" in first_combobox_data[0]:
+                if key not in limited_choises:
+                    limited_choises.append(key)
+            amount = amounts[ii]
+            choises = choises_list[ii]
+            while len(big_rect[key]) < amount:
+                big_rect[key].append(pg.Rect(0, 0, 0, 0))
+
+            pos = F.display_text(screen, key, 14, (S.SCREEN_WIDTH * 0.1, pos.y + pos.h * 1.3))
+
+            for i in range(amount):
+                if combobox_choises.get(key + str(i)) == None:
+                    combobox_choises[key + str(i)] = {"Text": "Choose",
+                                                      "Rect": 0,
+                                                      "Expand": False,
+                                                      "Hover": "",
+                                                      "Choises": []}
+
+                pg.draw.rect(screen, (240, 240, 240, 255), big_rect[key][i])
+                pos = F.display_text(screen, f"{combobox_choises[key + str(i)]["Text"]}", 14, (S.SCREEN_WIDTH * 0.1, pos.y + pos.h * 1.2))
+                pg.draw.rect(screen, (100, 100, 100, 255) if pressed == key + str(i) else (240, 240, 240, 255), (pos))
+                F.display_text(screen, f"{combobox_choises[key + str(i)]["Text"]}", 14, (pos.x, pos.y))  # Redraw text
+                pg.draw.line(screen, S.Standart_color, (pos.x, pos.y + pos.h), (pos.x + big_rect[key][i].w, pos.y + pos.h), width=2)
+                if not combobox_choises[key + str(i)]["Expand"]:
+                    big_rect[key][i] = pos
+                    combobox_choises[key + str(i)]["Rect"] = pg.draw.rect(screen, S.Standart_color, (pos.x - 2, pos.y - 2, pos.w + 4, pos.h + 4), width=2)
+                else:
+                    for choise in choises:
+                        pos = F.display_text(screen, f"{choise}", 14, (S.SCREEN_WIDTH * 0.1, pos.y + pos.h))
+                        pg.draw.rect(screen, (100, 100, 100, 255) if combobox_choises[key + str(i)]["Hover"] == choise + ":" + key + str(i) else (240, 240, 240, 255),(pos.x, pos.y + 1, big_rect[key][i].w, pos.h - 1))
+                        F.display_text(screen, f"{choise}", 14, (pos.x, pos.y))
+                        highlight = 2 if pressed == choise + ":" + key + str(i) else 1
+                        combobox_choises[key + str(i)]["Choises"].append((pg.Rect(pos.x, pos.y, big_rect[key][i].w, pos.h), choise))
+                        pg.draw.line(screen, S.Standart_color, (pos.x, pos.y + pos.h), (pos.x + big_rect[key][i].w, pos.y + pos.h), width=highlight)
+                        if big_rect[key][i].w < pos.w:
+                            big_rect[key][i].w = pos.w
+                    big_rect[key][i] = pg.Rect(big_rect[key][i].x, big_rect[key][i].y, big_rect[key][i].w, (pos.y + pos.h + 4) - big_rect[key][i].y)
+                    pg.draw.rect(screen, S.Standart_color, (big_rect[key][i].x - 2, big_rect[key][i].y - 2, big_rect[key][i].w + 4, (pos.y + pos.h + 4) - big_rect[key][i].y), width=2)
+
+        if function_name == "Ranger's Companion" and combobox_choises[function_name + "0"]["Text"] != "Choose":
+            p = [
+                S.SCREEN_WIDTH * 0.38,
+                S.SCREEN_HEIGHT * 0.2,
+                S.SCREEN_WIDTH * 0.1,
+                S.SCREEN_HEIGHT * 0.15,
+                S.SCREEN_HEIGHT * 0.21,
+                S.SCREEN_WIDTH * 0.02,
+                S.SCREEN_HEIGHT * 0.04
+            ]
+            display_mob(V.mob_dict[combobox_choises[function_name + "0"]["Text"]], screen, combobox_choises[function_name + "0"]["Text"], pos=p, disp_hp=False)
+
 
         for event in pg.event.get():
+            mouse_pos = pg.mouse.get_pos()
             if event.type == pg.QUIT:
                 running = False
             elif event.type == pg.VIDEORESIZE:
@@ -1236,7 +1349,6 @@ def universal_combobox_screen(screen, clock, character, first_combobox_data, fun
                 screen = pg.display.set_mode((S.SCREEN_WIDTH, S.SCREEN_HEIGHT), pg.RESIZABLE)
             if event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
                 mouse_pos = pg.mouse.get_pos()
-                combobox_selected = -1
                 for i in range(0, len(buttons)):
                     if buttons[i].collidepoint(mouse_pos):
                         pressed = "Back"
@@ -1244,21 +1356,86 @@ def universal_combobox_screen(screen, clock, character, first_combobox_data, fun
                         # for key, value in button_dict.items():
                         #     if value[3] == buttons[i]:
                         #         pressed = value[0]
-                for i in range(0, len(combobox_rects)):
-                    if combobox_rects[i].collidepoint(mouse_pos):
-                        pg.draw.rect(screen, "black", combobox_rects[i], width=3)
-                        pressed = str(i)
-                        break
+                if combobox_choises != {}:
+                    found = False
+                    for key, value in combobox_choises.items():
+                        if value["Rect"].collidepoint(mouse_pos):
+                            pressed = key
+                        if value["Expand"]:
+                            """Expanded, check the rects for collision and secure the choise"""
+                            for (ch_rect, ch) in value["Choises"]:
+                                if ch_rect.collidepoint(mouse_pos):
+                                    pressed = "Chose_Made:" + key + ":" + ch
+                                    found = True
+                                    break
+                        if found:
+                            break
             elif event.type == pg.MOUSEBUTTONUP and event.button == 1:
                 if pressed != -1:
-                    mouse_pos = pg.mouse.get_pos()
                     if pressed == "Back":
-                        return
-                    elif isinstance(pressed, str) and pressed.isdigit():
-                        """pressed on a combobox"""
-                        combobox_selected = int(pressed)
-                pressed = -1
+                        if char_config_data.get("Choises") == None:
+                            char_config_data["Choises"] = {}
+                        for key in combobox_choises:
+                            if combobox_choises[key]["Text"] != "Choose":
+                                if char_config_data["Choises"].get(key[:-1].replace("|Humanoid", "")) == None:
+                                    char_config_data["Choises"][key[:-1].replace("|Humanoid", "")] = combobox_choises[key]["Text"]
+                                else:
+                                    if not isinstance(char_config_data["Choises"][key[:-1].replace("|Humanoid", "")], list):
+                                        char_config_data["Choises"][key[:-1].replace("|Humanoid", "")] = [char_config_data["Choises"][key[:-1].replace("|Humanoid", "")]]
+                                    char_config_data["Choises"][key[:-1].replace("|Humanoid", "")].append(combobox_choises[key]["Text"])
 
+                        with open(S.local_path + '/Created_Players/' + V.char_name + '_config.json', 'w') as file:
+                            json.dump(char_config_data, file, indent=4)
+                        return
+                    elif combobox_choises.get(pressed) != None and combobox_choises[pressed]["Rect"].collidepoint(mouse_pos):
+                        """Clicked on combobox, expand it."""
+                        if combobox_choises[pressed]["Expand"]:
+                            combobox_choises[pressed]["Expand"] = False
+                        else:
+                            combobox_choises[pressed]["Expand"] = True
+                            combobox_choises[pressed]["Text"] = "Choose"
+                            if pressed[:-1] in limited_choises:
+                                """Pressed a limited choise combobox, cancel the other ones"""
+                                for k in limited_choises:
+                                    if k != pressed[:-1]:
+                                        for i in range(999):
+                                            if combobox_choises.get(k + str(i)) != None:
+                                                combobox_choises[k + str(i)]["Expand"] = False
+                                                combobox_choises[k + str(i)]["Text"] = "Choose"
+                                            else:
+                                                break
+                    elif "Chose_Made:" in pressed:
+                        key = pressed.split(":")[1]
+                        choise = pressed.split(":")[2]
+                        combobox_choises[key]["Text"] = choise
+                        combobox_choises[key]["Expand"] = False
+                else:
+                    for choise in combobox_choises:
+                        if combobox_choises[choise]["Expand"]:
+                            combobox_choises[choise]["Expand"] = False
+                pressed = -1
+            elif event.type == pg.MOUSEMOTION:
+                found = False
+                for choise in combobox_choises:
+                    if combobox_choises[choise]["Expand"]:
+                        for (ch_rect, ch) in combobox_choises[choise]["Choises"]:
+                            if ch_rect.collidepoint(mouse_pos):
+                                combobox_choises[choise]["Hover"] = ch + ":" + choise
+                                found = True
+                                break
+                            if found:
+                                break
+            elif event.type == pg.MOUSEBUTTONDOWN and event.button == 2:
+                if to_display == "Description":
+                    to_display = "Description_for_dummies"
+                else:
+                    to_display = "Description"
+            elif event.type == pg.MOUSEBUTTONDOWN and event.button == 5:
+                y_scroll -= 20
+            elif event.type == pg.MOUSEBUTTONDOWN and event.button == 4:
+                y_scroll += 20
+                if y_scroll > 0:
+                    y_scroll = 0
         pg.display.flip()
         clock.tick(60)
 
@@ -1277,7 +1454,9 @@ def draw_combobox(screen, pos, text, state, data=[], text_size=10):
 
 
     else:
+        r = []
         rect = pg.Rect(pos[0], pos[1], pos[2], pos[3])
+        r.append(rect)
         pg.draw.rect(screen, "white", rect)
         pg.draw.rect(screen, "black", rect, width=1)
         F.display_text(screen, text, text_size, (rect.x, rect.y))
@@ -1288,7 +1467,13 @@ def draw_combobox(screen, pos, text, state, data=[], text_size=10):
         ]
         pg.draw.polygon(screen, "dark gray", points)
 
-        # for i in range(0, len(data)):
+        x = pos[0]
+        y = pos[1]
+        for i in range(2, len(data)):
+            pg.draw.rect(screen, "white", (x, y, pos[2], pos[3]))
+            pg.draw.rect(screen, "black", (x, y, pos[2], pos[3]), width=1)
+            F.display_text(screen, data[i], text_size, (x, y))
+            y += pos[3]
 
 
     return rect
@@ -1562,7 +1747,7 @@ def handle_font_of_magic(pressed, screen, clock):
     running = True
     text_size = 30
     pressed = -1
-    if V.spell_slots.get("Font of Magic") == None:
+    if V.spell_slots.get("Font of Magic") == None or V.spell_slots["Font of Magic"] == 0:
         return False
     sorcery_points = V.spell_slots["Font of Magic"]
     button_dict = {
@@ -1603,8 +1788,6 @@ def handle_font_of_magic(pressed, screen, clock):
                 if pressed != -1:
                     if pressed == "Back":
                         V.spell_slots["Font of Magic"] = sorcery_points
-                        if V.spell_slots["Font of Magic"] == 0:
-                            del V.spell_slots["Font of Magic"]
                         return True
                     elif pressed in ["1st", "2nd", "3rd"] and sorcery_points >= int(pressed[0]):
                         if V.spell_slots.get(pressed) == None:
