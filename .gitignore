@@ -180,7 +180,5 @@ cython_debug/
 .cursorignore
 .cursorindexingignore
 /Images/Campaign
-/Images/Items
 /Images/Maps
-/Images/Mobs
-/Images/Players
+

@@ -715,7 +715,7 @@ def Initialize_actions(screen, clock):
                 #     """When colliding with this rect shows spells"""
                 #     show_slots = True
                 #     show_history = False
-                elif hist_rect.collidepoint(mouse_pos):
+                if hist_rect.collidepoint(mouse_pos):
                     """When colliding with this rect shows spells"""
                     show_slots = False
                     show_history = True
