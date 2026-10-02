@@ -580,6 +580,12 @@ def Take_a_LONG_rest():
 
     if "Natural Recovery" in V.character_dict[V.char_name]["Code"]:
         V.Special_Flags["Natural_Recovery_Used"] = 0
+    
+    if V.Ranger_Companion != {}:
+        selected_companion = V.char_config["Choises"]["Ranger's Companion"]
+        if V.Ranger_Companion[selected_companion]["health"][0] > 0:
+            V.Ranger_Companion[selected_companion]["health"][0] = V.Ranger_Companion[selected_companion]["health"][1]
+
 
 def Take_a_SHORT_rest(screen, clock):
     """Does something with V.short_rest but doesnt touch hp dont understand it, caused errors, removed it"""

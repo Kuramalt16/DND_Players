@@ -384,6 +384,12 @@
       "Slot Level": ["--ADD", "key", "2"],
       "Favoured Enemy": ["--ADD", "key", "1"],
       "Natural Explorer": ["--ADD", "key", "1"]
+    },
+    "7": {
+        "Hit dice": ["--ADD", "key", "7d10"],
+        "Proficiency Bonus": ["--ADD", "key", "3"],
+        "Spell Slots": ["--ADD", "key", "1st:4,2nd:3"],
+        "Slot Level": ["--ADD", "key", "2"]
     }
   },
   "Paladin":

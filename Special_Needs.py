@@ -525,6 +525,10 @@ def WildShape(screen, clock, selected, special_case="Wildshape"):
         (2, 1): ["Actions", "background", "background", "rect-place-holder", "black"],
         (2, 0): ["Conditions", "background", "background", "rect-place-holder", "black"],
     }
+    if special_case == "Ranger's Companion":
+        with open(S.local_path + '/Created_Players/' + V.char_name + '_config.json', 'r') as file:
+            char_config_data = json.load(file)
+        button_dict[(0, 1)] = ["New Beast", "background", "background", "rect-place-holder", "black"]
     timer = 10
     txt_dict = {"Heal": ["", 0]}
     selected_entry = -1
@@ -537,13 +541,12 @@ def WildShape(screen, clock, selected, special_case="Wildshape"):
 
         V.Ranger_Companion = {
             "Name": selected,
-            "Health": [disp_hp, disp_hp],
+            "Health": [disp_hp, disp_hp]
         }
         V.mob_dict[selected]["Health"] = V.Ranger_Companion["Health"]
 
     elif special_case == "Ranger's Companion" and V.Ranger_Companion != {}:
         V.mob_dict[selected]["Health"] = V.Ranger_Companion["Health"]
-
     while running:
         if int(V.mob_dict[selected]["Health"][0]) <= 0 and special_case == "Wildshape":
             """IF mob gets too hurt reduce player hp tiek kiek persinesa wildshape only"""
@@ -564,7 +567,10 @@ def WildShape(screen, clock, selected, special_case="Wildshape"):
 
 
         """Display back button"""
-        buttons = F.display_back_button(screen, "Switch back")
+        if special_case == "Wildshape":
+            buttons = F.display_back_button(screen, "Switch back")
+        elif special_case == "Ranger's Companion":
+            buttons = F.display_back_button(screen, "Player")
 
         """Display other buttons"""
         x_pos = [S.SCREEN_WIDTH * 0.02, S.SCREEN_WIDTH * 0.27, S.SCREEN_WIDTH * 0.52, S.SCREEN_WIDTH * 0.77]
@@ -572,6 +578,7 @@ def WildShape(screen, clock, selected, special_case="Wildshape"):
         button_width = S.SCREEN_WIDTH / 5
         button_height = S.SCREEN_HEIGHT / 20
         buttons = buttons + F.display_any_buttons(screen, x_pos, y_pos, button_width, button_height, button_dict)
+
 
         """Run user input commands"""
         for event in pg.event.get():
@@ -591,6 +598,7 @@ def WildShape(screen, clock, selected, special_case="Wildshape"):
                         for key, value in button_dict.items():
                             if value[3] == buttons[i]:
                                 pressed = value[0]
+
                         # pressed = i
                         pg.draw.rect(screen, "black", buttons[i], width=3)
                 if enter_hp.collidepoint(mouse_pos):
@@ -616,6 +624,27 @@ def WildShape(screen, clock, selected, special_case="Wildshape"):
                         C.Select_condition(screen, clock)
                         if V.Condition == 'Exhaustion lv6':
                             return
+                    elif pressed == "New Beast":
+                        mob_name = add_wild_shape(screen, clock, [])
+                        if mob_name != None:
+                            selected = mob_name
+                            V.Ranger_Companion = {}
+                            if int(V.character_dict[V.char_name]["Level"]) * 4 > int(V.mob_dict[selected]["Health"][1]):
+                                disp_hp = int(V.character_dict[V.char_name]["Level"]) * 4
+                            else:
+                                disp_hp = int(V.mob_dict[selected]["Health"][1])
+
+                            V.Ranger_Companion = {
+                                "Name": selected,
+                                "Health": [disp_hp, disp_hp]
+                            }
+                            V.mob_dict[selected]["Health"] = V.Ranger_Companion["Health"]
+
+                            char_config_data["Choises"]["Ranger's Companion"] = selected
+                            """SAVING"""
+                            F.create_char_JSON(V.char_name, char_config_data)
+
+
                     pressed = -1
             elif event.type == pg.TEXTINPUT and selected_entry != -1:
                 property = list(txt_dict.keys())[selected_entry]
@@ -882,8 +911,8 @@ def Initialize_mob_actions(character, screen, clock, mob_name):
                                 screen.blit(feature_screen, (0, 0))
 
                                 F.Roll_3d_dice(screen, clock, "D20", str(dtwenty),(S.SCREEN_WIDTH * 0.5, S.SCREEN_HEIGHT * 0.5))
-                                F.add_to_roll_history(dtwenty, rolled_sum, "Mob:Hit:" + str(pressed[1]))
                                 rolled_sum, dtwenty = sk.handle_disadvantage_rolls(screen, clock, "1D20", dtwenty, (disadvantage, advantage), int(rect_dict[pressed[1]]["Roll_mod"]))
+                                F.add_to_roll_history(dtwenty, rolled_sum, "Mob:Hit:" + str(pressed[1]))
 
                                 dice_color, critical_fail, critical_success = A.handle_critical_fail_success_colors(dtwenty)
 

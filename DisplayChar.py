@@ -4,6 +4,8 @@ import pygame as pg, Settings as S, Variables as V, Functions as F, random, Acti
 
 import operator
 
+import main as m
+
 
 def selected_char_display(selected, screen, clock):
     character = V.character_dict[selected]
@@ -98,6 +100,7 @@ def selected_char_display(selected, screen, clock):
                         if V.SECRETS.get(V.char_name) and V.SECRETS[V.char_name]["LevelUp"]:
                             """Allow level up"""
                             LevelUp(screen, clock)
+                            m.Take_a_LONG_rest()
                         else:
                             F.print_debug("Levelup", debug="WARNING")
                     elif pressed == "Actions":
@@ -1914,7 +1917,7 @@ def LevelUp(screen, clock):
     if len(char_class) > 1:
         F.print_debug("NOT AVAILABLE TO LEVEL UP MULTICLASS YET")
     new_level = int(character["Level"].split(",")[0])+1
-    print(S.class_data[char_class[0]][str(new_level)])
+
     new_data = S.class_data[char_class[0]][str(new_level)]
     combobox_choises = {}
     limited_choises = []
@@ -2112,10 +2115,13 @@ def LevelUp(screen, clock):
                 for w in value[to_display].split(' '):
                     w = w.replace("\n\n", " ")
                     pos = F.display_text(screen, f"{w} ", 14, (pos.x + pos.w, pos.y))
-                    if pos.x + pos.w > S.SCREEN_WIDTH * 0.95:
+                    if pos.x + pos.w > S.SCREEN_WIDTH * 0.8:
                         pos.x = S.SCREEN_WIDTH * 0.1
                         pos.w = 0
                         pos.y += pos.h * 1.1
+                # if key in ["Circle Spells lv3", "Circle Spells lv5", "Circle Spells lv7", "Circle Spells lv9"]:
+
+
 
         buttons = F.display_back_button(screen, "Save")
         buttons = buttons + F.display_any_buttons(screen, x_pos, y_pos, button_width, button_height, button_dict)
@@ -2184,7 +2190,6 @@ def LevelUp(screen, clock):
                     if pressed == "Save" and buttons[0].collidepoint(mouse_pos):
                         """Save button pressed"""
                         save_leveled_up_data(character, combobox_choises, write_entry)
-                        running = False
                         return
                     elif pressed == "Roll Hp" and buttons[1].collidepoint(mouse_pos):
                         rolled = random.randint(1, int(dice_to_roll))
@@ -2342,8 +2347,10 @@ def save_leveled_up_data(character, combobox_choises, write_entry):
     for key, value in subclass_data.items():
         if int(value["Level"]) == new_level:
             """New subclass feature"""
-            if value["Action_Type"] in ["Passive"]:
-                character["Code"] += f",SubClass:{type}:{sub_type}:{key}"
+            if value["Action_Type"] in ["Passive", "Free Spell"]:
+                character["Code"] += f',SubClass:{type}:{sub_type}:{key}'
+            elif key in ["Circle Spells lv7"]:
+                continue
             else:
                 F.print_debug("IDK WHAT TO DO WITH SUBCLASS FEATURE BOSS", [value, character["Name"], subclass_data, key], "Error")
 
@@ -2360,8 +2367,8 @@ def save_leveled_up_data(character, combobox_choises, write_entry):
     for i in range(0, int(character["Hit dice"].split("d")[0])):
         V.BASE_HIT_DICE.append(character["Hit dice"].split("d")[1])
 
-    with open(S.local_path + '/Created_Players/' + V.char_name + '_config.json', 'w') as file:
-        json.dump(char_config_data, file, indent=4)
+    # with open(S.local_path + '/Created_Players/' + V.char_name + '_config.json', 'w') as file:
+    #     json.dump(char_config_data, file, indent=4)
 
 
     if not isinstance(character["Health"], int):
@@ -2371,7 +2378,7 @@ def save_leveled_up_data(character, combobox_choises, write_entry):
     character["Health"] = [character["Health"], character["Health"]]
 
     V.char_config = char_config_data.copy()
-    set_level_flag(0)
+    # set_level_flag(0)
     V.SECRETS[V.char_name]["LevelUp"] = 0
 
 

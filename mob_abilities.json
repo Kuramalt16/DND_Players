@@ -44,7 +44,13 @@
       "HIT": "4",
       "DICE": "1d4",
       "DICE_MOD": "0",
-      "DC": "3"
+      "DC": "2"
+    },
+    "Brown Bear": {
+      "HIT": "5",
+      "DICE": "1d8",
+      "DICE_MOD": "4",
+      "DC": "15"
     }
   },
   "Claws": {
@@ -54,6 +60,11 @@
       "HIT": "7",
       "DICE": "2d8",
       "DICE_MOD": "5"
+    },
+    "Brown Bear": {
+      "HIT": "5",
+      "DICE": "2d6",
+      "DICE_MOD": "4"
     }
   },
   "Charge": {
@@ -70,6 +81,15 @@
       "ATTACK_NAME": "Tusk",
       "DICE": "1d6",
       "DC": "11"
+    }
+  },
+  "Fist": {
+    "Description": "Melee Weapon Attack: +*HIT* to hit, reach 5 ft., one target. Hit: *DICE* + *DICE_MOD* bludgeoning damage.",
+    "Type": "Bludgeoning",
+    "Ape": {
+      "HIT": "5",
+      "DICE": "1d6",
+      "DICE_MOD": "3"
     }
   },
   "Gore": {
@@ -94,6 +114,11 @@
       "HIT": "5",
       "DICE": "2d4",
       "DICE_MOD": "3"
+    },
+    "Pony": {
+      "HIT": "4",
+      "DICE": "2d4",
+      "DICE_MOD": "2"
     }
   },
   "Horns": {
@@ -136,6 +161,9 @@
     "Description": "The *NAME* has advantage on Wisdom (Perception) checks that rely on smell.",
     "Giant Rat": {
       "NAME": "Giant Rat"
+    },
+    "Brown Bear": {
+      "NAME": "Brown Bear"
     }
   },
   "Multiattack": {
@@ -145,6 +173,18 @@
       "COUNT": "two",
       "DESC": "one with its beak and one with its claws.",
       "Attack_list": ["Beak", "Claws"]
+    },
+    "Brown Bear": {
+      "NAME": "Brown Bear",
+      "COUNT": "two",
+      "DESC": "one with its bite and one with its claws.",
+      "Attack_list": ["Bite", "Claws"]
+    },
+    "Ape": {
+      "NAME": "Ape",
+      "COUNT": "two",
+      "DESC": "one with its left and one with its right.",
+      "Attack_list": ["Fist", "Fist"]
     }
   },
   "Pack Tactics": {
@@ -165,6 +205,16 @@
     "Boar": {
       "NAME": "Boar",
       "DAMAGE_TAKEN": "7"
+    }
+  },
+  "Rock": {
+    "Description": "Ranged Weapon Attack: +*HIT* to hit, reach *RANGE* ft., one target. Hit: *DICE* + *DICE_MOD* bludgeoning damage.",
+    "Type": "Bludgeoning",
+    "Ape": {
+      "HIT": "5",
+      "DICE": "1d6",
+      "DICE_MOD": "3",
+      "RANGE": "25/50"
     }
   },
   "Small Creature": {

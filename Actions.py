@@ -682,7 +682,7 @@ def Initialize_actions(screen, clock):
                                 component_name = ""
                         elif pressed[0] == "Use":
                             if pressed[1] == "Ranger's Companion":
-                                Special_Needs.WildShape(screen, clock, V.char_config["Choises"][pressed[1]], "Ranger's Companion")
+                                Special_Needs.WildShape(screen, clock, V.char_config["Choises"]["Ranger's Companion"], "Ranger's Companion")
                     elif isinstance(pressed, tuple):
                         if slot_to_add_dict[pressed[0]][pressed[1]].collidepoint(mouse_pos):
                             if pressed[1] == "Plus":
@@ -1960,7 +1960,7 @@ def display_single_spell(screen, spell, start_X, start_y, step_y, displayed_rect
                     temp_spell_data["Damage"] = temp_spell_data["Damage"].replace(temp_spell_data["Damage"].split("d")[0], str(leveled_healing))
                 else:
                     F.print_debug("HELP BOSS THIS SPELL IS WEIRD its a healing spell, but when leveling up it doesnt level up the healing output", debug="ERROR")
-            rect_damage = F.display_text(screen, "Heal: " + temp_spell_data["Damage"].replace("+spellcasting ability modifier", "+" + str(V.spellcasting_ability_mod)), 15,(start_X + tab, start_y + step_y))
+            rect_damage = F.display_text(screen, "Heal: " + temp_spell_data["Damage"].replace("+spellcasting ability modifier", "+" + str(V.spellcasting_ability_mod)), 15,(start_X + tab, start_y + step_y), color="dark green")
         else:
             if S.spell_data[spell]["Attack"] in ["Ranged Spell Attack", "Melee Spell Attack"]:
                 step_y += S.SCREEN_HEIGHT * 0.031

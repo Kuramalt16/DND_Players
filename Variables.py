@@ -121,7 +121,8 @@ Available_spells_data = \
                 3: [2, "WISMOD+lv", 6, "1st:4,2nd:2", 2],
                 4: [3, "WISMOD+lv", 7, "1st:4,2nd:3", 2],
                 5: [3, "WISMOD+lv", 9, "1st:4,2nd:3,3rd:2", 3],
-                6: [3, "WISMOD+lv", 10, "1st:4,2nd:3,3rd:3", 3]
+                6: [3, "WISMOD+lv", 10, "1st:4,2nd:3,3rd:3", 3],
+                7: [3, "WISMOD+lv", 11, "1st:4,2nd:3,3rd:3,4th:1", 4],
             },
         "Ranger":
             {
@@ -131,6 +132,8 @@ Available_spells_data = \
                 4: [0, 3, 3, "1st:3", 1],
                 5: [0, 4, 6, "1st:4,2nd:2", 2],
                 6: [0, 4, 6, "1st:4,2nd:2", 2],
+                7: [0, 5, 7, "1st:4,2nd:3", 2],
+                8: [0, 5, 7, "1st:4,2nd:3", 2],
             },
         "Paladin":
             {

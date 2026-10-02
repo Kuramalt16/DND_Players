@@ -880,7 +880,7 @@
       "Remarkable Athlete": {
         "Level": "7",
         "Description": "Starting at 7th level, you can add half your proficiency bonus (rounded up) to any Strength, Dexterity, or Constitution check you make that doesn't already use your proficiency bonus.\n\nIn addition, when you make a running long jump, the distance you can cover increases by a number of feet equal to your Strength modifier.",
-        "Description_for_dummies": "You can add half your proficiency bonus rounded up to any STR, DEX, CON check that doesn't have proficiency as well as when making a running long jump the distance is increased by a number of feet equal to your STR MOD",
+        "Description_for_dummies": "You can add half your proficiency bonus rounded up to any STR, DEX, CON check that doesn't have proficiency as well as when making a running long jump the distance is increased by a number of feet equal to your STR MOD, Even DUMBER: In Skills, the not Red ones can be bigger as long as they are physical. How much bigger? maybe half Proficiency bonus rounded up?",
         "Action_Type": "Passive"
       },
       "Additional Fighting Style": {
@@ -2952,8 +2952,8 @@
       },
       "Exceptional Training": {
         "Level": "7",
-        "Description": "",
-        "Description_for_dummies": "",
+        "Description": "Beginning at 7th level, on any of your turns when your beast companion doesn’t attack, you can use a bonus action to command the beast to take the Dash, Disengage, or Help action on its turn. In addition, the beast’s attacks now count as magical for the purpose of overcoming resistance and immunity to nonmagical attacks and damage.",
+        "Description_for_dummies": "When your Beast doesn't attack, you can use a bonus action to make the beast, Dash, Disengage or Help on its turn. Also it's attacks are now magical",
         "Action_Type": "Passive"
       },
       "Bestial Fury": {
