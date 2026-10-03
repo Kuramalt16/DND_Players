@@ -303,7 +303,7 @@ def Initialize_actions(screen, clock):
                 if pressed in ["Back", -1]:
                     for name, value in rect_dict.items():
                         for property, rect in value.items():
-                            if isinstance(rect, pg.Rect) and rect.collidepoint(mouse_pos) and property in ["Hit", "Damage", "Cast", "Throw", "Versatile", "Spell_slot", "Damage_extra", "Rite", "Sub_Feature_Spell_slot", "Ritual", "Use"]:
+                            if isinstance(rect, pg.Rect) and rect.collidepoint(mouse_pos) and property in ["Hit", "Damage", "Cast", "Throw", "Versatile", "Spell_slot", "Damage_extra", "Rite", "Sub_Feature_Spell_slot", "Ritual", "Use", "Ammo_+", "Ammo_-"]:
                                 pressed = [property, name]
                 for slot in slot_to_add_dict:
                     for plus_or_minus, rect in slot_to_add_dict[slot].items():
@@ -683,6 +683,20 @@ def Initialize_actions(screen, clock):
                         elif pressed[0] == "Use":
                             if pressed[1] == "Ranger's Companion":
                                 Special_Needs.WildShape(screen, clock, V.char_config["Choises"]["Ranger's Companion"], "Ranger's Companion")
+                        elif pressed[0] in ["Ammo_+", "Ammo_-"]:
+                            weapon_name = pressed[1]
+                            if pressed[0][-1] == "+":
+                                F.add_item_to_char(weapon_name, character)
+                                ammo_count[weapon_name] += 1
+                            else:
+                                F.remove_item_from_char(weapon_name, character)
+                                ammo_count[weapon_name] -= 1
+                                if ammo_count[weapon_name] == 0:
+                                    del ammo_count[weapon_name]
+                                    weapon_list.remove(weapon_name)
+
+
+
                     elif isinstance(pressed, tuple):
                         if slot_to_add_dict[pressed[0]][pressed[1]].collidepoint(mouse_pos):
                             if pressed[1] == "Plus":
@@ -1008,11 +1022,27 @@ def display_weapons(screen, weapon_list, ammo_count, scroll):
             displayed_rects[weapon] = {"Info": info_rect, "Type": "Weapon"}
         step_y += S.SCREEN_HEIGHT * 0.031
 
+        if V.item_dict[weapon].get("Type") != None and V.item_dict[weapon]["Type"] in ["Wonderous Item", "Magic Weapon"] and "Wand" in weapon:
+            """Wands"""
+            ammo_count[weapon] = 7
+            r = F.display_text(screen, "Charges: ", 15, (start_X + tab, start_y + step_y))
+            F.display_text(screen, str(ammo_count[weapon]), 15, (r.x + r.w, r.y))
+            step_y += S.SCREEN_HEIGHT * 0.031
+            continue
 
         if V.item_dict[weapon].get("Extra") != None and V.item_dict[weapon].get("Properties") != None:
             if "Ammunition" in V.item_dict[weapon]["Properties"]:
                 r = F.display_text(screen, "Amount: ", 15, (start_X + tab, start_y + step_y))
-                F.display_text(screen,  str(ammo_count[weapon]), 15, (r.x + r.w, r.y))
+                r = F.display_text(screen,  str(ammo_count[weapon]), 15, (r.x + r.w, r.y))
+                r = F.display_text(screen,  " + ", 15, (r.x + r.w + 5, r.y))
+                pg.draw.rect(screen, "black", r, width=1)
+                displayed_rects[weapon]["Ammo_+"] = r
+                r1 = F.display_text(screen,  " - ", 15, (r.x + r.w + 6, r.y))
+                r2 = pg.Rect(r.x + r.w+4, r1.y, r.w, r.h)
+                pg.draw.rect(screen, "black", r2, width=1)
+                displayed_rects[weapon]["Ammo_-"] = r2
+
+
                 step_y += S.SCREEN_HEIGHT * 0.031
                 continue
             multiplyer = is_weapon_proficient(weapon, character)

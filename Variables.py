@@ -29,7 +29,7 @@ Special_Flags = {} # check Help.py
 
 consentration = {}
 
-Players_to_Chars = {"Laura": ["New", "Etheria", "Ru`ahala", "Kugel"],"Rokas": ["New", "Conan", "Crocus", "Nyx"],"Simonas": ["New", "Kalabrimbur", "Galandir"],"Rita": ["New", "Eloise"],"Admin": ["New", "GAR", "L", "Nyx2"],}
+Players_to_Chars = {"Laura": ["New", "Etheria", "Ru`ahala", "Kugel"],"Rokas": ["New", "Conan", "Crocus", "Nyx"],"Simonas": ["New", "Kalabrimbur", "Galandir"],"Rita": ["New", "Eloise"],"Admin": ["New", "GAR", "L"],}
 
 Languages = ["Common", "Elvish", "Thieves Cant", "Dwarvish", "Orcish", "Draconic", "Goblin", "Druidic", "Celestial", "Giant", "Gnomish", "Abyssal", "Infernal", "Sylvan", "Undercommon"]
 

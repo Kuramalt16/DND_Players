@@ -1,4 +1,6 @@
 import time
+from os import mkdir
+import copy
 
 import Settings as S, pygame as pg, os, Variables as V, pymysql
 import json, random, math, datetime
@@ -368,10 +370,10 @@ def add_to_dict_db_results(add_dict, to_dict, type):
 
 def read_image_from_database(table, name, output_path):
     if os.path.exists(output_path):
-        # print_debug("image already saved", output_path)
+        print_debug("image already saved", output_path)
         return
     if os.path.exists(output_path.replace(".png", ".jpg")):
-        # print_debug("image already saved", output_path.replace(".png", ".jpg"))
+        print_debug("image already saved", output_path.replace(".png", ".jpg"))
         return
     else:
         connection = Connect_to_MySql()
@@ -476,8 +478,10 @@ def save_data(data, table, case=None):
 
         else:
             """update entry"""
-            local_dict[table].remove("Ability_Scores")
-            db_dict[table].remove("Ability_Scores")
+            if "Ability_Scores" in local_dict[table]:
+                local_dict[table].remove("Ability_Scores")
+            if "Ability_Scores" in db_dict[table]:
+                db_dict[table].remove("Ability_Scores")
             sql = "UPDATE `{}` SET {} WHERE `Name` = '{}'".format(
                 table,
                 ', '.join(
@@ -706,6 +710,31 @@ def remove_item_from_char(item_name, char):
 
         create_char_JSON(V.char_name, char_config_data)
 
+def add_item_to_char(item_name, char):
+    item_list = char["Items"].split(",")
+    if item_name == "Spellcasting_Focus":
+        return
+    item_list.append(item_name)
+    char["Items"] = ",".join(item_list)
+    update_items_db(char)
+
+    # with open(S.local_path + '/Created_Players/' + V.char_name + '_config.json', 'r') as file:
+    #     char_config_data = json.load(file)
+    #
+    # if char_config_data.get("Equiped Items") == None:
+    #     return
+    #
+    # for key, item in char_config_data["Equiped Items"].items():
+    #     if item_name in item:
+    #         if "," in item:
+    #             items = item.split(",")
+    #             items.append(item_name)
+    #             char_config_data["Equiped Items"][key] = ",".join(items)
+    #         else:
+    #             char_config_data["Equiped Items"][key] = item_name
+    #
+    # create_char_JSON(V.char_name, char_config_data)
+
 def upload_to_json(data, json_filename, key_name):
     """
     This function uploads data to a JSON file, converting any BLOB (binary) data to base64 encoding.
@@ -715,14 +744,14 @@ def upload_to_json(data, json_filename, key_name):
     :param key_name: A unique key that identifies the data for the JSON file.
     """
     # If the data contains BLOBs, encode them as base64 strings
-    temp_data = data.copy()
+    temp_data = copy.deepcopy(data)
 
     # Update the JSON data with the new data
     new_data = {}
     for item_name, values in temp_data.items():
         if values["Type"].lower() == key_name.lower():
-            values = encode_value(values)
-            new_data[item_name] = values
+            value = encode_value(values)
+            new_data[item_name] = value
     json_data = new_data  # Store the updated data under the key_name
 
     # Write the updated data back to the JSON file
@@ -774,29 +803,40 @@ def encode_json_values(json_data):
             json_data[key] = encode_value(value)
     return json_data
 
-def read_json_item_data():
+Available_keys = {
+        "Armor": ["armour", False],
+        "Weapons": ["weapons", False],
+        "Special": ["special", False],
+        "Mounts": ["mount", False],
+        "Potions": ["potions", False],
+        "Food": ["food", False],
+        "Ingredients": ["ingredient", False],
+        "Magic Weapons": ["magic weapon", True],
+        "Magic Armor": ["magic armour", True],
+        "Wonderous Items": ["Wonderous Item", True],
+        "Coms": ["communication", "communications"],
+                      }
 
-    decoded_armor_data = read_and_decode_json(S.local_path + "/Armor.json")
-    decoded_food_data = read_and_decode_json(S.local_path + "/Food.json")
-    decoded_Ingredient_data = read_and_decode_json(S.local_path + "/Ingredients.json")
-    decoded_mArmor_data = read_and_decode_json(S.local_path + "/Magic Armor.json")
-    decoded_mweapon_data = read_and_decode_json(S.local_path + "/Magic Weapons.json")
-    decoded_Mounts_data = read_and_decode_json(S.local_path + "/Mounts.json")
-    decoded_Potions_data = read_and_decode_json(S.local_path + "/Potions.json")
-    decoded_Special_data = read_and_decode_json(S.local_path + "/Special.json")
-    decoded_Weapons_data = read_and_decode_json(S.local_path + "/Weapons.json")
-    decoded_Witems_data = read_and_decode_json(S.local_path + "/Wonderous Items.json")
-    V.item_dict = {}
-    V.item_dict.update(decoded_Witems_data)
-    V.item_dict.update(decoded_Weapons_data)
-    V.item_dict.update(decoded_Special_data)
-    V.item_dict.update(decoded_Potions_data)
-    V.item_dict.update(decoded_Mounts_data)
-    V.item_dict.update(decoded_mweapon_data)
-    V.item_dict.update(decoded_mArmor_data)
-    V.item_dict.update(decoded_Ingredient_data)
-    V.item_dict.update(decoded_food_data)
-    V.item_dict.update(decoded_armor_data)
+def read_json_item_data():
+    V.itm_dict = {}
+    failed_to_read = []
+    if not os.path.exists(S.local_path + "\\Images\\Items"):
+        os.mkdir(S.local_path + "\\Images\\Items")
+    for n in ["Armor", "Food", "Ingredients", "Magic Armor", "Magic Weapons", "Mounts", "Potions", "Special", "Weapons", "Wonderous Items"]:
+        if not os.path.exists(S.local_path + f"\\Images\\Items\\{Available_keys[n][0].capitalize()}"):
+            os.mkdir(S.local_path + f"\\Images\\Items\\{Available_keys[n][0].capitalize()}")
+        path = S.local_path + f"/{n}.json"
+        if os.path.exists(path):
+            decoded_data = read_and_decode_json(path)
+            V.item_dict.update(decoded_data)
+        else:
+            failed_to_read.append(n)
+
+    for n in failed_to_read:
+        data = read_db_table(Available_keys[n][0])
+        V.item_dict = add_to_dict_db_results(data, V.item_dict, Available_keys[n][1])
+
+        upload_to_json(V.item_dict, S.local_path + f"/{n}.json", Available_keys[n][0])
 
     check_and_save_images(V.item_dict, S.local_path + "/Images/Items/")
     print_debug("data collected", debug="INFO")
@@ -824,7 +864,7 @@ def check_and_save_images(item_dict, image_directory):
             if not os.path.exists(image_path) and not os.path.exists(image_path2):
                 print_debug(f"Image for '{item_name}' not found. Generating image...", debug="WARNING")
                 # Save the image if it doesn't exist
-                save_image(image_data, image_path2)
+                save_image(image_data, image_path)
             # else:
             #     print_debug(f"Image for '{item_name}' already exists at {image_path}.")
         else:
@@ -1503,7 +1543,7 @@ def get_equiped_weapons():
         char_config_data = json.load(file)
     if char_config_data.get("Equiped Items") != None:
         for key, value in char_config_data["Equiped Items"].items():
-            if key in ["Weapons", "Magic Weapon"] and value != "":
+            if key in ["Weapons", "Magic Weapon"] and value != "" or key in ["Wonderous Item"] and "Wand" in value:
                 if "," in value:
                     items = value.split(",")
                     weapon_list += items

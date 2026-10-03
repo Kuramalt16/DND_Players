@@ -181,4 +181,6 @@ cython_debug/
 .cursorindexingignore
 /Images/Campaign
 /Images/Maps
+/Images/Original Items
+/Images/Items
 

@@ -137,11 +137,12 @@
         }
     },
     "Equiped Items": {
-        "Weapons": "",
+        "Weapons": "Longbow,Arrows",
         "Magic Weapon": "",
         "Shield": "",
         "Armour": "Leather",
-        "Magic Armour": ""
+        "Magic Armour": "",
+        "Wonderous Item": "Wand of Polymorph,Wand of Fireballs,Wand of Fear"
     },
     "Notes": "\\cursor0",
     "Choises": {

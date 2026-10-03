@@ -294,10 +294,14 @@ def ReadData_Clicked(screen, clock):
                         F.print_debug(f"converting {pressed} data to dict", debug="INFO")
                         if pressed != "Coms":
                             V.item_dict = F.add_to_dict_db_results(data, V.item_dict, Available_keys[pressed][1])
+
+                            F.upload_to_json(V.item_dict, S.local_path + "/" + pressed + ".json", Available_keys[pressed][0])
                         else:
                             V.SECRETS = {}
                             V.SECRETS = F.add_to_dict_db_results(data, V.SECRETS, Available_keys[pressed][1])
-                        F.upload_to_json(V.item_dict, S.local_path + "/" + pressed + ".json", Available_keys[pressed][0])
+
+
+
                         for key, value in button_dict.items():
                             if value[0] == pressed:
                                 value[4] = "green"
